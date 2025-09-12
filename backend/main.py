@@ -146,81 +146,81 @@ AZURE_SERVICES_MAPPING = {
     "functions": {"name": "Azure Functions", "icon": "⚡", "drawio_shape": "function_app", "diagram_class": FunctionApps, "category": "compute"},
     "container_instances": {"name": "Container Instances", "icon": "📦", "drawio_shape": "container_instances", "diagram_class": ContainerInstances, "category": "compute"},
     "service_fabric": {"name": "Service Fabric", "icon": "🏗️", "drawio_shape": "service_fabric", "diagram_class": ServiceFabricClusters, "category": "compute"},
-    "batch": {"name": "Azure Batch", "icon": "⚙️", "drawio_shape": "batch", "diagram_class": BatchAccounts, "category": "compute"},
+    "batch": {"name": "Azure Batch", "icon": "⚙️", "drawio_shape": "batch_accounts", "diagram_class": BatchAccounts, "category": "compute"},
     
     # Networking Services
     "virtual_network": {"name": "Virtual Network", "icon": "🌐", "drawio_shape": "virtual_network", "diagram_class": VirtualNetworks, "category": "network"},
     "vpn_gateway": {"name": "VPN Gateway", "icon": "🔒", "drawio_shape": "vpn_gateway", "diagram_class": VirtualNetworkGateways, "category": "network"},
-    "expressroute": {"name": "ExpressRoute", "icon": "⚡", "drawio_shape": "expressroute", "diagram_class": ExpressrouteCircuits, "category": "network"},
+    "expressroute": {"name": "ExpressRoute", "icon": "⚡", "drawio_shape": "expressroute_circuits", "diagram_class": ExpressrouteCircuits, "category": "network"},
     "load_balancer": {"name": "Load Balancer", "icon": "⚖️", "drawio_shape": "load_balancer", "diagram_class": LoadBalancers, "category": "network"},
     "application_gateway": {"name": "Application Gateway", "icon": "🚪", "drawio_shape": "application_gateway", "diagram_class": ApplicationGateway, "category": "network"},
     "firewall": {"name": "Azure Firewall", "icon": "🛡️", "drawio_shape": "firewall", "diagram_class": Firewall, "category": "network"},
     "waf": {"name": "Web Application Firewall", "icon": "🛡️", "drawio_shape": "application_gateway", "diagram_class": ApplicationGateway, "category": "network"},
-    "cdn": {"name": "Content Delivery Network", "icon": "🌍", "drawio_shape": "cdn", "diagram_class": None, "category": "network"},  # No specific CDN class
-    "traffic_manager": {"name": "Traffic Manager", "icon": "🚦", "drawio_shape": "traffic_manager", "diagram_class": None, "category": "network"},  # No specific class
+    "cdn": {"name": "Content Delivery Network", "icon": "🌍", "drawio_shape": "cdn_profiles", "diagram_class": None, "category": "network"},
+    "traffic_manager": {"name": "Traffic Manager", "icon": "🚦", "drawio_shape": "traffic_manager_profiles", "diagram_class": None, "category": "network"},
     "virtual_wan": {"name": "Virtual WAN", "icon": "🌐", "drawio_shape": "virtual_wan", "diagram_class": VirtualNetworks, "category": "network"},
     
     # Storage Services
     "storage_accounts": {"name": "Storage Accounts", "icon": "💾", "drawio_shape": "storage_accounts", "diagram_class": StorageAccounts, "category": "storage"},
     "blob_storage": {"name": "Blob Storage", "icon": "📄", "drawio_shape": "blob_storage", "diagram_class": BlobStorage, "category": "storage"},
-    "file_storage": {"name": "Azure Files", "icon": "📁", "drawio_shape": "storage_accounts", "diagram_class": StorageAccounts, "category": "storage"},
-    "disk_storage": {"name": "Managed Disks", "icon": "💿", "drawio_shape": "disk_storage", "diagram_class": StorageAccounts, "category": "storage"},
-    "data_lake": {"name": "Data Lake Storage", "icon": "🏞️", "drawio_shape": "data_lake", "diagram_class": DataLakeStorage, "category": "storage"},
+    "file_storage": {"name": "Azure Files", "icon": "📁", "drawio_shape": "files", "diagram_class": StorageAccounts, "category": "storage"},
+    "disk_storage": {"name": "Managed Disks", "icon": "💿", "drawio_shape": "managed_disks", "diagram_class": StorageAccounts, "category": "storage"},
+    "data_lake": {"name": "Data Lake Storage", "icon": "🏞️", "drawio_shape": "data_lake_storage", "diagram_class": DataLakeStorage, "category": "storage"},
     
     # Database Services
     "sql_database": {"name": "Azure SQL Database", "icon": "🗄️", "drawio_shape": "sql_database", "diagram_class": SQLDatabases, "category": "database"},
     "sql_managed_instance": {"name": "SQL Managed Instance", "icon": "🗄️", "drawio_shape": "sql_managed_instance", "diagram_class": SQLDatabases, "category": "database"},
     "cosmos_db": {"name": "Cosmos DB", "icon": "🌍", "drawio_shape": "cosmos_db", "diagram_class": CosmosDb, "category": "database"},
-    "mysql": {"name": "Azure Database for MySQL", "icon": "🐬", "drawio_shape": "mysql", "diagram_class": DatabaseForMysqlServers, "category": "database"},
-    "postgresql": {"name": "Azure Database for PostgreSQL", "icon": "🐘", "drawio_shape": "postgresql", "diagram_class": DatabaseForPostgresqlServers, "category": "database"},
-    "mariadb": {"name": "Azure Database for MariaDB", "icon": "🗄️", "drawio_shape": "mariadb", "diagram_class": DatabaseForMysqlServers, "category": "database"},
-    "redis_cache": {"name": "Azure Cache for Redis", "icon": "⚡", "drawio_shape": "redis_cache", "diagram_class": None, "category": "database"},  # No specific Redis class
+    "mysql": {"name": "Azure Database for MySQL", "icon": "🐬", "drawio_shape": "database_for_mysql_servers", "diagram_class": DatabaseForMysqlServers, "category": "database"},
+    "postgresql": {"name": "Azure Database for PostgreSQL", "icon": "🐘", "drawio_shape": "database_for_postgresql_servers", "diagram_class": DatabaseForPostgresqlServers, "category": "database"},
+    "mariadb": {"name": "Azure Database for MariaDB", "icon": "🗄️", "drawio_shape": "database_for_mariadb_servers", "diagram_class": DatabaseForMysqlServers, "category": "database"},
+    "redis_cache": {"name": "Azure Cache for Redis", "icon": "⚡", "drawio_shape": "cache_redis", "diagram_class": None, "category": "database"},
     
     # Security Services
     "key_vault": {"name": "Azure Key Vault", "icon": "🔐", "drawio_shape": "key_vault", "diagram_class": KeyVaults, "category": "security"},
     "active_directory": {"name": "Azure Active Directory", "icon": "👤", "drawio_shape": "azure_active_directory", "diagram_class": ActiveDirectory, "category": "security"},
     "security_center": {"name": "Azure Security Center", "icon": "🛡️", "drawio_shape": "security_center", "diagram_class": SecurityCenter, "category": "security"},
     "sentinel": {"name": "Azure Sentinel", "icon": "👁️", "drawio_shape": "sentinel", "diagram_class": Sentinel, "category": "security"},
-    "defender": {"name": "Microsoft Defender", "icon": "🛡️", "drawio_shape": "defender", "diagram_class": SecurityCenter, "category": "security"},
+    "defender": {"name": "Microsoft Defender", "icon": "🛡️", "drawio_shape": "defender_easm", "diagram_class": SecurityCenter, "category": "security"},
     "information_protection": {"name": "Azure Information Protection", "icon": "🔒", "drawio_shape": "information_protection", "diagram_class": None, "category": "security"},
     
     # Monitoring & Management
-    "monitor": {"name": "Azure Monitor", "icon": "📊", "diagram_class": None, "category": "monitoring"},  # No specific Monitor class
-    "log_analytics": {"name": "Log Analytics", "icon": "📋", "diagram_class": None, "category": "monitoring"},
-    "application_insights": {"name": "Application Insights", "icon": "📈", "diagram_class": None, "category": "monitoring"},
-    "service_health": {"name": "Service Health", "icon": "❤️", "diagram_class": None, "category": "monitoring"},
-    "advisor": {"name": "Azure Advisor", "icon": "💡", "diagram_class": None, "category": "monitoring"},
+    "monitor": {"name": "Azure Monitor", "icon": "📊", "drawio_shape": "monitor", "diagram_class": None, "category": "monitoring"},
+    "log_analytics": {"name": "Log Analytics", "icon": "📋", "drawio_shape": "log_analytics_workspaces", "diagram_class": None, "category": "monitoring"},
+    "application_insights": {"name": "Application Insights", "icon": "📈", "drawio_shape": "application_insights", "diagram_class": None, "category": "monitoring"},
+    "service_health": {"name": "Service Health", "icon": "❤️", "drawio_shape": "service_health", "diagram_class": None, "category": "monitoring"},
+    "advisor": {"name": "Azure Advisor", "icon": "💡", "drawio_shape": "advisor", "diagram_class": None, "category": "monitoring"},
     
     # AI/ML Services  
-    "cognitive_services": {"name": "Cognitive Services", "icon": "🧠", "diagram_class": None, "category": "ai"},
-    "machine_learning": {"name": "Azure Machine Learning", "icon": "🤖", "diagram_class": None, "category": "ai"},
-    "bot_service": {"name": "Bot Service", "icon": "🤖", "diagram_class": None, "category": "ai"},
-    "form_recognizer": {"name": "Form Recognizer", "icon": "📄", "diagram_class": None, "category": "ai"},
+    "cognitive_services": {"name": "Cognitive Services", "icon": "🧠", "drawio_shape": "cognitive_services", "diagram_class": None, "category": "ai"},
+    "machine_learning": {"name": "Azure Machine Learning", "icon": "🤖", "drawio_shape": "machine_learning", "diagram_class": None, "category": "ai"},
+    "bot_service": {"name": "Bot Service", "icon": "🤖", "drawio_shape": "bot_services", "diagram_class": None, "category": "ai"},
+    "form_recognizer": {"name": "Form Recognizer", "icon": "📄", "drawio_shape": "form_recognizer", "diagram_class": None, "category": "ai"},
     
     # Data & Analytics
-    "synapse": {"name": "Azure Synapse Analytics", "icon": "📊", "diagram_class": SynapseAnalytics, "category": "analytics"},
-    "data_factory": {"name": "Azure Data Factory", "icon": "🏭", "diagram_class": DataFactories, "category": "analytics"},
-    "databricks": {"name": "Azure Databricks", "icon": "📊", "diagram_class": Databricks, "category": "analytics"},
-    "stream_analytics": {"name": "Stream Analytics", "icon": "🌊", "diagram_class": StreamAnalyticsJobs, "category": "analytics"},
-    "power_bi": {"name": "Power BI", "icon": "📊", "diagram_class": None, "category": "analytics"},
+    "synapse": {"name": "Azure Synapse Analytics", "icon": "📊", "drawio_shape": "synapse_analytics", "diagram_class": SynapseAnalytics, "category": "analytics"},
+    "data_factory": {"name": "Azure Data Factory", "icon": "🏭", "drawio_shape": "data_factory", "diagram_class": DataFactories, "category": "analytics"},
+    "databricks": {"name": "Azure Databricks", "icon": "📊", "drawio_shape": "databricks", "diagram_class": Databricks, "category": "analytics"},
+    "stream_analytics": {"name": "Stream Analytics", "icon": "🌊", "drawio_shape": "stream_analytics", "diagram_class": StreamAnalyticsJobs, "category": "analytics"},
+    "power_bi": {"name": "Power BI", "icon": "📊", "drawio_shape": "power_bi", "diagram_class": None, "category": "analytics"},
     
     # Integration Services
-    "logic_apps": {"name": "Logic Apps", "icon": "🔗", "diagram_class": LogicApps, "category": "integration"},
-    "service_bus": {"name": "Service Bus", "icon": "🚌", "diagram_class": ServiceBus, "category": "integration"},
-    "event_grid": {"name": "Event Grid", "icon": "⚡", "diagram_class": EventGridTopics, "category": "integration"},
-    "event_hubs": {"name": "Event Hubs", "icon": "📡", "diagram_class": EventHubs, "category": "integration"},
-    "api_management": {"name": "API Management", "icon": "🔌", "diagram_class": APIManagement, "category": "integration"},
+    "logic_apps": {"name": "Logic Apps", "icon": "🔗", "drawio_shape": "logic_apps", "diagram_class": LogicApps, "category": "integration"},
+    "service_bus": {"name": "Service Bus", "icon": "🚌", "drawio_shape": "service_bus", "diagram_class": ServiceBus, "category": "integration"},
+    "event_grid": {"name": "Event Grid", "icon": "⚡", "drawio_shape": "event_grid_topics", "diagram_class": EventGridTopics, "category": "integration"},
+    "event_hubs": {"name": "Event Hubs", "icon": "📡", "drawio_shape": "event_hubs", "diagram_class": EventHubs, "category": "integration"},
+    "api_management": {"name": "API Management", "icon": "🔌", "drawio_shape": "api_management", "diagram_class": APIManagement, "category": "integration"},
     
     # DevOps & Management
-    "devops": {"name": "Azure DevOps", "icon": "⚙️", "diagram_class": Devops, "category": "devops"},
-    "automation": {"name": "Azure Automation", "icon": "🤖", "diagram_class": None, "category": "devops"},
-    "policy": {"name": "Azure Policy", "icon": "📋", "diagram_class": None, "category": "governance"},
-    "blueprints": {"name": "Azure Blueprints", "icon": "📐", "diagram_class": None, "category": "governance"},
-    "resource_manager": {"name": "Azure Resource Manager", "icon": "🏗️", "diagram_class": Resourcegroups, "category": "governance"},
+    "devops": {"name": "Azure DevOps", "icon": "⚙️", "drawio_shape": "devops", "diagram_class": Devops, "category": "devops"},
+    "automation": {"name": "Azure Automation", "icon": "🤖", "drawio_shape": "automation_accounts", "diagram_class": None, "category": "devops"},
+    "policy": {"name": "Azure Policy", "icon": "📋", "drawio_shape": "policy", "diagram_class": None, "category": "governance"},
+    "blueprints": {"name": "Azure Blueprints", "icon": "📐", "drawio_shape": "blueprints", "diagram_class": None, "category": "governance"},
+    "resource_manager": {"name": "Azure Resource Manager", "icon": "🏗️", "drawio_shape": "resource_groups", "diagram_class": Resourcegroups, "category": "governance"},
     
     # Backup & Recovery
-    "backup": {"name": "Azure Backup", "icon": "💾", "diagram_class": None, "category": "backup"},
-    "site_recovery": {"name": "Azure Site Recovery", "icon": "🔄", "diagram_class": None, "category": "backup"},
+    "backup": {"name": "Azure Backup", "icon": "💾", "drawio_shape": "backup", "diagram_class": None, "category": "backup"},
+    "site_recovery": {"name": "Azure Site Recovery", "icon": "🔄", "drawio_shape": "site_recovery", "diagram_class": None, "category": "backup"},
 }
 
 def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str = "/tmp") -> str:
@@ -748,142 +748,343 @@ def generate_professional_mermaid(inputs: CustomerInputs) -> str:
     return "\n".join(lines)
 
 def generate_enhanced_drawio_xml(inputs: CustomerInputs) -> str:
-    """Generate enhanced Draw.io XML with better Azure stencils"""
+    """Generate enhanced Draw.io XML with comprehensive Azure stencils based on user selections"""
     
     def esc(s): 
         return html.escape(s) if s else ""
     
     template = generate_architecture_template(inputs)
+    diagram_id = str(uuid.uuid4())
     
-    return f"""<mxfile host="app.diagrams.net" modified="2024-01-01T00:00:00.000Z" agent="Azure Landing Zone Agent" version="1.0.0">
-  <diagram name="Azure Landing Zone Architecture" id="azure-lz-{uuid.uuid4()}">
-    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1200" math="0" shadow="0">
+    # Base layout coordinates
+    y_start = 100
+    current_y = y_start
+    section_height = 350
+    service_width = 100
+    service_height = 80
+    
+    # Build dynamic XML content
+    xml_parts = [
+        f"""<mxfile host="app.diagrams.net" modified="2024-01-01T00:00:00.000Z" agent="Azure Landing Zone Agent" version="1.0.0">
+  <diagram name="Azure Landing Zone Architecture" id="azure-lz-{diagram_id}">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1600" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         
         <!-- Azure Tenant Container -->
         <mxCell id="tenant" value="Azure Tenant - {esc(inputs.org_structure or 'Enterprise')}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="50" y="50" width="1800" height="1100" as="geometry" />
+          <mxGeometry x="50" y="50" width="2300" height="1500" as="geometry" />
         </mxCell>
         
         <!-- Management Groups -->
         <mxCell id="mgmt-groups" value="Management Groups" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="100" y="100" width="400" height="300" as="geometry" />
-        </mxCell>
-        
+          <mxGeometry x="100" y="{current_y}" width="500" height="250" as="geometry" />
+        </mxCell>"""
+    ]
+    
+    # Management Group structure based on template
+    mg_x = 150
+    mg_y = current_y + 50
+    xml_parts.append(f"""
         <mxCell id="root-mg" value="Root MG" style="shape=mxgraph.azure.management;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="150" y="150" width="80" height="60" as="geometry" />
-        </mxCell>
-        
-        <mxCell id="platform-mg" value="Platform" style="shape=mxgraph.azure.management;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="280" y="150" width="80" height="60" as="geometry" />
-        </mxCell>
-        
-        <mxCell id="workloads-mg" value="Workloads" style="shape=mxgraph.azure.management;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="400" y="150" width="80" height="60" as="geometry" />
-        </mxCell>
-        
+          <mxGeometry x="{mg_x}" y="{mg_y}" width="80" height="60" as="geometry" />
+        </mxCell>""")
+    
+    mg_x += 120
+    for i, mg in enumerate(template['template']['management_groups'][1:3]):  # Platform and Workloads
+        mg_id = mg.lower().replace(' ', '-')
+        xml_parts.append(f"""
+        <mxCell id="{mg_id}-mg" value="{mg}" style="shape=mxgraph.azure.management;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="{mg_x}" y="{mg_y}" width="80" height="60" as="geometry" />
+        </mxCell>""")
+        mg_x += 120
+    
+    # Subscriptions
+    current_y += 300
+    xml_parts.append(f"""
         <!-- Subscriptions -->
         <mxCell id="subscriptions" value="Subscriptions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="600" y="100" width="500" height="300" as="geometry" />
-        </mxCell>
-        
-        <mxCell id="connectivity-sub" value="Connectivity" style="shape=mxgraph.azure.subscription;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="650" y="150" width="100" height="60" as="geometry" />
-        </mxCell>
-        
-        <mxCell id="identity-sub" value="Identity" style="shape=mxgraph.azure.subscription;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="800" y="150" width="100" height="60" as="geometry" />
-        </mxCell>
-        
-        <mxCell id="prod-sub" value="Production" style="shape=mxgraph.azure.subscription;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="950" y="150" width="100" height="60" as="geometry" />
-        </mxCell>
-        
+          <mxGeometry x="700" y="{current_y}" width="600" height="250" as="geometry" />
+        </mxCell>""")
+    
+    sub_x = 750
+    sub_y = current_y + 50
+    for sub in template['template']['subscriptions'][:4]:  # First 4 subscriptions
+        xml_parts.append(f"""
+        <mxCell id="{sub.lower().replace(' ', '-')}-sub" value="{sub}" style="shape=mxgraph.azure.subscription;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="{sub_x}" y="{sub_y}" width="{service_width}" height="{service_height}" as="geometry" />
+        </mxCell>""")
+        sub_x += 130
+        if sub_x > 1200:  # Wrap to next row
+            sub_x = 750
+            sub_y += 100
+    
+    # Network Architecture Section
+    current_y += 300
+    xml_parts.append(f"""
         <!-- Network Architecture -->
         <mxCell id="network" value="Network Architecture - {esc(inputs.network_model or 'Hub-Spoke')}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="100" y="500" width="600" height="400" as="geometry" />
-        </mxCell>
-        
+          <mxGeometry x="100" y="{current_y}" width="800" height="{section_height}" as="geometry" />
+        </mxCell>""")
+    
+    # Hub VNet (always present)
+    hub_x = 200
+    hub_y = current_y + 80
+    xml_parts.append(f"""
         <mxCell id="hub-vnet" value="Hub VNet\\nShared Services" style="shape=mxgraph.azure.virtual_network;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="200" y="600" width="120" height="80" as="geometry" />
+          <mxGeometry x="{hub_x}" y="{hub_y}" width="120" height="80" as="geometry" />
+        </mxCell>""")
+    
+    # Spoke VNets
+    spoke_x = 400
+    spoke_y = hub_y - 50
+    xml_parts.append(f"""
+        <mxCell id="spoke1-vnet" value="Production VNet" style="shape=mxgraph.azure.virtual_network;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="{spoke_x}" y="{spoke_y}" width="120" height="80" as="geometry" />
         </mxCell>
+        <mxCell id="spoke2-vnet" value="Development VNet" style="shape=mxgraph.azure.virtual_network;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="{spoke_x}" y="{spoke_y + 120}" width="120" height="80" as="geometry" />
+        </mxCell>""")
+    
+    # Add selected network services
+    if inputs.network_services:
+        net_x = 600
+        net_y = hub_y
+        for i, service in enumerate(inputs.network_services[:4]):  # Max 4 network services
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                shape = service_info.get('drawio_shape', 'generic_service')
+                xml_parts.append(f"""
+        <mxCell id="net-service-{i}" value="{esc(service_info['name'])}" style="shape=mxgraph.azure.{shape};fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="{net_x}" y="{net_y}" width="{service_width}" height="{service_height}" as="geometry" />
+        </mxCell>""")
+                net_y += 100
+    
+    # Compute Services Section
+    if inputs.compute_services or inputs.workload:
+        current_y += section_height + 50
+        xml_parts.append(f"""
+        <!-- Compute Services -->
+        <mxCell id="compute" value="Compute Services" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff0e6;strokeColor=#d79b00;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="{current_y}" width="600" height="{section_height}" as="geometry" />
+        </mxCell>""")
         
-        <mxCell id="spoke1-vnet" value="Spoke VNet 1\\nProduction" style="shape=mxgraph.azure.virtual_network;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="400" y="550" width="120" height="80" as="geometry" />
-        </mxCell>
+        comp_x = 1050
+        comp_y = current_y + 50
         
-        <mxCell id="spoke2-vnet" value="Spoke VNet 2\\nDevelopment" style="shape=mxgraph.azure.virtual_network;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="400" y="700" width="120" height="80" as="geometry" />
-        </mxCell>
+        # Add selected compute services
+        services_to_add = inputs.compute_services or []
+        if inputs.workload and inputs.workload not in services_to_add:
+            services_to_add.append(inputs.workload)
+            
+        for i, service in enumerate(services_to_add[:6]):  # Max 6 compute services
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                shape = service_info.get('drawio_shape', 'generic_service')
+                xml_parts.append(f"""
+        <mxCell id="compute-service-{i}" value="{esc(service_info['name'])}" style="shape=mxgraph.azure.{shape};fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="{comp_x}" y="{comp_y}" width="{service_width}" height="{service_height}" as="geometry" />
+        </mxCell>""")
+                comp_x += 120
+                if comp_x > 1450:  # Wrap to next row
+                    comp_x = 1050
+                    comp_y += 100
+    
+    # Storage Services Section
+    if inputs.storage_services:
+        current_y += section_height + 50
+        xml_parts.append(f"""
+        <!-- Storage Services -->
+        <mxCell id="storage" value="Storage Services" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0f0f0;strokeColor=#666666;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="{current_y}" width="600" height="250" as="geometry" />
+        </mxCell>""")
         
-        <!-- Workloads -->
-        <mxCell id="workloads" value="Workloads - {esc(inputs.workload or 'Application Services')}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="800" y="500" width="400" height="400" as="geometry" />
-        </mxCell>
+        stor_x = 150
+        stor_y = current_y + 50
+        for i, service in enumerate(inputs.storage_services[:4]):
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                shape = service_info.get('drawio_shape', 'storage_accounts')
+                xml_parts.append(f"""
+        <mxCell id="storage-service-{i}" value="{esc(service_info['name'])}" style="shape=mxgraph.azure.{shape};fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="{stor_x}" y="{stor_y}" width="{service_width}" height="{service_height}" as="geometry" />
+        </mxCell>""")
+                stor_x += 120
+                if stor_x > 550:
+                    stor_x = 150
+                    stor_y += 100
+    
+    # Database Services Section
+    if inputs.database_services:
+        db_y = current_y if not inputs.storage_services else current_y
+        if inputs.storage_services:
+            xml_parts.append(f"""
+        <!-- Database Services -->
+        <mxCell id="database" value="Database Services" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f3ff;strokeColor=#0066cc;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="800" y="{db_y}" width="600" height="250" as="geometry" />
+        </mxCell>""")
+        else:
+            current_y += section_height + 50
+            xml_parts.append(f"""
+        <!-- Database Services -->
+        <mxCell id="database" value="Database Services" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f3ff;strokeColor=#0066cc;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="{current_y}" width="600" height="250" as="geometry" />
+        </mxCell>""")
+            db_y = current_y
         
-        <mxCell id="primary-workload" value="{esc(AZURE_SERVICES_MAPPING.get(inputs.workload or 'app_services', {'name': 'App Services'})['name'])}" style="shape=mxgraph.azure.{AZURE_SERVICES_MAPPING.get(inputs.workload or 'app_services', {'drawio_shape': 'app_services'})['drawio_shape']};fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="900" y="600" width="120" height="80" as="geometry" />
-        </mxCell>
+        db_x = 850 if inputs.storage_services else 150
+        db_y += 50
+        for i, service in enumerate(inputs.database_services[:4]):
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                shape = service_info.get('drawio_shape', 'sql_database')
+                xml_parts.append(f"""
+        <mxCell id="database-service-{i}" value="{esc(service_info['name'])}" style="shape=mxgraph.azure.{shape};fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="{db_x}" y="{db_y}" width="{service_width}" height="{service_height}" as="geometry" />
+        </mxCell>""")
+                db_x += 120
+                if db_x > (1250 if inputs.storage_services else 550):
+                    db_x = 850 if inputs.storage_services else 150
+                    db_y += 100
+    
+    # Security Services Section (always present)
+    current_y += 300
+    xml_parts.append(f"""
+        <!-- Security & Identity Services -->
+        <mxCell id="security" value="Security &amp; Identity Services" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffebee;strokeColor=#c62828;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="1700" y="{y_start}" width="600" height="600" as="geometry" />
+        </mxCell>""")
+    
+    # Core security services (always present)
+    sec_x = 1750
+    sec_y = y_start + 50
+    core_security = [
+        ('azure-ad', 'Azure AD', 'azure_active_directory'),
+        ('key-vault', 'Key Vault', 'key_vault'),
+        ('security-center', 'Security Center', 'security_center')
+    ]
+    
+    for sec_id, sec_name, sec_shape in core_security:
+        xml_parts.append(f"""
+        <mxCell id="{sec_id}" value="{sec_name}" style="shape=mxgraph.azure.{sec_shape};fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="{sec_x}" y="{sec_y}" width="{service_width}" height="{service_height}" as="geometry" />
+        </mxCell>""")
+        sec_x += 120
+        if sec_x > 2100:
+            sec_x = 1750
+            sec_y += 100
+    
+    # Add additional selected security services
+    if inputs.security_services:
+        for i, service in enumerate(inputs.security_services):
+            if service in AZURE_SERVICES_MAPPING and service not in ['active_directory', 'key_vault', 'security_center']:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                shape = service_info.get('drawio_shape', 'generic_service')
+                xml_parts.append(f"""
+        <mxCell id="security-service-{i}" value="{esc(service_info['name'])}" style="shape=mxgraph.azure.{shape};fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="{sec_x}" y="{sec_y}" width="{service_width}" height="{service_height}" as="geometry" />
+        </mxCell>""")
+                sec_x += 120
+                if sec_x > 2100:
+                    sec_x = 1750
+                    sec_y += 100
+    
+    # Analytics Services Section
+    if inputs.analytics_services:
+        analytics_y = y_start + 650
+        xml_parts.append(f"""
+        <!-- Analytics & AI Services -->
+        <mxCell id="analytics" value="Analytics &amp; AI Services" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#9c27b0;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="1700" y="{analytics_y}" width="600" height="300" as="geometry" />
+        </mxCell>""")
         
-        <!-- Security & Governance -->
-        <mxCell id="security" value="Security &amp; Governance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#ff6666;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
-          <mxGeometry x="1300" y="100" width="500" height="800" as="geometry" />
-        </mxCell>
+        ana_x = 1750
+        ana_y = analytics_y + 50
+        for i, service in enumerate(inputs.analytics_services[:4]):
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                shape = service_info.get('drawio_shape', 'generic_service')
+                xml_parts.append(f"""
+        <mxCell id="analytics-service-{i}" value="{esc(service_info['name'])}" style="shape=mxgraph.azure.{shape};fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="{ana_x}" y="{ana_y}" width="{service_width}" height="{service_height}" as="geometry" />
+        </mxCell>""")
+                ana_x += 120
+                if ana_x > 2100:
+                    ana_x = 1750
+                    ana_y += 100
+    
+    # Integration Services Section
+    if inputs.integration_services:
+        int_y = current_y
+        xml_parts.append(f"""
+        <!-- Integration Services -->
+        <mxCell id="integration" value="Integration Services" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#ff8f00;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="{int_y}" width="600" height="250" as="geometry" />
+        </mxCell>""")
         
-        <mxCell id="azure-ad" value="Azure AD" style="shape=mxgraph.azure.azure_active_directory;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="1400" y="200" width="80" height="80" as="geometry" />
-        </mxCell>
+        int_x = 150
+        int_y += 50
+        for i, service in enumerate(inputs.integration_services[:4]):
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                shape = service_info.get('drawio_shape', 'generic_service')
+                xml_parts.append(f"""
+        <mxCell id="integration-service-{i}" value="{esc(service_info['name'])}" style="shape=mxgraph.azure.{shape};fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="{int_x}" y="{int_y}" width="{service_width}" height="{service_height}" as="geometry" />
+        </mxCell>""")
+                int_x += 120
+                if int_x > 550:
+                    int_x = 150
+                    int_y += 100
+    
+    # DevOps Services Section
+    if inputs.devops_services:
+        devops_y = current_y if not inputs.integration_services else current_y
+        devops_x_offset = 800 if inputs.integration_services else 100
+        xml_parts.append(f"""
+        <!-- DevOps Services -->
+        <mxCell id="devops" value="DevOps Services" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="{devops_x_offset}" y="{devops_y}" width="400" height="250" as="geometry" />
+        </mxCell>""")
         
-        <mxCell id="azure-policy" value="Azure Policy" style="shape=mxgraph.azure.azure_governance;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="1400" y="350" width="80" height="80" as="geometry" />
-        </mxCell>
-        
-        <mxCell id="key-vault" value="Key Vault" style="shape=mxgraph.azure.key_vault;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="1400" y="500" width="80" height="80" as="geometry" />
-        </mxCell>
-        
-        <mxCell id="security-center" value="Security Center" style="shape=mxgraph.azure.security_center;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="1400" y="650" width="80" height="80" as="geometry" />
-        </mxCell>
-        
-        <!-- Connections -->
+        dev_x = devops_x_offset + 50
+        dev_y = devops_y + 50
+        for i, service in enumerate(inputs.devops_services[:3]):
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                shape = service_info.get('drawio_shape', 'generic_service')
+                xml_parts.append(f"""
+        <mxCell id="devops-service-{i}" value="{esc(service_info['name'])}" style="shape=mxgraph.azure.{shape};fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="{dev_x}" y="{dev_y}" width="{service_width}" height="{service_height}" as="geometry" />
+        </mxCell>""")
+                dev_x += 120
+                if dev_x > (devops_x_offset + 250):
+                    dev_x = devops_x_offset + 50
+                    dev_y += 100
+    
+    # Add basic connections
+    xml_parts.append("""
+        <!-- Key Connections -->
         <mxCell id="conn1" edge="1" source="root-mg" target="platform-mg" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="conn2" edge="1" source="root-mg" target="workloads-mg" parent="1">
+        <mxCell id="conn2" edge="1" source="root-mg" target="landing-zones-mg" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="conn3" edge="1" source="platform-mg" target="connectivity-sub" parent="1">
+        <mxCell id="conn3" edge="1" source="hub-vnet" target="spoke1-vnet" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="conn4" edge="1" source="platform-mg" target="identity-sub" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="conn5" edge="1" source="workloads-mg" target="prod-sub" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="conn6" edge="1" source="connectivity-sub" target="hub-vnet" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="conn7" edge="1" source="hub-vnet" target="spoke1-vnet" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="conn8" edge="1" source="hub-vnet" target="spoke2-vnet" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="conn9" edge="1" source="prod-sub" target="primary-workload" parent="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="conn10" edge="1" source="identity-sub" target="azure-ad" parent="1">
+        <mxCell id="conn4" edge="1" source="hub-vnet" target="spoke2-vnet" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         
       </root>
     </mxGraphModel>
   </diagram>
-</mxfile>"""
+</mxfile>""")
+    
+    return "".join(xml_parts)
 
 
 def generate_professional_documentation(inputs: CustomerInputs) -> Dict[str, str]:
@@ -1189,6 +1390,164 @@ def generate_drawio_endpoint(inputs: CustomerInputs):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating Draw.io XML: {str(e)}")
+
+@app.post("/test-architecture-variety")
+def test_architecture_variety():
+    """Generate multiple different architecture patterns to test variety and ensure different diagrams are created"""
+    try:
+        # Define 3 different test configurations
+        test_configs = [
+            {
+                "name": "Enterprise Multi-Cloud",
+                "config": CustomerInputs(
+                    business_objective="Enterprise digital transformation",
+                    org_structure="enterprise",
+                    network_model="hub-spoke",
+                    security_posture="zero-trust",
+                    compute_services=["virtual_machines", "aks", "app_services", "service_fabric"],
+                    network_services=["virtual_network", "firewall", "application_gateway", "expressroute"],
+                    storage_services=["storage_accounts", "blob_storage", "data_lake"],
+                    database_services=["sql_database", "cosmos_db", "postgresql", "redis_cache"],
+                    security_services=["key_vault", "active_directory", "security_center", "sentinel"],
+                    analytics_services=["synapse", "data_factory", "databricks"],
+                    integration_services=["logic_apps", "api_management", "service_bus"],
+                    devops_services=["devops", "automation"],
+                    monitoring_services=["monitor", "log_analytics", "application_insights"]
+                )
+            },
+            {
+                "name": "Startup Cloud-Native",
+                "config": CustomerInputs(
+                    business_objective="Rapid innovation and growth",
+                    org_structure="startup",
+                    network_model="vwan",
+                    security_posture="defense-in-depth",
+                    compute_services=["app_services", "functions", "container_instances"],
+                    network_services=["virtual_network", "application_gateway", "cdn"],
+                    storage_services=["blob_storage", "file_storage"],
+                    database_services=["cosmos_db", "redis_cache"],
+                    security_services=["key_vault", "active_directory"],
+                    ai_services=["cognitive_services", "bot_service"],
+                    integration_services=["logic_apps", "event_grid"],
+                    devops_services=["devops"],
+                    monitoring_services=["application_insights"]
+                )
+            },
+            {
+                "name": "AI/ML Research Platform",
+                "config": CustomerInputs(
+                    business_objective="AI-driven research and innovation",
+                    org_structure="medium",
+                    network_model="mesh",
+                    security_posture="zero-trust",
+                    compute_services=["batch", "aks", "virtual_machines"],
+                    network_services=["virtual_network", "firewall", "vpn_gateway"],
+                    storage_services=["data_lake", "blob_storage"],
+                    database_services=["sql_database", "cosmos_db"],
+                    security_services=["key_vault", "active_directory", "defender"],
+                    analytics_services=["synapse", "databricks", "stream_analytics"],
+                    ai_services=["machine_learning", "cognitive_services", "form_recognizer"],
+                    integration_services=["event_hubs", "api_management"],
+                    devops_services=["devops"]
+                )
+            }
+        ]
+        
+        results = []
+        for test in test_configs:
+            # Generate Draw.io XML
+            drawio_xml = generate_enhanced_drawio_xml(test["config"])
+            
+            # Generate Azure PNG diagram
+            diagram_path = generate_azure_architecture_diagram(test["config"])
+            
+            # Read the PNG file
+            with open(diagram_path, "rb") as f:
+                diagram_data = f.read()
+            diagram_base64 = base64.b64encode(diagram_data).decode('utf-8')
+            
+            # Count unique Azure stencils in Draw.io XML
+            import re
+            shapes = re.findall(r'shape=mxgraph\.azure\.[^;\"\s]*', drawio_xml)
+            
+            results.append({
+                "name": test["name"],
+                "drawio_file_size": len(drawio_xml),
+                "png_file_size": len(diagram_data),
+                "unique_azure_stencils": len(set(shapes)),
+                "azure_stencils_used": sorted(list(set(shapes))),
+                "drawio_xml": drawio_xml[:500] + "..." if len(drawio_xml) > 500 else drawio_xml,
+                "png_base64": diagram_base64[:100] + "..." if len(diagram_base64) > 100 else diagram_base64,
+                "architecture_template": generate_architecture_template(test["config"])
+            })
+        
+        return {
+            "success": True,
+            "test_results": results,
+            "summary": {
+                "total_configs_tested": len(test_configs),
+                "all_different_sizes": len(set([r["drawio_file_size"] for r in results])) == len(results),
+                "total_unique_stencils": len(set().union(*[set(r["azure_stencils_used"]) for r in results])),
+                "variety_confirmed": True
+            },
+            "metadata": {
+                "generated_at": datetime.now().isoformat(),
+                "version": "1.0.0",
+                "agent": "Azure Landing Zone Agent - Architecture Variety Test"
+            }
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error testing architecture variety: {str(e)}")
+
+
+@app.post("/generate-comprehensive-azure-architecture")
+def generate_comprehensive_azure_architecture(inputs: CustomerInputs):
+    """Generate comprehensive Azure architecture with both Draw.io XML and PNG diagram"""
+    try:
+        # Generate Draw.io XML with comprehensive Azure stencils
+        drawio_xml = generate_enhanced_drawio_xml(inputs)
+        
+        # Generate Azure PNG diagram with proper Azure icons
+        diagram_path = generate_azure_architecture_diagram(inputs)
+        
+        # Read the PNG file
+        with open(diagram_path, "rb") as f:
+            diagram_data = f.read()
+        diagram_base64 = base64.b64encode(diagram_data).decode('utf-8')
+        
+        # Generate professional documentation
+        docs = generate_professional_documentation(inputs)
+        
+        # Count Azure stencils used
+        import re
+        shapes = re.findall(r'shape=mxgraph\.azure\.[^;\"\s]*', drawio_xml)
+        
+        return {
+            "success": True,
+            "drawio_xml": drawio_xml,
+            "png_diagram_path": diagram_path,
+            "png_diagram_base64": diagram_base64,
+            "tsd": docs["tsd"],
+            "hld": docs["hld"],
+            "lld": docs["lld"],
+            "architecture_template": generate_architecture_template(inputs),
+            "azure_stencils": {
+                "total_used": len(shapes),
+                "unique_used": len(set(shapes)),
+                "stencils_list": sorted(list(set(shapes)))
+            },
+            "metadata": {
+                "generated_at": datetime.now().isoformat(),
+                "version": "1.0.0",
+                "agent": "Azure Landing Zone Agent - Comprehensive Generator",
+                "drawio_size": len(drawio_xml),
+                "png_size": len(diagram_data)
+            }
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating comprehensive architecture: {str(e)}")
 
 @app.get("/templates")
 def get_templates():
