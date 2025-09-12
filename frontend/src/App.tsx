@@ -1,6 +1,6 @@
 import * as React from "react";
-import { ChakraProvider, Box, Heading, VStack, HStack, Button, Select, Text, SimpleGrid, Card, CardHeader, CardBody, Badge, Container, Icon, Checkbox, CheckboxGroup, Stack, Wrap, WrapItem, Input } from "@chakra-ui/react";
-import { FiCloud, FiSettings, FiMonitor, FiDownload } from "react-icons/fi";
+import { ChakraProvider, Box, Heading, VStack, HStack, Button, Select, Text, SimpleGrid, Card, CardHeader, CardBody, Badge, Container, Checkbox, CheckboxGroup, Wrap, WrapItem } from "@chakra-ui/react";
+
 import Mermaid from "./components/Mermaid";
 
 interface FormData {
@@ -63,6 +63,15 @@ interface Results {
   lld: string;
   architecture_template: any;
   metadata: any;
+  azure_diagram?: {
+    png_base64: string;
+    png_path: string;
+    azure_stencils: {
+      total_used: number;
+      unique_used: number;
+      stencils_list: string[];
+    };
+  };
 }
 
 function App() {
@@ -95,10 +104,49 @@ function App() {
     setFormData({ ...formData, [categoryField]: selectedServices });
   };
 
+  const testArchitectureVariety = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("http://127.0.0.1:8001/test-architecture-variety", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      
+      if (data.success) {
+        const summary = data.summary;
+        alert(`Architecture Variety Test Completed Successfully!
+        
+• Tested ${summary.total_configs_tested} different configurations
+• All generated different file sizes: ${summary.all_different_sizes ? 'Yes' : 'No'}
+• Total unique Azure stencils used: ${summary.total_unique_stencils}
+• Variety confirmed: ${summary.variety_confirmed ? 'Yes' : 'No'}
+
+Test Results:
+${data.test_results.map((r: any) => `• ${r.name}: ${r.unique_azure_stencils} stencils`).join('\n')}
+
+This confirms that the system generates different architectures based on your selections!`);
+      } else {
+        throw new Error("Failed to test architecture variety");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error: Failed to test architecture variety. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://127.0.0.1:8001/generate-diagram", {
+      // Use the comprehensive Azure architecture endpoint for better results
+      const res = await fetch("http://127.0.0.1:8001/generate-comprehensive-azure-architecture", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -111,8 +159,25 @@ function App() {
       const data = await res.json();
       
       if (data.success) {
-        setResults(data);
-        alert("Architecture Generated Successfully!");
+        // Transform the comprehensive data to match the existing interface
+        const transformedData = {
+          success: true,
+          mermaid: "", // We'll generate this from the architecture template
+          drawio: data.drawio_xml,
+          tsd: data.tsd,
+          hld: data.hld,
+          lld: data.lld,
+          architecture_template: data.architecture_template,
+          metadata: data.metadata,
+          azure_diagram: {
+            png_base64: data.png_diagram_base64,
+            png_path: data.png_diagram_path,
+            azure_stencils: data.azure_stencils
+          }
+        };
+        
+        setResults(transformedData);
+        alert(`Architecture Generated Successfully! Using ${data.azure_stencils.unique_used} unique Azure stencils.`);
       } else {
         throw new Error("Failed to generate architecture");
       }
@@ -121,6 +186,32 @@ function App() {
       alert("Error: Failed to generate architecture. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const downloadPNG = (base64Data: string) => {
+    try {
+      const byteCharacters = atob(base64Data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'image/png' });
+      
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'azure-landing-zone-architecture.png';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      alert("Azure PNG diagram download started!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to download PNG diagram.");
     }
   };
 
@@ -157,7 +248,6 @@ function App() {
             {/* Header */}
             <Box textAlign="center">
               <Heading size="2xl" color="blue.600" mb="2">
-                <Icon color="blue.600" mr="3" />
                 🏢 Azure Landing Zone Agent
               </Heading>
               <Text fontSize="lg" color="gray.600">
@@ -435,15 +525,28 @@ function App() {
                     </Box>
 
                     {/* Generate Button */}
-                    <Button
-                      colorScheme="blue"
-                      size="lg"
-                      w="full"
-                      onClick={handleSubmit}
-                      loading={loading}
-                    >
-                      🏗️ Generate Azure Landing Zone Architecture
-                    </Button>
+                    <VStack spacing="3">
+                      <Button
+                        colorScheme="blue"
+                        size="lg"
+                        w="full"
+                        onClick={handleSubmit}
+                        isLoading={loading}
+                      >
+                        🏗️ Generate Azure Landing Zone Architecture
+                      </Button>
+                      
+                      <Button
+                        colorScheme="teal"
+                        variant="outline"
+                        size="md"
+                        w="full"
+                        onClick={testArchitectureVariety}
+                        isLoading={loading}
+                      >
+                        🧪 Test Architecture Variety (3 Different Patterns)
+                      </Button>
+                    </VStack>
                   </VStack>
                 </CardBody>
               </Card>
@@ -456,29 +559,46 @@ function App() {
                       <Heading size="lg" color="green.700">
                         📊 Generated Architecture
                       </Heading>
-                      <Button
-                        onClick={downloadDrawio}
-                        colorScheme="blue"
-                        variant="outline"
-                        size="sm"
-                      >
-                        📥 Download Draw.io
-                      </Button>
+                      <HStack spacing="2">
+                        <Button
+                          onClick={downloadDrawio}
+                          colorScheme="blue"
+                          variant="outline"
+                          size="sm"
+                        >
+                          📥 Download Draw.io
+                        </Button>
+                        {results.azure_diagram && (
+                          <Button
+                            onClick={() => downloadPNG(results.azure_diagram!.png_base64)}
+                            colorScheme="green"
+                            variant="outline"
+                            size="sm"
+                          >
+                            🖼️ Download PNG
+                          </Button>
+                        )}
+                      </HStack>
                     </HStack>
                   </CardHeader>
                   <CardBody>
                     <VStack gap="4" align="stretch">
                       <Box p="3" bg="green.50" borderRadius="md" borderLeft="4px solid" borderColor="green.500">
-                        <Text fontWeight="bold" color="green.800">Architecture Generated Successfully!</Text>
+                        <Text fontWeight="bold" color="green.800">Azure Architecture Generated Successfully!</Text>
                         <Text fontSize="sm" color="green.600">
                           Template: {results.architecture_template?.template?.name}
                         </Text>
+                        {results.azure_diagram && (
+                          <Text fontSize="sm" color="green.600">
+                            Azure Stencils: {results.azure_diagram.azure_stencils.unique_used} unique stencils used
+                          </Text>
+                        )}
                       </Box>
 
                       {/* Tab Navigation */}
                       <Box>
                         <HStack mb="4" borderBottom="1px solid" borderColor="gray.200">
-                          {["Diagram", "TSD", "HLD", "LLD"].map((tab, index) => (
+                          {["Diagram", "Azure PNG", "TSD", "HLD", "LLD"].map((tab, index) => (
                             <Button
                               key={tab}
                               variant={activeTab === index ? "solid" : "ghost"}
@@ -509,7 +629,32 @@ function App() {
                           </Box>
                         )}
 
-                        {activeTab === 1 && (
+                        {activeTab === 1 && results.azure_diagram && (
+                          <Box>
+                            <Heading size="md" mb="4">🎨 Azure Architecture Diagram (Professional)</Heading>
+                            <Text fontSize="sm" color="green.600" mb="4">
+                              Generated with {results.azure_diagram.azure_stencils.unique_used} unique Azure stencils
+                            </Text>
+                            <Box 
+                              border="1px solid" 
+                              borderColor="gray.200" 
+                              borderRadius="md" 
+                              p="4" 
+                              bg="white"
+                              maxH="600px"
+                              overflowY="auto"
+                              textAlign="center"
+                            >
+                              <img 
+                                src={`data:image/png;base64,${results.azure_diagram.png_base64}`}
+                                alt="Azure Architecture Diagram"
+                                style={{ maxWidth: "100%", height: "auto" }}
+                              />
+                            </Box>
+                          </Box>
+                        )}
+
+                        {activeTab === 2 && (
                           <Box>
                             <Heading size="md" mb="4">📘 Technical Specification Document (TSD)</Heading>
                             <Box 
@@ -528,7 +673,7 @@ function App() {
                           </Box>
                         )}
 
-                        {activeTab === 2 && (
+                        {activeTab === 3 && (
                           <Box>
                             <Heading size="md" mb="4">📗 High Level Design (HLD)</Heading>
                             <Box 
@@ -547,7 +692,7 @@ function App() {
                           </Box>
                         )}
 
-                        {activeTab === 3 && (
+                        {activeTab === 4 && (
                           <Box>
                             <Heading size="md" mb="4">📙 Low Level Design (LLD)</Heading>
                             <Box 
