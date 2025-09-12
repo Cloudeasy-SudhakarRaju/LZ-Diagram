@@ -7,6 +7,7 @@ import json
 import uuid
 import os
 import base64
+import subprocess
 from datetime import datetime
 
 # Import diagrams for Azure architecture generation
@@ -226,9 +227,24 @@ AZURE_SERVICES_MAPPING = {
 def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str = "/tmp") -> str:
     """Generate Azure architecture diagram using the Python Diagrams library with proper Azure icons"""
     
+    # Verify Graphviz availability before proceeding
+    try:
+        import subprocess
+        result = subprocess.run(['dot', '-V'], capture_output=True, text=True, timeout=5)
+        if result.returncode != 0:
+            raise Exception("Graphviz 'dot' command is not available. Please install Graphviz: sudo apt-get install -y graphviz graphviz-dev")
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        raise Exception("Graphviz is not installed or not accessible. Please install Graphviz: sudo apt-get install -y graphviz graphviz-dev")
+    except subprocess.SubprocessError as e:
+        raise Exception(f"Graphviz check failed: {str(e)}. Please install Graphviz: sudo apt-get install -y graphviz graphviz-dev")
+    
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"azure_landing_zone_{timestamp}"
     filepath = os.path.join(output_dir, filename)
+    
+    # Verify output directory is writable
+    if not os.access(output_dir, os.W_OK):
+        raise Exception(f"Output directory {output_dir} is not writable")
     
     # Determine organization template
     template = generate_architecture_template(inputs)
@@ -1291,7 +1307,50 @@ def root():
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+    """Enhanced health check that verifies system dependencies"""
+    status = "healthy"
+    issues = []
+    
+    # Check Graphviz availability
+    try:
+        import subprocess
+        result = subprocess.run(['dot', '-V'], capture_output=True, text=True, timeout=5)
+        if result.returncode != 0:
+            issues.append("Graphviz 'dot' command not available")
+            status = "degraded"
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        issues.append("Graphviz not installed or not accessible")
+        status = "degraded"
+    except Exception as e:
+        issues.append(f"Graphviz check failed: {str(e)}")
+        status = "degraded"
+    
+    # Check diagrams library
+    try:
+        from diagrams import Diagram
+    except ImportError as e:
+        issues.append(f"Diagrams library import failed: {str(e)}")
+        status = "unhealthy"
+    
+    # Check /tmp directory accessibility
+    try:
+        import tempfile
+        with tempfile.NamedTemporaryFile(dir="/tmp", delete=True):
+            pass
+    except Exception as e:
+        issues.append(f"Cannot write to /tmp directory: {str(e)}")
+        status = "degraded"
+    
+    return {
+        "status": status,
+        "timestamp": datetime.now().isoformat(),
+        "issues": issues,
+        "dependencies": {
+            "graphviz_available": "Graphviz not installed or not accessible" not in [str(issue) for issue in issues],
+            "diagrams_available": "Diagrams library import failed" not in str(issues),
+            "tmp_writable": "Cannot write to /tmp directory" not in str(issues)
+        }
+    }
 
 @app.post("/generate-diagram")
 def generate_diagram(inputs: CustomerInputs):
