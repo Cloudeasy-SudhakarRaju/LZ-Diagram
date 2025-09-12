@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChakraProvider, Box, Heading, VStack, HStack, Button, Select, Text, SimpleGrid, Card, Badge, Container, Icon, defaultSystem } from "@chakra-ui/react";
+import { ChakraProvider, Box, Heading, VStack, HStack, Button, Select, Text, SimpleGrid, Card, CardHeader, CardBody, Badge, Container, Icon } from "@chakra-ui/react";
 import { FiCloud, FiSettings, FiMonitor, FiDownload } from "react-icons/fi";
 import Mermaid from "./components/Mermaid";
 
@@ -105,7 +105,7 @@ function App() {
   };
 
   return (
-    <ChakraProvider value={defaultSystem}>
+    <ChakraProvider>
       <Box bg="gray.50" minH="100vh" p="8">
         <Container maxW="7xl">
           <VStack gap="6" align="stretch">
@@ -139,13 +139,13 @@ function App() {
             <SimpleGrid columns={{ base: 1, lg: results ? 2 : 1 }} gap="8">
               
               {/* Input Form */}
-              <Card.Root>
-                <Card.Header>
+              <Card>
+                <CardHeader>
                   <Heading size="lg" color="blue.700">
                     ⚙️ Customer Requirements Input
                   </Heading>
-                </Card.Header>
-                <Card.Body>
+                </CardHeader>
+                <CardBody>
                   <VStack gap="6" align="stretch">
                     
                     {/* Business Section */}
@@ -362,13 +362,13 @@ function App() {
                       🏗️ Generate Azure Landing Zone Architecture
                     </Button>
                   </VStack>
-                </Card.Body>
-              </Card.Root>
+                </CardBody>
+              </Card>
 
               {/* Results Panel */}
               {results && (
-                <Card.Root>
-                  <Card.Header>
+                <Card>
+                  <CardHeader>
                     <HStack justify="space-between">
                       <Heading size="lg" color="green.700">
                         📊 Generated Architecture
@@ -382,8 +382,8 @@ function App() {
                         📥 Download Draw.io
                       </Button>
                     </HStack>
-                  </Card.Header>
-                  <Card.Body>
+                  </CardHeader>
+                  <CardBody>
                     <VStack gap="4" align="stretch">
                       <Box p="3" bg="green.50" borderRadius="md" borderLeft="4px solid" borderColor="green.500">
                         <Text fontWeight="bold" color="green.800">Architecture Generated Successfully!</Text>
@@ -484,8 +484,8 @@ function App() {
                         )}
                       </Box>
                     </VStack>
-                  </Card.Body>
-                </Card.Root>
+                  </CardBody>
+                </Card>
               )}
             </SimpleGrid>
           </VStack>
