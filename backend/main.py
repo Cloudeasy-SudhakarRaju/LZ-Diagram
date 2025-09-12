@@ -383,7 +383,7 @@ def generate_enhanced_drawio_xml(inputs: CustomerInputs) -> str:
         </mxCell>
         
         <!-- Security & Governance -->
-        <mxCell id="security" value="Security & Governance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#ff6666;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+        <mxCell id="security" value="Security &amp; Governance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#ff6666;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
           <mxGeometry x="1300" y="100" width="500" height="800" as="geometry" />
         </mxCell>
         
