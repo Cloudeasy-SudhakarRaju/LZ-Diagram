@@ -46,7 +46,7 @@ class CustomerInputs(BaseModel):
     key_vault: Optional[str] = Field(None, description="Key management approach")
     threat_protection: Optional[str] = Field(None, description="Threat protection strategy")
     
-    # Workloads & Applications
+    # Legacy fields for backward compatibility
     workload: Optional[str] = Field(None, description="Primary workload type")
     architecture_style: Optional[str] = Field(None, description="Architecture style")
     scalability: Optional[str] = Field(None, description="Scalability requirements")
@@ -63,6 +63,40 @@ class CustomerInputs(BaseModel):
     migration_scope: Optional[str] = Field(None, description="Migration scope")
     cost_priority: Optional[str] = Field(None, description="Cost optimization priority")
     iac: Optional[str] = Field(None, description="Infrastructure as Code preference")
+    
+    # Specific Azure Service Selections
+    # Compute Services
+    compute_services: Optional[List[str]] = Field(default_factory=list, description="Selected compute services")
+    
+    # Networking Services
+    network_services: Optional[List[str]] = Field(default_factory=list, description="Selected networking services")
+    
+    # Storage Services
+    storage_services: Optional[List[str]] = Field(default_factory=list, description="Selected storage services")
+    
+    # Database Services
+    database_services: Optional[List[str]] = Field(default_factory=list, description="Selected database services")
+    
+    # Security Services
+    security_services: Optional[List[str]] = Field(default_factory=list, description="Selected security services")
+    
+    # Monitoring Services
+    monitoring_services: Optional[List[str]] = Field(default_factory=list, description="Selected monitoring services")
+    
+    # AI/ML Services
+    ai_services: Optional[List[str]] = Field(default_factory=list, description="Selected AI/ML services")
+    
+    # Analytics Services
+    analytics_services: Optional[List[str]] = Field(default_factory=list, description="Selected analytics services")
+    
+    # Integration Services
+    integration_services: Optional[List[str]] = Field(default_factory=list, description="Selected integration services")
+    
+    # DevOps Services
+    devops_services: Optional[List[str]] = Field(default_factory=list, description="Selected DevOps services")
+    
+    # Backup Services
+    backup_services: Optional[List[str]] = Field(default_factory=list, description="Selected backup services")
 
 
 # Azure Architecture Templates and Patterns
@@ -89,61 +123,88 @@ AZURE_TEMPLATES = {
 
 AZURE_SERVICES_MAPPING = {
     # Compute Services
-    "aks": {"name": "Azure Kubernetes Service", "icon": "azure.kubernetes_services", "category": "compute"},
-    "appservices": {"name": "Azure App Services", "icon": "azure.app_services", "category": "compute"},
-    "vm": {"name": "Virtual Machines", "icon": "azure.virtual_machine", "category": "compute"},
-    "sap": {"name": "SAP on Azure", "icon": "azure.sap_hana_on_azure", "category": "compute"},
-    "functions": {"name": "Azure Functions", "icon": "azure.azure_functions", "category": "compute"},
-    "batch": {"name": "Azure Batch", "icon": "azure.batch", "category": "compute"},
-    "service_fabric": {"name": "Service Fabric", "icon": "azure.service_fabric", "category": "compute"},
+    "virtual_machines": {"name": "Azure Virtual Machines", "icon": "🖥️", "azure_icon": "azure.virtual_machine", "category": "compute"},
+    "aks": {"name": "Azure Kubernetes Service", "icon": "☸️", "azure_icon": "azure.kubernetes_services", "category": "compute"},
+    "app_services": {"name": "Azure App Services", "icon": "🌐", "azure_icon": "azure.app_services", "category": "compute"},
+    "web_apps": {"name": "Azure Web Apps", "icon": "🌐", "azure_icon": "azure.web_app", "category": "compute"},
+    "functions": {"name": "Azure Functions", "icon": "⚡", "azure_icon": "azure.azure_functions", "category": "compute"},
+    "container_instances": {"name": "Container Instances", "icon": "📦", "azure_icon": "azure.container_instances", "category": "compute"},
+    "service_fabric": {"name": "Service Fabric", "icon": "🏗️", "azure_icon": "azure.service_fabric", "category": "compute"},
+    "batch": {"name": "Azure Batch", "icon": "⚙️", "azure_icon": "azure.batch", "category": "compute"},
+    
+    # Networking Services
+    "virtual_network": {"name": "Virtual Network", "icon": "🌐", "azure_icon": "azure.virtual_network", "category": "network"},
+    "vpn_gateway": {"name": "VPN Gateway", "icon": "🔒", "azure_icon": "azure.vpn_gateway", "category": "network"},
+    "expressroute": {"name": "ExpressRoute", "icon": "⚡", "azure_icon": "azure.expressroute", "category": "network"},
+    "load_balancer": {"name": "Load Balancer", "icon": "⚖️", "azure_icon": "azure.load_balancer", "category": "network"},
+    "application_gateway": {"name": "Application Gateway", "icon": "🚪", "azure_icon": "azure.application_gateway", "category": "network"},
+    "firewall": {"name": "Azure Firewall", "icon": "🛡️", "azure_icon": "azure.firewall", "category": "network"},
+    "waf": {"name": "Web Application Firewall", "icon": "🛡️", "azure_icon": "azure.web_application_firewall", "category": "network"},
+    "cdn": {"name": "Content Delivery Network", "icon": "🌍", "azure_icon": "azure.cdn", "category": "network"},
+    "traffic_manager": {"name": "Traffic Manager", "icon": "🚦", "azure_icon": "azure.traffic_manager", "category": "network"},
+    "virtual_wan": {"name": "Virtual WAN", "icon": "🌐", "azure_icon": "azure.virtual_wan", "category": "network"},
     
     # Storage Services
-    "storage": {"name": "Azure Storage", "icon": "azure.azure_storage", "category": "storage"},
-    "blob_storage": {"name": "Blob Storage", "icon": "azure.blob_storage", "category": "storage"},
-    "file_storage": {"name": "File Storage", "icon": "azure.file_storage", "category": "storage"},
-    "disk_storage": {"name": "Disk Storage", "icon": "azure.disk_storage", "category": "storage"},
+    "storage_accounts": {"name": "Storage Accounts", "icon": "💾", "azure_icon": "azure.azure_storage", "category": "storage"},
+    "blob_storage": {"name": "Blob Storage", "icon": "📄", "azure_icon": "azure.blob_storage", "category": "storage"},
+    "file_storage": {"name": "Azure Files", "icon": "📁", "azure_icon": "azure.file_storage", "category": "storage"},
+    "disk_storage": {"name": "Managed Disks", "icon": "💿", "azure_icon": "azure.disk_storage", "category": "storage"},
+    "data_lake": {"name": "Data Lake Storage", "icon": "🏞️", "azure_icon": "azure.data_lake_storage", "category": "storage"},
     
     # Database Services
-    "sql_database": {"name": "SQL Database", "icon": "azure.sql_database", "category": "database"},
-    "cosmos_db": {"name": "Cosmos DB", "icon": "azure.cosmos_db", "category": "database"},
-    "mysql": {"name": "MySQL Database", "icon": "azure.mysql_database", "category": "database"},
-    "postgresql": {"name": "PostgreSQL Database", "icon": "azure.postgresql_database", "category": "database"},
-    
-    # AI/ML Services
-    "ai": {"name": "Azure AI/ML", "icon": "azure.machine_learning", "category": "ai"},
-    "cognitive_services": {"name": "Cognitive Services", "icon": "azure.cognitive_services", "category": "ai"},
-    "bot_service": {"name": "Bot Service", "icon": "azure.bot_service", "category": "ai"},
-    
-    # Data & Analytics
-    "data": {"name": "Azure Data Services", "icon": "azure.data_factory", "category": "data"},
-    "synapse": {"name": "Azure Synapse", "icon": "azure.synapse_analytics", "category": "data"},
-    "databricks": {"name": "Azure Databricks", "icon": "azure.databricks", "category": "data"},
-    "stream_analytics": {"name": "Stream Analytics", "icon": "azure.stream_analytics", "category": "data"},
-    
-    # Network Services
-    "hub-spoke": {"name": "Hub-Spoke Network", "icon": "azure.virtual_network", "category": "network"},
-    "mesh": {"name": "Mesh Network", "icon": "azure.virtual_network", "category": "network"},
-    "vwan": {"name": "Virtual WAN", "icon": "azure.virtual_wan", "category": "network"},
-    "load_balancer": {"name": "Load Balancer", "icon": "azure.load_balancer", "category": "network"},
-    "application_gateway": {"name": "Application Gateway", "icon": "azure.application_gateway", "category": "network"},
-    "firewall": {"name": "Azure Firewall", "icon": "azure.firewall", "category": "network"},
-    "vpn_gateway": {"name": "VPN Gateway", "icon": "azure.vpn_gateway", "category": "network"},
+    "sql_database": {"name": "Azure SQL Database", "icon": "🗄️", "azure_icon": "azure.sql_database", "category": "database"},
+    "sql_managed_instance": {"name": "SQL Managed Instance", "icon": "🗄️", "azure_icon": "azure.sql_managed_instance", "category": "database"},
+    "cosmos_db": {"name": "Cosmos DB", "icon": "🌍", "azure_icon": "azure.cosmos_db", "category": "database"},
+    "mysql": {"name": "Azure Database for MySQL", "icon": "🐬", "azure_icon": "azure.mysql_database", "category": "database"},
+    "postgresql": {"name": "Azure Database for PostgreSQL", "icon": "🐘", "azure_icon": "azure.postgresql_database", "category": "database"},
+    "mariadb": {"name": "Azure Database for MariaDB", "icon": "🗄️", "azure_icon": "azure.mariadb_database", "category": "database"},
+    "redis_cache": {"name": "Azure Cache for Redis", "icon": "⚡", "azure_icon": "azure.redis_cache", "category": "database"},
     
     # Security Services
-    "zero-trust": {"name": "Zero Trust Security", "icon": "azure.security_center", "category": "security"},
-    "siem": {"name": "Azure Sentinel", "icon": "azure.sentinel", "category": "security"},
-    "key_vault": {"name": "Key Vault", "icon": "azure.key_vault", "category": "security"},
-    "azure_ad": {"name": "Azure Active Directory", "icon": "azure.azure_active_directory", "category": "security"},
+    "key_vault": {"name": "Azure Key Vault", "icon": "🔐", "azure_icon": "azure.key_vault", "category": "security"},
+    "active_directory": {"name": "Azure Active Directory", "icon": "👤", "azure_icon": "azure.azure_active_directory", "category": "security"},
+    "security_center": {"name": "Azure Security Center", "icon": "🛡️", "azure_icon": "azure.security_center", "category": "security"},
+    "sentinel": {"name": "Azure Sentinel", "icon": "👁️", "azure_icon": "azure.sentinel", "category": "security"},
+    "defender": {"name": "Microsoft Defender", "icon": "🛡️", "azure_icon": "azure.defender", "category": "security"},
+    "information_protection": {"name": "Azure Information Protection", "icon": "🔒", "azure_icon": "azure.information_protection", "category": "security"},
     
     # Monitoring & Management
-    "monitor": {"name": "Azure Monitor", "icon": "azure.monitor", "category": "management"},
-    "log_analytics": {"name": "Log Analytics", "icon": "azure.log_analytics", "category": "management"},
-    "application_insights": {"name": "Application Insights", "icon": "azure.application_insights", "category": "management"},
+    "monitor": {"name": "Azure Monitor", "icon": "📊", "azure_icon": "azure.monitor", "category": "monitoring"},
+    "log_analytics": {"name": "Log Analytics", "icon": "📋", "azure_icon": "azure.log_analytics", "category": "monitoring"},
+    "application_insights": {"name": "Application Insights", "icon": "📈", "azure_icon": "azure.application_insights", "category": "monitoring"},
+    "service_health": {"name": "Service Health", "icon": "❤️", "azure_icon": "azure.service_health", "category": "monitoring"},
+    "advisor": {"name": "Azure Advisor", "icon": "💡", "azure_icon": "azure.advisor", "category": "monitoring"},
+    
+    # AI/ML Services  
+    "cognitive_services": {"name": "Cognitive Services", "icon": "🧠", "azure_icon": "azure.cognitive_services", "category": "ai"},
+    "machine_learning": {"name": "Azure Machine Learning", "icon": "🤖", "azure_icon": "azure.machine_learning", "category": "ai"},
+    "bot_service": {"name": "Bot Service", "icon": "🤖", "azure_icon": "azure.bot_service", "category": "ai"},
+    "form_recognizer": {"name": "Form Recognizer", "icon": "📄", "azure_icon": "azure.form_recognizer", "category": "ai"},
+    
+    # Data & Analytics
+    "synapse": {"name": "Azure Synapse Analytics", "icon": "📊", "azure_icon": "azure.synapse_analytics", "category": "analytics"},
+    "data_factory": {"name": "Azure Data Factory", "icon": "🏭", "azure_icon": "azure.data_factory", "category": "analytics"},
+    "databricks": {"name": "Azure Databricks", "icon": "📊", "azure_icon": "azure.databricks", "category": "analytics"},
+    "stream_analytics": {"name": "Stream Analytics", "icon": "🌊", "azure_icon": "azure.stream_analytics", "category": "analytics"},
+    "power_bi": {"name": "Power BI", "icon": "📊", "azure_icon": "azure.power_bi", "category": "analytics"},
     
     # Integration Services
-    "logic_apps": {"name": "Logic Apps", "icon": "azure.logic_apps", "category": "integration"},
-    "service_bus": {"name": "Service Bus", "icon": "azure.service_bus", "category": "integration"},
-    "event_grid": {"name": "Event Grid", "icon": "azure.event_grid", "category": "integration"},
+    "logic_apps": {"name": "Logic Apps", "icon": "🔗", "azure_icon": "azure.logic_apps", "category": "integration"},
+    "service_bus": {"name": "Service Bus", "icon": "🚌", "azure_icon": "azure.service_bus", "category": "integration"},
+    "event_grid": {"name": "Event Grid", "icon": "⚡", "azure_icon": "azure.event_grid", "category": "integration"},
+    "event_hubs": {"name": "Event Hubs", "icon": "📡", "azure_icon": "azure.event_hubs", "category": "integration"},
+    "api_management": {"name": "API Management", "icon": "🔌", "azure_icon": "azure.api_management", "category": "integration"},
+    
+    # DevOps & Management
+    "devops": {"name": "Azure DevOps", "icon": "⚙️", "azure_icon": "azure.devops", "category": "devops"},
+    "automation": {"name": "Azure Automation", "icon": "🤖", "azure_icon": "azure.automation", "category": "devops"},
+    "policy": {"name": "Azure Policy", "icon": "📋", "azure_icon": "azure.policy", "category": "governance"},
+    "blueprints": {"name": "Azure Blueprints", "icon": "📐", "azure_icon": "azure.blueprints", "category": "governance"},
+    "resource_manager": {"name": "Azure Resource Manager", "icon": "🏗️", "azure_icon": "azure.resource_manager", "category": "governance"},
+    
+    # Backup & Recovery
+    "backup": {"name": "Azure Backup", "icon": "💾", "azure_icon": "azure.backup", "category": "backup"},
+    "site_recovery": {"name": "Azure Site Recovery", "icon": "🔄", "azure_icon": "azure.site_recovery", "category": "backup"},
 }
 
 def generate_architecture_template(inputs: CustomerInputs) -> Dict[str, Any]:
@@ -175,7 +236,6 @@ def generate_professional_mermaid(inputs: CustomerInputs) -> str:
     
     template = generate_architecture_template(inputs)
     network_model = inputs.network_model or "hub-spoke"
-    workload = inputs.workload or "appservices"
     
     lines = [
         "graph TB",
@@ -234,53 +294,205 @@ def generate_professional_mermaid(inputs: CustomerInputs) -> str:
     
     lines.append("        end")
     
-    # Add network topology
-    if network_model == "hub-spoke":
+    # Add networking services based on selections
+    if inputs.network_services:
         lines.extend([
-            "        subgraph \"Hub-Spoke Network\"",
-            "            HUB[\"🌐 Hub VNet<br/>Shared Services\"]",
-            "            SPOKE1[\"🏷️ Spoke VNet 1<br/>Production\"]",
-            "            SPOKE2[\"🏷️ Spoke VNet 2<br/>Development\"]",
-            "            CONN --> HUB",
-            "            HUB --> SPOKE1",
-            "            HUB --> SPOKE2",
+            "        subgraph \"Networking Services\""
+        ])
+        
+        service_connections = []
+        for service in inputs.network_services:
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                service_id = service.upper().replace("_", "")
+                lines.append(f"            {service_id}[\"{service_info['icon']} {service_info['name']}\"]")
+                service_connections.append(f"            CONN --> {service_id}")
+        
+        lines.extend(service_connections)
+        lines.append("        end")
+    
+    # Add compute services based on selections
+    if inputs.compute_services:
+        lines.extend([
+            "        subgraph \"Compute Services\""
+        ])
+        
+        service_connections = []
+        for service in inputs.compute_services:
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                service_id = service.upper().replace("_", "")
+                lines.append(f"            {service_id}[\"{service_info['icon']} {service_info['name']}\"]")
+                service_connections.append(f"            PROD --> {service_id}")
+        
+        lines.extend(service_connections)
+        lines.append("        end")
+    
+    # Add storage services based on selections
+    if inputs.storage_services:
+        lines.extend([
+            "        subgraph \"Storage Services\""
+        ])
+        
+        service_connections = []
+        for service in inputs.storage_services:
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                service_id = service.upper().replace("_", "")
+                lines.append(f"            {service_id}[\"{service_info['icon']} {service_info['name']}\"]")
+                service_connections.append(f"            PROD --> {service_id}")
+        
+        lines.extend(service_connections)
+        lines.append("        end")
+    
+    # Add database services based on selections
+    if inputs.database_services:
+        lines.extend([
+            "        subgraph \"Database Services\""
+        ])
+        
+        service_connections = []
+        for service in inputs.database_services:
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                service_id = service.upper().replace("_", "")
+                lines.append(f"            {service_id}[\"{service_info['icon']} {service_info['name']}\"]")
+                service_connections.append(f"            PROD --> {service_id}")
+        
+        lines.extend(service_connections)
+        lines.append("        end")
+    
+    # Add security services based on selections
+    if inputs.security_services:
+        lines.extend([
+            "        subgraph \"Security & Identity\""
+        ])
+        
+        service_connections = []
+        for service in inputs.security_services:
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                service_id = service.upper().replace("_", "")
+                lines.append(f"            {service_id}[\"{service_info['icon']} {service_info['name']}\"]")
+                service_connections.append(f"            IDENTITY --> {service_id}")
+        
+        lines.extend(service_connections)
+        lines.append("        end")
+    
+    # Add monitoring services based on selections
+    if inputs.monitoring_services:
+        lines.extend([
+            "        subgraph \"Monitoring & Management\""
+        ])
+        
+        service_connections = []
+        for service in inputs.monitoring_services:
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                service_id = service.upper().replace("_", "")
+                lines.append(f"            {service_id}[\"{service_info['icon']} {service_info['name']}\"]")
+                service_connections.append(f"            MGMT --> {service_id}")
+        
+        lines.extend(service_connections)
+        lines.append("        end")
+    
+    # Add AI/ML services based on selections  
+    if inputs.ai_services:
+        lines.extend([
+            "        subgraph \"AI & Machine Learning\""
+        ])
+        
+        service_connections = []
+        for service in inputs.ai_services:
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                service_id = service.upper().replace("_", "")
+                lines.append(f"            {service_id}[\"{service_info['icon']} {service_info['name']}\"]")
+                service_connections.append(f"            PROD --> {service_id}")
+        
+        lines.extend(service_connections)
+        lines.append("        end")
+    
+    # Add analytics services based on selections
+    if inputs.analytics_services:
+        lines.extend([
+            "        subgraph \"Data & Analytics\""
+        ])
+        
+        service_connections = []
+        for service in inputs.analytics_services:
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                service_id = service.upper().replace("_", "")
+                lines.append(f"            {service_id}[\"{service_info['icon']} {service_info['name']}\"]")
+                service_connections.append(f"            PROD --> {service_id}")
+        
+        lines.extend(service_connections)
+        lines.append("        end")
+    
+    # Add integration services based on selections
+    if inputs.integration_services:
+        lines.extend([
+            "        subgraph \"Integration Services\""
+        ])
+        
+        service_connections = []
+        for service in inputs.integration_services:
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                service_id = service.upper().replace("_", "")
+                lines.append(f"            {service_id}[\"{service_info['icon']} {service_info['name']}\"]")
+                service_connections.append(f"            PROD --> {service_id}")
+        
+        lines.extend(service_connections)
+        lines.append("        end")
+    
+    # Add DevOps services based on selections
+    if inputs.devops_services:
+        lines.extend([
+            "        subgraph \"DevOps & Governance\""
+        ])
+        
+        service_connections = []
+        for service in inputs.devops_services:
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                service_id = service.upper().replace("_", "")
+                lines.append(f"            {service_id}[\"{service_info['icon']} {service_info['name']}\"]")
+                service_connections.append(f"            MGMT --> {service_id}")
+        
+        lines.extend(service_connections)
+        lines.append("        end")
+    
+    # Add backup services based on selections
+    if inputs.backup_services:
+        lines.extend([
+            "        subgraph \"Backup & Recovery\""
+        ])
+        
+        service_connections = []
+        for service in inputs.backup_services:
+            if service in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service]
+                service_id = service.upper().replace("_", "")
+                lines.append(f"            {service_id}[\"{service_info['icon']} {service_info['name']}\"]")
+                service_connections.append(f"            MGMT --> {service_id}")
+        
+        lines.extend(service_connections)
+        lines.append("        end")
+    
+    # Fallback for legacy workload field
+    if not any([inputs.compute_services, inputs.network_services, inputs.storage_services, 
+               inputs.database_services, inputs.security_services, inputs.monitoring_services,
+               inputs.ai_services, inputs.analytics_services, inputs.integration_services,
+               inputs.devops_services, inputs.backup_services]) and inputs.workload:
+        workload_name = AZURE_SERVICES_MAPPING.get(inputs.workload, {"name": inputs.workload, "icon": "⚙️"})["name"]
+        lines.extend([
+            "        subgraph \"Workloads\"",
+            f"            WORKLOAD[\"{workload_name}\"]",
+            "            PROD --> WORKLOAD",
             "        end"
         ])
-    elif network_model == "vwan":
-        lines.extend([
-            "        subgraph \"Virtual WAN\"",
-            "            VWAN[\"🌐 Virtual WAN Hub\"]",
-            "            VPNGW[\"🔐 VPN Gateway\"]",
-            "            ERGW[\"⚡ ExpressRoute Gateway\"]", 
-            "            CONN --> VWAN",
-            "            VWAN --> VPNGW",
-            "            VWAN --> ERGW",
-            "        end"
-        ])
-    
-    # Add workload specific components
-    workload_name = AZURE_SERVICES_MAPPING.get(workload, {"name": workload})["name"]
-    lines.extend([
-        "        subgraph \"Workloads\"",
-        f"            WORKLOAD[\"{workload_name}\"]",
-        "            PROD --> WORKLOAD",
-        "        end"
-    ])
-    
-    # Add security and governance
-    lines.extend([
-        "        subgraph \"Security & Governance\"",
-        "            AAD[\"🔐 Azure Active Directory\"]",
-        "            POLICY[\"📋 Azure Policy\"]",
-        "            MONITOR[\"📊 Azure Monitor\"]",
-        "            KEYVAULT[\"🔑 Key Vault\"]",
-        "            SECURITY[\"🛡️ Security Center\"]",
-        "            IDENTITY --> AAD",
-        "            MGMT --> POLICY",
-        "            MGMT --> MONITOR",
-        "            MGMT --> SECURITY",
-        "        end"
-    ])
     
     lines.append("    end")
     
@@ -289,15 +501,20 @@ def generate_professional_mermaid(inputs: CustomerInputs) -> str:
         "",
         "    classDef mgmtGroup fill:#e1f5fe,stroke:#01579b,stroke-width:2px;",
         "    classDef subscription fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;", 
+        "    classDef compute fill:#fff3e0,stroke:#e65100,stroke-width:2px;",
         "    classDef network fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px;",
-        "    classDef workload fill:#fff3e0,stroke:#e65100,stroke-width:2px;",
+        "    classDef storage fill:#fce4ec,stroke:#880e4f,stroke-width:2px;",
+        "    classDef database fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px;",
         "    classDef security fill:#ffebee,stroke:#b71c1c,stroke-width:2px;",
+        "    classDef monitoring fill:#f1f8e9,stroke:#33691e,stroke-width:2px;",
+        "    classDef ai fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;",
+        "    classDef analytics fill:#e8eaf6,stroke:#1a237e,stroke-width:2px;",
+        "    classDef integration fill:#fff8e1,stroke:#f57f17,stroke-width:2px;",
+        "    classDef devops fill:#fafafa,stroke:#424242,stroke-width:2px;",
+        "    classDef backup fill:#e0f2f1,stroke:#00695c,stroke-width:2px;",
         "",
         "    class ROOT,PLATFORM,LANDINGZONES,SANDBOX,DECOM,WORKLOADS mgmtGroup;",
-        "    class CONN,IDENTITY,MGMT,PROD,DEV subscription;",
-        "    class HUB,SPOKE1,SPOKE2,VWAN,VPNGW,ERGW network;",
-        "    class WORKLOAD workload;",
-        "    class AAD,POLICY,MONITOR,KEYVAULT,SECURITY security;"
+        "    class CONN,IDENTITY,MGMT,PROD,DEV subscription;"
     ])
     
     return "\n".join(lines)
@@ -694,4 +911,38 @@ def get_templates():
     return {
         "templates": AZURE_TEMPLATES,
         "azure_services": AZURE_SERVICES_MAPPING
+    }
+
+@app.get("/services")
+def get_services():
+    """Get available Azure services categorized for form selection"""
+    services_by_category = {}
+    
+    for service_key, service_info in AZURE_SERVICES_MAPPING.items():
+        category = service_info["category"]
+        if category not in services_by_category:
+            services_by_category[category] = []
+        
+        services_by_category[category].append({
+            "key": service_key,
+            "name": service_info["name"],
+            "icon": service_info["icon"],
+            "azure_icon": service_info.get("azure_icon", ""),
+        })
+    
+    return {
+        "categories": services_by_category,
+        "category_mapping": {
+            "compute": "Compute Services",
+            "network": "Networking Services", 
+            "storage": "Storage Services",
+            "database": "Database Services",
+            "security": "Security Services",
+            "monitoring": "Monitoring Services",
+            "ai": "AI & Machine Learning",
+            "analytics": "Data & Analytics",
+            "integration": "Integration Services",
+            "devops": "DevOps & Governance",
+            "backup": "Backup & Recovery"
+        }
     }

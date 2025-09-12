@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChakraProvider, Box, Heading, VStack, HStack, Button, Select, Text, SimpleGrid, Card, CardHeader, CardBody, Badge, Container, Icon } from "@chakra-ui/react";
+import { ChakraProvider, Box, Heading, VStack, HStack, Button, Select, Text, SimpleGrid, Card, CardHeader, CardBody, Badge, Container, Icon, Checkbox, CheckboxGroup, Stack, Wrap, WrapItem, Input } from "@chakra-ui/react";
 import { FiCloud, FiSettings, FiMonitor, FiDownload } from "react-icons/fi";
 import Mermaid from "./components/Mermaid";
 
@@ -27,6 +27,31 @@ interface FormData {
   migration_scope?: string;
   cost_priority?: string;
   iac?: string;
+  
+  // Azure Service Selections
+  compute_services?: string[];
+  network_services?: string[];
+  storage_services?: string[];
+  database_services?: string[];
+  security_services?: string[];
+  monitoring_services?: string[];
+  ai_services?: string[];
+  analytics_services?: string[];
+  integration_services?: string[];
+  devops_services?: string[];
+  backup_services?: string[];
+}
+
+interface AzureService {
+  key: string;
+  name: string;
+  icon: string;
+  azure_icon: string;
+}
+
+interface ServicesData {
+  categories: Record<string, AzureService[]>;
+  category_mapping: Record<string, string>;
 }
 
 interface Results {
@@ -45,9 +70,29 @@ function App() {
   const [results, setResults] = React.useState<Results | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState(0);
+  const [services, setServices] = React.useState<ServicesData | null>(null);
+
+  // Load available Azure services on component mount
+  React.useEffect(() => {
+    const loadServices = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8001/services");
+        const servicesData = await response.json();
+        setServices(servicesData);
+      } catch (error) {
+        console.error("Error loading services:", error);
+      }
+    };
+    loadServices();
+  }, []);
 
   const handleChange = (field: keyof FormData, value: string) => {
     setFormData({ ...formData, [field]: value });
+  };
+
+  const handleServiceChange = (category: string, selectedServices: string[]) => {
+    const categoryField = `${category}_services` as keyof FormData;
+    setFormData({ ...formData, [categoryField]: selectedServices });
   };
 
   const handleSubmit = async () => {
@@ -282,20 +327,58 @@ function App() {
                       </SimpleGrid>
                     </Box>
 
-                    {/* Workloads Section */}
+                    {/* Azure Services Selection */}
                     <Box>
-                      <Heading size="md" color="blue.600" mb="4">5. Workloads & Applications</Heading>
+                      <Heading size="md" color="blue.600" mb="4">5. Azure Services Selection</Heading>
+                      <Text mb="4" color="gray.600">
+                        Select the specific Azure services you want to include in your landing zone architecture.
+                        Choose from compute, networking, storage, database, security, and other services to create a detailed, professional diagram.
+                      </Text>
+                      
+                      {services && (
+                        <VStack spacing="6" align="stretch">
+                          {Object.entries(services.categories).map(([category, categoryServices]) => (
+                            <Box key={category} border="1px solid" borderColor="gray.200" borderRadius="md" p="4">
+                              <Heading size="sm" mb="3" color="blue.500">
+                                {services.category_mapping[category] || category}
+                              </Heading>
+                              <CheckboxGroup
+                                value={formData[`${category}_services` as keyof FormData] as string[] || []}
+                                onChange={(values) => handleServiceChange(category, values as string[])}
+                              >
+                                <Wrap spacing="4">
+                                  {categoryServices.map((service) => (
+                                    <WrapItem key={service.key}>
+                                      <Checkbox value={service.key} size="sm">
+                                        <HStack spacing="2">
+                                          <Text fontSize="lg">{service.icon}</Text>
+                                          <Text fontSize="sm">{service.name}</Text>
+                                        </HStack>
+                                      </Checkbox>
+                                    </WrapItem>
+                                  ))}
+                                </Wrap>
+                              </CheckboxGroup>
+                            </Box>
+                          ))}
+                        </VStack>
+                      )}
+                    </Box>
+
+                    {/* Legacy Workloads Section for backward compatibility */}
+                    <Box>
+                      <Heading size="md" color="blue.600" mb="4">6. Legacy Workload Configuration</Heading>
                       <SimpleGrid columns={2} gap="4">
                         <Box>
-                          <Text mb="2" fontWeight="medium">Primary Workload</Text>
+                          <Text mb="2" fontWeight="medium">Primary Workload (Legacy)</Text>
                           <Select
                             placeholder="Select workload type"
                             value={formData.workload || ""}
                             onChange={(e) => handleChange("workload", e.target.value)}
                           >
                             <option value="aks">Azure Kubernetes Service (AKS)</option>
-                            <option value="appservices">Azure App Services</option>
-                            <option value="vm">Virtual Machines</option>
+                            <option value="app_services">Azure App Services</option>
+                            <option value="virtual_machines">Virtual Machines</option>
                             <option value="sap">SAP on Azure</option>
                             <option value="ai">AI/ML Workloads</option>
                             <option value="data">Data & Analytics</option>
@@ -303,7 +386,7 @@ function App() {
                         </Box>
                         
                         <Box>
-                          <Text mb="2" fontWeight="medium">Monitoring Strategy</Text>
+                          <Text mb="2" fontWeight="medium">Monitoring Strategy (Legacy)</Text>
                           <Select
                             placeholder="Select monitoring approach"
                             value={formData.monitoring || ""}
@@ -320,7 +403,7 @@ function App() {
 
                     {/* Operations Section */}
                     <Box>
-                      <Heading size="md" color="blue.600" mb="4">6. Operations & Management</Heading>
+                      <Heading size="md" color="blue.600" mb="4">7. Operations & Management</Heading>
                       <SimpleGrid columns={2} gap="4">
                         <Box>
                           <Text mb="2" fontWeight="medium">Infrastructure as Code</Text>
