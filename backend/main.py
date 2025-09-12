@@ -5,7 +5,23 @@ from typing import Optional, List, Dict, Any
 import html
 import json
 import uuid
+import os
+import base64
 from datetime import datetime
+
+# Import diagrams for Azure architecture generation
+from diagrams import Diagram, Cluster, Edge
+from diagrams.azure.compute import VM, AKS, AppServices, FunctionApps, ContainerInstances, ServiceFabricClusters, BatchAccounts
+from diagrams.azure.network import VirtualNetworks, ApplicationGateway, LoadBalancers, Firewall, ExpressrouteCircuits, VirtualNetworkGateways
+from diagrams.azure.storage import StorageAccounts, BlobStorage, DataLakeStorage
+from diagrams.azure.database import SQLDatabases, CosmosDb, DatabaseForMysqlServers, DatabaseForPostgresqlServers
+from diagrams.azure.security import KeyVaults, SecurityCenter, Sentinel
+from diagrams.azure.identity import ActiveDirectory
+from diagrams.azure.analytics import SynapseAnalytics, DataFactories, Databricks, StreamAnalyticsJobs, EventHubs
+from diagrams.azure.integration import LogicApps, ServiceBus, EventGridTopics, APIManagement
+from diagrams.azure.devops import Devops, Pipelines
+from diagrams.azure.general import Subscriptions, Resourcegroups
+from diagrams.azure.web import AppServices as WebApps
 
 app = FastAPI(
     title="Azure Landing Zone Agent",
@@ -123,89 +139,301 @@ AZURE_TEMPLATES = {
 
 AZURE_SERVICES_MAPPING = {
     # Compute Services
-    "virtual_machines": {"name": "Azure Virtual Machines", "icon": "🖥️", "azure_icon": "azure.virtual_machine", "category": "compute"},
-    "aks": {"name": "Azure Kubernetes Service", "icon": "☸️", "azure_icon": "azure.kubernetes_services", "category": "compute"},
-    "app_services": {"name": "Azure App Services", "icon": "🌐", "azure_icon": "azure.app_services", "category": "compute"},
-    "web_apps": {"name": "Azure Web Apps", "icon": "🌐", "azure_icon": "azure.web_app", "category": "compute"},
-    "functions": {"name": "Azure Functions", "icon": "⚡", "azure_icon": "azure.azure_functions", "category": "compute"},
-    "container_instances": {"name": "Container Instances", "icon": "📦", "azure_icon": "azure.container_instances", "category": "compute"},
-    "service_fabric": {"name": "Service Fabric", "icon": "🏗️", "azure_icon": "azure.service_fabric", "category": "compute"},
-    "batch": {"name": "Azure Batch", "icon": "⚙️", "azure_icon": "azure.batch", "category": "compute"},
+    "virtual_machines": {"name": "Azure Virtual Machines", "icon": "🖥️", "diagram_class": VM, "category": "compute"},
+    "aks": {"name": "Azure Kubernetes Service", "icon": "☸️", "diagram_class": AKS, "category": "compute"},
+    "app_services": {"name": "Azure App Services", "icon": "🌐", "diagram_class": AppServices, "category": "compute"},
+    "web_apps": {"name": "Azure Web Apps", "icon": "🌐", "diagram_class": WebApps, "category": "compute"},
+    "functions": {"name": "Azure Functions", "icon": "⚡", "diagram_class": FunctionApps, "category": "compute"},
+    "container_instances": {"name": "Container Instances", "icon": "📦", "diagram_class": ContainerInstances, "category": "compute"},
+    "service_fabric": {"name": "Service Fabric", "icon": "🏗️", "diagram_class": ServiceFabricClusters, "category": "compute"},
+    "batch": {"name": "Azure Batch", "icon": "⚙️", "diagram_class": BatchAccounts, "category": "compute"},
     
     # Networking Services
-    "virtual_network": {"name": "Virtual Network", "icon": "🌐", "azure_icon": "azure.virtual_network", "category": "network"},
-    "vpn_gateway": {"name": "VPN Gateway", "icon": "🔒", "azure_icon": "azure.vpn_gateway", "category": "network"},
-    "expressroute": {"name": "ExpressRoute", "icon": "⚡", "azure_icon": "azure.expressroute", "category": "network"},
-    "load_balancer": {"name": "Load Balancer", "icon": "⚖️", "azure_icon": "azure.load_balancer", "category": "network"},
-    "application_gateway": {"name": "Application Gateway", "icon": "🚪", "azure_icon": "azure.application_gateway", "category": "network"},
-    "firewall": {"name": "Azure Firewall", "icon": "🛡️", "azure_icon": "azure.firewall", "category": "network"},
-    "waf": {"name": "Web Application Firewall", "icon": "🛡️", "azure_icon": "azure.web_application_firewall", "category": "network"},
-    "cdn": {"name": "Content Delivery Network", "icon": "🌍", "azure_icon": "azure.cdn", "category": "network"},
-    "traffic_manager": {"name": "Traffic Manager", "icon": "🚦", "azure_icon": "azure.traffic_manager", "category": "network"},
-    "virtual_wan": {"name": "Virtual WAN", "icon": "🌐", "azure_icon": "azure.virtual_wan", "category": "network"},
+    "virtual_network": {"name": "Virtual Network", "icon": "🌐", "diagram_class": VirtualNetworks, "category": "network"},
+    "vpn_gateway": {"name": "VPN Gateway", "icon": "🔒", "diagram_class": VirtualNetworkGateways, "category": "network"},
+    "expressroute": {"name": "ExpressRoute", "icon": "⚡", "diagram_class": ExpressrouteCircuits, "category": "network"},
+    "load_balancer": {"name": "Load Balancer", "icon": "⚖️", "diagram_class": LoadBalancers, "category": "network"},
+    "application_gateway": {"name": "Application Gateway", "icon": "🚪", "diagram_class": ApplicationGateway, "category": "network"},
+    "firewall": {"name": "Azure Firewall", "icon": "🛡️", "diagram_class": Firewall, "category": "network"},
+    "waf": {"name": "Web Application Firewall", "icon": "🛡️", "diagram_class": ApplicationGateway, "category": "network"},
+    "cdn": {"name": "Content Delivery Network", "icon": "🌍", "diagram_class": None, "category": "network"},  # No specific CDN class
+    "traffic_manager": {"name": "Traffic Manager", "icon": "🚦", "diagram_class": None, "category": "network"},  # No specific class
+    "virtual_wan": {"name": "Virtual WAN", "icon": "🌐", "diagram_class": VirtualNetworks, "category": "network"},
     
     # Storage Services
-    "storage_accounts": {"name": "Storage Accounts", "icon": "💾", "azure_icon": "azure.azure_storage", "category": "storage"},
-    "blob_storage": {"name": "Blob Storage", "icon": "📄", "azure_icon": "azure.blob_storage", "category": "storage"},
-    "file_storage": {"name": "Azure Files", "icon": "📁", "azure_icon": "azure.file_storage", "category": "storage"},
-    "disk_storage": {"name": "Managed Disks", "icon": "💿", "azure_icon": "azure.disk_storage", "category": "storage"},
-    "data_lake": {"name": "Data Lake Storage", "icon": "🏞️", "azure_icon": "azure.data_lake_storage", "category": "storage"},
+    "storage_accounts": {"name": "Storage Accounts", "icon": "💾", "diagram_class": StorageAccounts, "category": "storage"},
+    "blob_storage": {"name": "Blob Storage", "icon": "📄", "diagram_class": BlobStorage, "category": "storage"},
+    "file_storage": {"name": "Azure Files", "icon": "📁", "diagram_class": StorageAccounts, "category": "storage"},
+    "disk_storage": {"name": "Managed Disks", "icon": "💿", "diagram_class": StorageAccounts, "category": "storage"},
+    "data_lake": {"name": "Data Lake Storage", "icon": "🏞️", "diagram_class": DataLakeStorage, "category": "storage"},
     
     # Database Services
-    "sql_database": {"name": "Azure SQL Database", "icon": "🗄️", "azure_icon": "azure.sql_database", "category": "database"},
-    "sql_managed_instance": {"name": "SQL Managed Instance", "icon": "🗄️", "azure_icon": "azure.sql_managed_instance", "category": "database"},
-    "cosmos_db": {"name": "Cosmos DB", "icon": "🌍", "azure_icon": "azure.cosmos_db", "category": "database"},
-    "mysql": {"name": "Azure Database for MySQL", "icon": "🐬", "azure_icon": "azure.mysql_database", "category": "database"},
-    "postgresql": {"name": "Azure Database for PostgreSQL", "icon": "🐘", "azure_icon": "azure.postgresql_database", "category": "database"},
-    "mariadb": {"name": "Azure Database for MariaDB", "icon": "🗄️", "azure_icon": "azure.mariadb_database", "category": "database"},
-    "redis_cache": {"name": "Azure Cache for Redis", "icon": "⚡", "azure_icon": "azure.redis_cache", "category": "database"},
+    "sql_database": {"name": "Azure SQL Database", "icon": "🗄️", "diagram_class": SQLDatabases, "category": "database"},
+    "sql_managed_instance": {"name": "SQL Managed Instance", "icon": "🗄️", "diagram_class": SQLDatabases, "category": "database"},
+    "cosmos_db": {"name": "Cosmos DB", "icon": "🌍", "diagram_class": CosmosDb, "category": "database"},
+    "mysql": {"name": "Azure Database for MySQL", "icon": "🐬", "diagram_class": DatabaseForMysqlServers, "category": "database"},
+    "postgresql": {"name": "Azure Database for PostgreSQL", "icon": "🐘", "diagram_class": DatabaseForPostgresqlServers, "category": "database"},
+    "mariadb": {"name": "Azure Database for MariaDB", "icon": "🗄️", "diagram_class": DatabaseForMysqlServers, "category": "database"},
+    "redis_cache": {"name": "Azure Cache for Redis", "icon": "⚡", "diagram_class": None, "category": "database"},  # No specific Redis class
     
     # Security Services
-    "key_vault": {"name": "Azure Key Vault", "icon": "🔐", "azure_icon": "azure.key_vault", "category": "security"},
-    "active_directory": {"name": "Azure Active Directory", "icon": "👤", "azure_icon": "azure.azure_active_directory", "category": "security"},
-    "security_center": {"name": "Azure Security Center", "icon": "🛡️", "azure_icon": "azure.security_center", "category": "security"},
-    "sentinel": {"name": "Azure Sentinel", "icon": "👁️", "azure_icon": "azure.sentinel", "category": "security"},
-    "defender": {"name": "Microsoft Defender", "icon": "🛡️", "azure_icon": "azure.defender", "category": "security"},
-    "information_protection": {"name": "Azure Information Protection", "icon": "🔒", "azure_icon": "azure.information_protection", "category": "security"},
+    "key_vault": {"name": "Azure Key Vault", "icon": "🔐", "diagram_class": KeyVaults, "category": "security"},
+    "active_directory": {"name": "Azure Active Directory", "icon": "👤", "diagram_class": ActiveDirectory, "category": "security"},
+    "security_center": {"name": "Azure Security Center", "icon": "🛡️", "diagram_class": SecurityCenter, "category": "security"},
+    "sentinel": {"name": "Azure Sentinel", "icon": "👁️", "diagram_class": Sentinel, "category": "security"},
+    "defender": {"name": "Microsoft Defender", "icon": "🛡️", "diagram_class": SecurityCenter, "category": "security"},
+    "information_protection": {"name": "Azure Information Protection", "icon": "🔒", "diagram_class": None, "category": "security"},
     
     # Monitoring & Management
-    "monitor": {"name": "Azure Monitor", "icon": "📊", "azure_icon": "azure.monitor", "category": "monitoring"},
-    "log_analytics": {"name": "Log Analytics", "icon": "📋", "azure_icon": "azure.log_analytics", "category": "monitoring"},
-    "application_insights": {"name": "Application Insights", "icon": "📈", "azure_icon": "azure.application_insights", "category": "monitoring"},
-    "service_health": {"name": "Service Health", "icon": "❤️", "azure_icon": "azure.service_health", "category": "monitoring"},
-    "advisor": {"name": "Azure Advisor", "icon": "💡", "azure_icon": "azure.advisor", "category": "monitoring"},
+    "monitor": {"name": "Azure Monitor", "icon": "📊", "diagram_class": None, "category": "monitoring"},  # No specific Monitor class
+    "log_analytics": {"name": "Log Analytics", "icon": "📋", "diagram_class": None, "category": "monitoring"},
+    "application_insights": {"name": "Application Insights", "icon": "📈", "diagram_class": None, "category": "monitoring"},
+    "service_health": {"name": "Service Health", "icon": "❤️", "diagram_class": None, "category": "monitoring"},
+    "advisor": {"name": "Azure Advisor", "icon": "💡", "diagram_class": None, "category": "monitoring"},
     
     # AI/ML Services  
-    "cognitive_services": {"name": "Cognitive Services", "icon": "🧠", "azure_icon": "azure.cognitive_services", "category": "ai"},
-    "machine_learning": {"name": "Azure Machine Learning", "icon": "🤖", "azure_icon": "azure.machine_learning", "category": "ai"},
-    "bot_service": {"name": "Bot Service", "icon": "🤖", "azure_icon": "azure.bot_service", "category": "ai"},
-    "form_recognizer": {"name": "Form Recognizer", "icon": "📄", "azure_icon": "azure.form_recognizer", "category": "ai"},
+    "cognitive_services": {"name": "Cognitive Services", "icon": "🧠", "diagram_class": None, "category": "ai"},
+    "machine_learning": {"name": "Azure Machine Learning", "icon": "🤖", "diagram_class": None, "category": "ai"},
+    "bot_service": {"name": "Bot Service", "icon": "🤖", "diagram_class": None, "category": "ai"},
+    "form_recognizer": {"name": "Form Recognizer", "icon": "📄", "diagram_class": None, "category": "ai"},
     
     # Data & Analytics
-    "synapse": {"name": "Azure Synapse Analytics", "icon": "📊", "azure_icon": "azure.synapse_analytics", "category": "analytics"},
-    "data_factory": {"name": "Azure Data Factory", "icon": "🏭", "azure_icon": "azure.data_factory", "category": "analytics"},
-    "databricks": {"name": "Azure Databricks", "icon": "📊", "azure_icon": "azure.databricks", "category": "analytics"},
-    "stream_analytics": {"name": "Stream Analytics", "icon": "🌊", "azure_icon": "azure.stream_analytics", "category": "analytics"},
-    "power_bi": {"name": "Power BI", "icon": "📊", "azure_icon": "azure.power_bi", "category": "analytics"},
+    "synapse": {"name": "Azure Synapse Analytics", "icon": "📊", "diagram_class": SynapseAnalytics, "category": "analytics"},
+    "data_factory": {"name": "Azure Data Factory", "icon": "🏭", "diagram_class": DataFactories, "category": "analytics"},
+    "databricks": {"name": "Azure Databricks", "icon": "📊", "diagram_class": Databricks, "category": "analytics"},
+    "stream_analytics": {"name": "Stream Analytics", "icon": "🌊", "diagram_class": StreamAnalyticsJobs, "category": "analytics"},
+    "power_bi": {"name": "Power BI", "icon": "📊", "diagram_class": None, "category": "analytics"},
     
     # Integration Services
-    "logic_apps": {"name": "Logic Apps", "icon": "🔗", "azure_icon": "azure.logic_apps", "category": "integration"},
-    "service_bus": {"name": "Service Bus", "icon": "🚌", "azure_icon": "azure.service_bus", "category": "integration"},
-    "event_grid": {"name": "Event Grid", "icon": "⚡", "azure_icon": "azure.event_grid", "category": "integration"},
-    "event_hubs": {"name": "Event Hubs", "icon": "📡", "azure_icon": "azure.event_hubs", "category": "integration"},
-    "api_management": {"name": "API Management", "icon": "🔌", "azure_icon": "azure.api_management", "category": "integration"},
+    "logic_apps": {"name": "Logic Apps", "icon": "🔗", "diagram_class": LogicApps, "category": "integration"},
+    "service_bus": {"name": "Service Bus", "icon": "🚌", "diagram_class": ServiceBus, "category": "integration"},
+    "event_grid": {"name": "Event Grid", "icon": "⚡", "diagram_class": EventGridTopics, "category": "integration"},
+    "event_hubs": {"name": "Event Hubs", "icon": "📡", "diagram_class": EventHubs, "category": "integration"},
+    "api_management": {"name": "API Management", "icon": "🔌", "diagram_class": APIManagement, "category": "integration"},
     
     # DevOps & Management
-    "devops": {"name": "Azure DevOps", "icon": "⚙️", "azure_icon": "azure.devops", "category": "devops"},
-    "automation": {"name": "Azure Automation", "icon": "🤖", "azure_icon": "azure.automation", "category": "devops"},
-    "policy": {"name": "Azure Policy", "icon": "📋", "azure_icon": "azure.policy", "category": "governance"},
-    "blueprints": {"name": "Azure Blueprints", "icon": "📐", "azure_icon": "azure.blueprints", "category": "governance"},
-    "resource_manager": {"name": "Azure Resource Manager", "icon": "🏗️", "azure_icon": "azure.resource_manager", "category": "governance"},
+    "devops": {"name": "Azure DevOps", "icon": "⚙️", "diagram_class": Devops, "category": "devops"},
+    "automation": {"name": "Azure Automation", "icon": "🤖", "diagram_class": None, "category": "devops"},
+    "policy": {"name": "Azure Policy", "icon": "📋", "diagram_class": None, "category": "governance"},
+    "blueprints": {"name": "Azure Blueprints", "icon": "📐", "diagram_class": None, "category": "governance"},
+    "resource_manager": {"name": "Azure Resource Manager", "icon": "🏗️", "diagram_class": Resourcegroups, "category": "governance"},
     
     # Backup & Recovery
-    "backup": {"name": "Azure Backup", "icon": "💾", "azure_icon": "azure.backup", "category": "backup"},
-    "site_recovery": {"name": "Azure Site Recovery", "icon": "🔄", "azure_icon": "azure.site_recovery", "category": "backup"},
+    "backup": {"name": "Azure Backup", "icon": "💾", "diagram_class": None, "category": "backup"},
+    "site_recovery": {"name": "Azure Site Recovery", "icon": "🔄", "diagram_class": None, "category": "backup"},
 }
+
+def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str = "/tmp") -> str:
+    """Generate Azure architecture diagram using the Python Diagrams library with proper Azure icons"""
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"azure_landing_zone_{timestamp}"
+    filepath = os.path.join(output_dir, filename)
+    
+    # Determine organization template
+    template = generate_architecture_template(inputs)
+    org_name = inputs.org_structure or "Enterprise"
+    
+    try:
+        with Diagram(
+            f"Azure Landing Zone - {template['template']['name']}", 
+            filename=filepath, 
+            show=False, 
+            direction="TB",
+            graph_attr={
+                "fontsize": "16",
+                "fontname": "Arial",
+                "rankdir": "TB",
+                "nodesep": "1.0",
+                "ranksep": "1.5",
+                "bgcolor": "#ffffff",
+                "margin": "0.5"
+            },
+            node_attr={
+                "fontsize": "12",
+                "fontname": "Arial"
+            },
+            edge_attr={
+                "fontsize": "10",
+                "fontname": "Arial"
+            }
+        ):
+            
+            # Core Identity and Security Services
+            with Cluster("Identity & Security", graph_attr={"bgcolor": "#e8f4f8", "style": "rounded"}):
+                aad = ActiveDirectory("Azure Active Directory")
+                key_vault = KeyVaults("Key Vault")
+                if inputs.security_services and "security_center" in inputs.security_services:
+                    sec_center = SecurityCenter("Security Center")
+                if inputs.security_services and "sentinel" in inputs.security_services:
+                    sentinel = Sentinel("Sentinel")
+            
+            # Management Groups and Subscriptions Structure
+            with Cluster("Management & Governance", graph_attr={"bgcolor": "#f0f8ff", "style": "rounded"}):
+                root_mg = Subscriptions("Root Management Group")
+                if template['template']['name'] == "Enterprise Scale Landing Zone":
+                    platform_mg = Subscriptions("Platform MG")
+                    workloads_mg = Subscriptions("Landing Zones MG")
+                    root_mg >> [platform_mg, workloads_mg]
+                else:
+                    platform_mg = Subscriptions("Platform MG")
+                    workloads_mg = Subscriptions("Workloads MG")
+                    root_mg >> [platform_mg, workloads_mg]
+            
+            # Networking Architecture
+            with Cluster("Network Architecture", graph_attr={"bgcolor": "#f0fff0", "style": "rounded"}):
+                # Hub VNet
+                hub_vnet = VirtualNetworks("Hub VNet\n(Shared Services)")
+                
+                # Network services based on selections
+                network_services = []
+                if inputs.network_services:
+                    for service in inputs.network_services:
+                        if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                            diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                            service_name = AZURE_SERVICES_MAPPING[service]["name"]
+                            network_services.append(diagram_class(service_name))
+                
+                # Default network services if none specified
+                if not network_services:
+                    firewall = Firewall("Azure Firewall")
+                    vpn_gw = VirtualNetworkGateways("VPN Gateway")
+                    network_services = [firewall, vpn_gw]
+                
+                # Spoke VNets
+                prod_vnet = VirtualNetworks("Production VNet")
+                dev_vnet = VirtualNetworks("Development VNet")
+                
+                # Connect hub to spokes
+                hub_vnet >> [prod_vnet, dev_vnet]
+                
+                # Connect platform subscription to hub
+                platform_mg >> hub_vnet
+                
+                # Connect network services to hub
+                for ns in network_services:
+                    hub_vnet >> ns
+            
+            # Compute and Application Services
+            if inputs.compute_services or inputs.workload:
+                with Cluster("Compute & Applications", graph_attr={"bgcolor": "#fff8dc", "style": "rounded"}):
+                    compute_services = []
+                    
+                    # Add selected compute services
+                    if inputs.compute_services:
+                        for service in inputs.compute_services:
+                            if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                                diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                                service_name = AZURE_SERVICES_MAPPING[service]["name"]
+                                compute_services.append(diagram_class(service_name))
+                    
+                    # Fallback to workload if no specific compute services
+                    if not compute_services and inputs.workload:
+                        if inputs.workload in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[inputs.workload]["diagram_class"]:
+                            diagram_class = AZURE_SERVICES_MAPPING[inputs.workload]["diagram_class"]
+                            service_name = AZURE_SERVICES_MAPPING[inputs.workload]["name"]
+                            compute_services.append(diagram_class(service_name))
+                    
+                    # Default to App Services if nothing specified
+                    if not compute_services:
+                        compute_services.append(AppServices("Azure App Services"))
+                    
+                    # Connect compute services to production VNet
+                    for cs in compute_services:
+                        prod_vnet >> cs
+                        workloads_mg >> cs
+            
+            # Storage Services
+            if inputs.storage_services:
+                with Cluster("Storage & Data", graph_attr={"bgcolor": "#f5f5dc", "style": "rounded"}):
+                    storage_services = []
+                    for service in inputs.storage_services:
+                        if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                            diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                            service_name = AZURE_SERVICES_MAPPING[service]["name"]
+                            storage_services.append(diagram_class(service_name))
+                    
+                    if not storage_services:
+                        storage_services.append(StorageAccounts("Storage Accounts"))
+                    
+                    # Connect storage to production VNet and workloads
+                    for ss in storage_services:
+                        prod_vnet >> ss
+                        workloads_mg >> ss
+            
+            # Database Services
+            if inputs.database_services:
+                with Cluster("Databases", graph_attr={"bgcolor": "#e6f3ff", "style": "rounded"}):
+                    database_services = []
+                    for service in inputs.database_services:
+                        if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                            diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                            service_name = AZURE_SERVICES_MAPPING[service]["name"]
+                            database_services.append(diagram_class(service_name))
+                    
+                    # Connect databases to production VNet and workloads
+                    for ds in database_services:
+                        prod_vnet >> ds
+                        workloads_mg >> ds
+            
+            # Analytics Services
+            if inputs.analytics_services:
+                with Cluster("Analytics & AI", graph_attr={"bgcolor": "#f0e6ff", "style": "rounded"}):
+                    analytics_services = []
+                    for service in inputs.analytics_services:
+                        if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                            diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                            service_name = AZURE_SERVICES_MAPPING[service]["name"]
+                            analytics_services.append(diagram_class(service_name))
+                    
+                    # Connect analytics to production VNet and workloads
+                    for as_service in analytics_services:
+                        prod_vnet >> as_service
+                        workloads_mg >> as_service
+            
+            # Integration Services
+            if inputs.integration_services:
+                with Cluster("Integration", graph_attr={"bgcolor": "#fff0e6", "style": "rounded"}):
+                    integration_services = []
+                    for service in inputs.integration_services:
+                        if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                            diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                            service_name = AZURE_SERVICES_MAPPING[service]["name"]
+                            integration_services.append(diagram_class(service_name))
+                    
+                    # Connect integration services to production VNet and workloads
+                    for is_service in integration_services:
+                        prod_vnet >> is_service
+                        workloads_mg >> is_service
+            
+            # DevOps Services
+            if inputs.devops_services:
+                with Cluster("DevOps & Automation", graph_attr={"bgcolor": "#f5f5f5", "style": "rounded"}):
+                    devops_services = []
+                    for service in inputs.devops_services:
+                        if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                            diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                            service_name = AZURE_SERVICES_MAPPING[service]["name"]
+                            devops_services.append(diagram_class(service_name))
+                    
+                    # Connect DevOps services to management
+                    for ds in devops_services:
+                        platform_mg >> ds
+            
+            # Core security connections
+            aad >> key_vault
+            platform_mg >> [aad, key_vault]
+            
+    except Exception as e:
+        raise Exception(f"Error generating Azure architecture diagram: {str(e)}")
+    
+    # Return the file path of the generated PNG
+    png_path = f"{filepath}.png"
+    if os.path.exists(png_path):
+        return png_path
+    else:
+        raise Exception(f"Diagram generation failed - PNG file not found: {png_path}")
+
 
 def generate_architecture_template(inputs: CustomerInputs) -> Dict[str, Any]:
     """Generate architecture template based on inputs"""
@@ -853,7 +1081,8 @@ def root():
         "version": "1.0.0",
         "endpoints": [
             "/docs - API Documentation",
-            "/generate-diagram - Generate architecture diagram",
+            "/generate-diagram - Generate architecture diagram (Mermaid + Draw.io)",
+            "/generate-azure-diagram - Generate Azure architecture diagram with official Azure icons (Python Diagrams)",
             "/generate-drawio - Generate Draw.io XML",
             "/health - Health check"
         ]
@@ -891,6 +1120,62 @@ def generate_diagram(inputs: CustomerInputs):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating diagram: {str(e)}")
+
+@app.post("/generate-azure-diagram")
+def generate_azure_diagram_endpoint(inputs: CustomerInputs):
+    """Generate Azure architecture diagram using Python Diagrams library with proper Azure icons"""
+    try:
+        # Generate Azure architecture diagram with proper icons
+        diagram_path = generate_azure_architecture_diagram(inputs)
+        
+        # Read the generated PNG file
+        with open(diagram_path, "rb") as f:
+            diagram_data = f.read()
+        
+        # Generate professional documentation
+        docs = generate_professional_documentation(inputs)
+        
+        # Encode the diagram as base64 for JSON response
+        import base64
+        diagram_base64 = base64.b64encode(diagram_data).decode('utf-8')
+        
+        return {
+            "success": True,
+            "diagram_path": diagram_path,
+            "diagram_base64": diagram_base64,
+            "tsd": docs["tsd"],
+            "hld": docs["hld"],
+            "lld": docs["lld"],
+            "architecture_template": generate_architecture_template(inputs),
+            "metadata": {
+                "generated_at": datetime.now().isoformat(),
+                "version": "1.0.0",
+                "agent": "Azure Landing Zone Agent - Python Diagrams",
+                "diagram_format": "PNG with Azure official icons"
+            }
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating Azure diagram: {str(e)}")
+
+@app.get("/generate-azure-diagram/download/{filename}")
+def download_azure_diagram(filename: str):
+    """Download generated Azure architecture diagram PNG file"""
+    try:
+        file_path = f"/tmp/{filename}"
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="Diagram file not found")
+        
+        with open(file_path, "rb") as f:
+            diagram_data = f.read()
+        
+        return Response(
+            content=diagram_data,
+            media_type="image/png", 
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error downloading diagram: {str(e)}")
 
 @app.post("/generate-drawio", response_class=Response)
 def generate_drawio_endpoint(inputs: CustomerInputs):
