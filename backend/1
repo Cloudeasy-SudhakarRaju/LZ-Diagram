@@ -1,0 +1,74 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+import google.generativeai as genai
+import os
+from dotenv import load_dotenv
+
+# Load .env if available
+load_dotenv()
+
+# Configure Gemini
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+# Define request schema
+class CustomerInputs(BaseModel):
+    business_objective: str | None = None
+    regulatory: str | None = None
+    org_structure: str | None = None
+    network_model: str | None = None
+    security_posture: str | None = None
+    workload: str | None = None
+    ops_model: str | None = None
+    cost_priority: str | None = None
+    migration_scope: str | None = None
+    iac: str | None = None
+
+app = FastAPI()
+
+# Enable CORS for frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.post("/generate-diagram")
+def generate_diagram(inputs: CustomerInputs):
+    # Example: Generate a Mermaid diagram based on inputs
+    mermaid = f"""
+    graph TD
+      A[Subscription] --> B[Hub Network ({inputs.network_model or "Hub-Spoke"})]
+      B --> C[Spokes]
+      A --> D[Azure AD]
+      A --> E[Monitoring: Log Analytics, Defender, Sentinel]
+      A --> F[Workload: {inputs.workload or "Generic"}]
+    """
+
+    # Ask Gemini to generate richer docs
+    gemini_prompt = f"""
+    Generate cloud architecture documentation for:
+    - Business Objective: {inputs.business_objective}
+    - Regulatory: {inputs.regulatory}
+    - Org Structure: {inputs.org_structure}
+    - Network Model: {inputs.network_model}
+    - Security Posture: {inputs.security_posture}
+    - Workload: {inputs.workload}
+    - Ops Model: {inputs.ops_model}
+    - Cost Priority: {inputs.cost_priority}
+    - Migration Scope: {inputs.migration_scope}
+    - IaC: {inputs.iac}
+    """
+
+    response = model.generate_content(gemini_prompt)
+
+    return {
+        "mermaid": mermaid,
+        "tsd": response.text or "TSD could not be generated.",
+        "hld": f"HLD generated with {inputs.network_model or 'Hub-Spoke'} topology.",
+        "lld": f"LLD generated for workload: {inputs.workload or 'Generic'}."
+    }
+
