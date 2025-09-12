@@ -239,7 +239,8 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
         raise Exception(f"Graphviz check failed: {str(e)}. Please install Graphviz: sudo apt-get install -y graphviz graphviz-dev")
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"azure_landing_zone_{timestamp}"
+    unique_id = str(uuid.uuid4())[:8]  # Use first 8 chars of UUID for uniqueness
+    filename = f"azure_landing_zone_{timestamp}_{unique_id}"
     filepath = os.path.join(output_dir, filename)
     
     # Verify output directory is writable
