@@ -8,34 +8,52 @@ type MermaidProps = {
 const Mermaid: React.FC<MermaidProps> = ({ chart }) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  // Unique ID for this diagram instance
-  const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
-
   // Initialize Mermaid ONCE
   useEffect(() => {
-    mermaid.initialize({ startOnLoad: false, theme: "default" });
+    mermaid.initialize({ 
+      startOnLoad: false, 
+      theme: "default",
+      securityLevel: "loose"
+    });
   }, []);
 
   useEffect(() => {
     if (!chart || !ref.current) return;
 
+    // Clear previous content
+    ref.current.innerHTML = "";
+
+    const id = `mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
     try {
-      mermaid.render(id, chart, (svgCode) => {
-        if (ref.current) {
-          ref.current.innerHTML = svgCode;
-        }
-      });
+      // Create a temporary element for mermaid to render into
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = chart;
+      
+      mermaid.render(id, chart)
+        .then((result) => {
+          if (ref.current) {
+            ref.current.innerHTML = result.svg;
+          }
+        })
+        .catch((err) => {
+          console.error("Mermaid render error:", err);
+          if (ref.current) {
+            ref.current.innerHTML = 
+              "<p style='color:red; padding: 20px; border: 1px solid red; border-radius: 4px; background: #ffebee;'>❌ Failed to render diagram. Please check the diagram syntax.</p>";
+          }
+        });
     } catch (err) {
       console.error("Mermaid render error:", err);
       if (ref.current) {
         ref.current.innerHTML =
-          "<p style='color:red'>❌ Failed to render diagram</p>";
+          "<p style='color:red; padding: 20px; border: 1px solid red; border-radius: 4px; background: #ffebee;'>❌ Failed to render diagram. Please check the diagram syntax.</p>";
       }
     }
-  }, [chart, id]);
+  }, [chart]);
 
   return (
-    <div ref={ref}>
+    <div ref={ref} style={{ width: '100%', minHeight: '400px' }}>
       {!chart && <p style={{ color: "gray" }}>No diagram available</p>}
     </div>
   );

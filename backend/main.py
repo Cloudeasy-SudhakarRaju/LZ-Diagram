@@ -88,17 +88,62 @@ AZURE_TEMPLATES = {
 }
 
 AZURE_SERVICES_MAPPING = {
+    # Compute Services
     "aks": {"name": "Azure Kubernetes Service", "icon": "azure.kubernetes_services", "category": "compute"},
     "appservices": {"name": "Azure App Services", "icon": "azure.app_services", "category": "compute"},
     "vm": {"name": "Virtual Machines", "icon": "azure.virtual_machine", "category": "compute"},
     "sap": {"name": "SAP on Azure", "icon": "azure.sap_hana_on_azure", "category": "compute"},
+    "functions": {"name": "Azure Functions", "icon": "azure.azure_functions", "category": "compute"},
+    "batch": {"name": "Azure Batch", "icon": "azure.batch", "category": "compute"},
+    "service_fabric": {"name": "Service Fabric", "icon": "azure.service_fabric", "category": "compute"},
+    
+    # Storage Services
+    "storage": {"name": "Azure Storage", "icon": "azure.azure_storage", "category": "storage"},
+    "blob_storage": {"name": "Blob Storage", "icon": "azure.blob_storage", "category": "storage"},
+    "file_storage": {"name": "File Storage", "icon": "azure.file_storage", "category": "storage"},
+    "disk_storage": {"name": "Disk Storage", "icon": "azure.disk_storage", "category": "storage"},
+    
+    # Database Services
+    "sql_database": {"name": "SQL Database", "icon": "azure.sql_database", "category": "database"},
+    "cosmos_db": {"name": "Cosmos DB", "icon": "azure.cosmos_db", "category": "database"},
+    "mysql": {"name": "MySQL Database", "icon": "azure.mysql_database", "category": "database"},
+    "postgresql": {"name": "PostgreSQL Database", "icon": "azure.postgresql_database", "category": "database"},
+    
+    # AI/ML Services
     "ai": {"name": "Azure AI/ML", "icon": "azure.machine_learning", "category": "ai"},
+    "cognitive_services": {"name": "Cognitive Services", "icon": "azure.cognitive_services", "category": "ai"},
+    "bot_service": {"name": "Bot Service", "icon": "azure.bot_service", "category": "ai"},
+    
+    # Data & Analytics
     "data": {"name": "Azure Data Services", "icon": "azure.data_factory", "category": "data"},
+    "synapse": {"name": "Azure Synapse", "icon": "azure.synapse_analytics", "category": "data"},
+    "databricks": {"name": "Azure Databricks", "icon": "azure.databricks", "category": "data"},
+    "stream_analytics": {"name": "Stream Analytics", "icon": "azure.stream_analytics", "category": "data"},
+    
+    # Network Services
     "hub-spoke": {"name": "Hub-Spoke Network", "icon": "azure.virtual_network", "category": "network"},
     "mesh": {"name": "Mesh Network", "icon": "azure.virtual_network", "category": "network"},
     "vwan": {"name": "Virtual WAN", "icon": "azure.virtual_wan", "category": "network"},
+    "load_balancer": {"name": "Load Balancer", "icon": "azure.load_balancer", "category": "network"},
+    "application_gateway": {"name": "Application Gateway", "icon": "azure.application_gateway", "category": "network"},
+    "firewall": {"name": "Azure Firewall", "icon": "azure.firewall", "category": "network"},
+    "vpn_gateway": {"name": "VPN Gateway", "icon": "azure.vpn_gateway", "category": "network"},
+    
+    # Security Services
     "zero-trust": {"name": "Zero Trust Security", "icon": "azure.security_center", "category": "security"},
     "siem": {"name": "Azure Sentinel", "icon": "azure.sentinel", "category": "security"},
+    "key_vault": {"name": "Key Vault", "icon": "azure.key_vault", "category": "security"},
+    "azure_ad": {"name": "Azure Active Directory", "icon": "azure.azure_active_directory", "category": "security"},
+    
+    # Monitoring & Management
+    "monitor": {"name": "Azure Monitor", "icon": "azure.monitor", "category": "management"},
+    "log_analytics": {"name": "Log Analytics", "icon": "azure.log_analytics", "category": "management"},
+    "application_insights": {"name": "Application Insights", "icon": "azure.application_insights", "category": "management"},
+    
+    # Integration Services
+    "logic_apps": {"name": "Logic Apps", "icon": "azure.logic_apps", "category": "integration"},
+    "service_bus": {"name": "Service Bus", "icon": "azure.service_bus", "category": "integration"},
+    "event_grid": {"name": "Event Grid", "icon": "azure.event_grid", "category": "integration"},
 }
 
 def generate_architecture_template(inputs: CustomerInputs) -> Dict[str, Any]:
