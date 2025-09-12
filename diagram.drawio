@@ -1,0 +1,129 @@
+<mxfile host="app.diagrams.net" modified="2024-01-01T00:00:00.000Z" agent="Azure Landing Zone Agent" version="1.0.0">
+  <diagram name="Azure Landing Zone Architecture" id="azure-lz-b84d114b-6cf3-499f-818a-b832cad1fa9f">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Azure Tenant Container -->
+        <mxCell id="tenant" value="Azure Tenant - Enterprise" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="50" y="50" width="1800" height="1100" as="geometry" />
+        </mxCell>
+        
+        <!-- Management Groups -->
+        <mxCell id="mgmt-groups" value="Management Groups" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="100" width="400" height="300" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="root-mg" value="Root MG" style="shape=mxgraph.azure.management;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="150" y="150" width="80" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="platform-mg" value="Platform" style="shape=mxgraph.azure.management;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="280" y="150" width="80" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="workloads-mg" value="Workloads" style="shape=mxgraph.azure.management;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="400" y="150" width="80" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Subscriptions -->
+        <mxCell id="subscriptions" value="Subscriptions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="600" y="100" width="500" height="300" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="connectivity-sub" value="Connectivity" style="shape=mxgraph.azure.subscription;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="650" y="150" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="identity-sub" value="Identity" style="shape=mxgraph.azure.subscription;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="800" y="150" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="prod-sub" value="Production" style="shape=mxgraph.azure.subscription;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="950" y="150" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- Network Architecture -->
+        <mxCell id="network" value="Network Architecture - Hub-Spoke" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="500" width="600" height="400" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="hub-vnet" value="Hub VNet\nShared Services" style="shape=mxgraph.azure.virtual_network;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="200" y="600" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="spoke1-vnet" value="Spoke VNet 1\nProduction" style="shape=mxgraph.azure.virtual_network;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="400" y="550" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="spoke2-vnet" value="Spoke VNet 2\nDevelopment" style="shape=mxgraph.azure.virtual_network;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="400" y="700" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Workloads -->
+        <mxCell id="workloads" value="Workloads - aks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="800" y="500" width="400" height="400" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="primary-workload" value="Azure Kubernetes Service" style="shape=mxgraph.azure.kubernetes_service;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="900" y="600" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Security & Governance -->
+        <mxCell id="security" value="Security &amp; Governance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#ff6666;fontSize=14;fontStyle=1;verticalAlign=top;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="100" width="500" height="800" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="azure-ad" value="Azure AD" style="shape=mxgraph.azure.azure_active_directory;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="200" width="80" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="azure-policy" value="Azure Policy" style="shape=mxgraph.azure.azure_governance;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="350" width="80" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="key-vault" value="Key Vault" style="shape=mxgraph.azure.key_vault;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="500" width="80" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="security-center" value="Security Center" style="shape=mxgraph.azure.security_center;fillColor=#0078d4;strokeColor=#005a9e;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="650" width="80" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Connections -->
+        <mxCell id="conn1" edge="1" source="root-mg" target="platform-mg" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn2" edge="1" source="root-mg" target="workloads-mg" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn3" edge="1" source="platform-mg" target="connectivity-sub" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn4" edge="1" source="platform-mg" target="identity-sub" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn5" edge="1" source="workloads-mg" target="prod-sub" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn6" edge="1" source="connectivity-sub" target="hub-vnet" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn7" edge="1" source="hub-vnet" target="spoke1-vnet" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn8" edge="1" source="hub-vnet" target="spoke2-vnet" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn9" edge="1" source="prod-sub" target="primary-workload" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn10" edge="1" source="identity-sub" target="azure-ad" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

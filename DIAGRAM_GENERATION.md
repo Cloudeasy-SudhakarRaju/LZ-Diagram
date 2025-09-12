@@ -114,3 +114,27 @@ Generated diagrams are saved as PNG files with:
 - Proper Azure branding and styling
 - File sizes typically 150-300KB
 - Suitable for documentation and architecture reviews
+
+## Troubleshooting
+
+### Draw.io XML Issues
+
+**Problem**: "Not a diagram file (error on line 1 at column 1: Start tag expected, '<' not found)" when uploading to app.diagrams.net
+
+**Solution**: This issue was resolved in version 1.0.0. The problem was caused by emoji characters being used as shape names in the XML (e.g., `shape=mxgraph.azure.☸️`). The fix replaced emoji icons with valid Draw.io shape names (e.g., `shape=mxgraph.azure.kubernetes_service`).
+
+**Testing**: To verify your generated .drawio file is valid:
+```bash
+# Test with AKS workload
+curl -X POST http://localhost:8001/generate-drawio \
+  -H "Content-Type: application/json" \
+  -d '{"workload": "aks"}' \
+  --output diagram.drawio
+
+# Verify XML structure
+python3 -c "import xml.etree.ElementTree as ET; ET.parse('diagram.drawio'); print('✅ Valid XML')"
+```
+
+The generated XML should contain proper shape references like:
+- `shape=mxgraph.azure.kubernetes_service` ✅
+- NOT `shape=mxgraph.azure.☸️` ❌
