@@ -104,43 +104,6 @@ function App() {
     setFormData({ ...formData, [categoryField]: selectedServices });
   };
 
-  const testArchitectureVariety = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("http://127.0.0.1:8001/test-architecture-variety", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-      
-      const data = await res.json();
-      
-      if (data.success) {
-        const summary = data.summary;
-        alert(`Architecture Variety Test Completed Successfully!
-        
-• Tested ${summary.total_configs_tested} different configurations
-• All generated different file sizes: ${summary.all_different_sizes ? 'Yes' : 'No'}
-• Total unique Azure stencils used: ${summary.total_unique_stencils}
-• Variety confirmed: ${summary.variety_confirmed ? 'Yes' : 'No'}
-
-Test Results:
-${data.test_results.map((r: any) => `• ${r.name}: ${r.unique_azure_stencils} stencils`).join('\n')}
-
-This confirms that the system generates different architectures based on your selections!`);
-      } else {
-        throw new Error("Failed to test architecture variety");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error: Failed to test architecture variety. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -534,17 +497,6 @@ This confirms that the system generates different architectures based on your se
                         isLoading={loading}
                       >
                         🏗️ Generate Azure Landing Zone Architecture
-                      </Button>
-                      
-                      <Button
-                        colorScheme="teal"
-                        variant="outline"
-                        size="md"
-                        w="full"
-                        onClick={testArchitectureVariety}
-                        isLoading={loading}
-                      >
-                        🧪 Test Architecture Variety (3 Different Patterns)
                       </Button>
                     </VStack>
                   </VStack>
