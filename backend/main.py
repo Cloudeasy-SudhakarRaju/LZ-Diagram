@@ -8,7 +8,11 @@ import uuid
 import os
 import base64
 import subprocess
+import tempfile
+import logging
+import traceback
 from datetime import datetime
+from pathlib import Path
 
 # Import diagrams for Azure architecture generation
 from diagrams import Diagram, Cluster, Edge
@@ -29,6 +33,13 @@ app = FastAPI(
     description="Professional Azure Landing Zone Architecture Generator",
     version="1.0.0"
 )
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 app.add_middleware(
     CORSMiddleware,
@@ -224,232 +235,353 @@ AZURE_SERVICES_MAPPING = {
     "site_recovery": {"name": "Azure Site Recovery", "icon": "🔄", "drawio_shape": "site_recovery", "diagram_class": None, "category": "backup"},
 }
 
-def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str = "/tmp") -> str:
+def get_safe_output_directory() -> str:
+    """Get a safe directory for output files with fallback options"""
+    directories_to_try = [
+        "/tmp",
+        tempfile.gettempdir(),
+        os.path.expanduser("~/tmp"),
+        "./tmp"
+    ]
+    
+    for directory in directories_to_try:
+        try:
+            # Create directory if it doesn't exist
+            Path(directory).mkdir(parents=True, exist_ok=True)
+            
+            # Test if we can write to it
+            test_file = os.path.join(directory, f"test_write_{uuid.uuid4().hex[:8]}.tmp")
+            with open(test_file, 'w') as f:
+                f.write("test")
+            os.remove(test_file)
+            
+            logger.info(f"Using output directory: {directory}")
+            return directory
+            
+        except Exception as e:
+            logger.warning(f"Cannot use directory {directory}: {e}")
+            continue
+    
+    raise Exception("No writable output directory found. Tried: " + ", ".join(directories_to_try))
+
+def cleanup_old_files(directory: str, max_age_hours: int = 24):
+    """Clean up old generated files to prevent disk space issues"""
+    try:
+        current_time = datetime.now().timestamp()
+        max_age_seconds = max_age_hours * 3600
+        
+        for filename in os.listdir(directory):
+            if filename.startswith("azure_landing_zone_") and filename.endswith(".png"):
+                filepath = os.path.join(directory, filename)
+                try:
+                    file_age = current_time - os.path.getmtime(filepath)
+                    if file_age > max_age_seconds:
+                        os.remove(filepath)
+                        logger.info(f"Cleaned up old file: {filename}")
+                except Exception as e:
+                    logger.warning(f"Failed to clean up file {filename}: {e}")
+                    
+    except Exception as e:
+        logger.warning(f"Failed to perform cleanup in {directory}: {e}")
+
+def validate_customer_inputs(inputs: CustomerInputs) -> None:
+    """Validate customer inputs to prevent potential errors"""
+    # Check for extremely long strings that might cause issues
+    string_fields = [
+        inputs.business_objective, inputs.regulatory, inputs.industry,
+        inputs.org_structure, inputs.governance, inputs.identity,
+        inputs.connectivity, inputs.network_model, inputs.ip_strategy,
+        inputs.security_zone, inputs.security_posture, inputs.key_vault,
+        inputs.threat_protection, inputs.workload, inputs.architecture_style,
+        inputs.scalability, inputs.ops_model, inputs.monitoring, inputs.backup,
+        inputs.topology_pattern, inputs.migration_scope, inputs.cost_priority, inputs.iac
+    ]
+    
+    for field in string_fields:
+        if field and len(field) > 1000:  # Reasonable limit
+            raise ValueError(f"Input field too long: {len(field)} characters (max 1000)")
+    
+    # Check service lists for reasonable sizes
+    service_lists = [
+        inputs.compute_services, inputs.network_services, inputs.storage_services,
+        inputs.database_services, inputs.security_services, inputs.monitoring_services,
+        inputs.ai_services, inputs.analytics_services, inputs.integration_services,
+        inputs.devops_services, inputs.backup_services
+    ]
+    
+    for service_list in service_lists:
+        if service_list and len(service_list) > 50:  # Reasonable limit
+            raise ValueError(f"Too many services selected: {len(service_list)} (max 50)")
+
+def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str = None) -> str:
     """Generate Azure architecture diagram using the Python Diagrams library with proper Azure icons"""
     
-    # Verify Graphviz availability before proceeding
-    try:
-        import subprocess
-        result = subprocess.run(['dot', '-V'], capture_output=True, text=True, timeout=5)
-        if result.returncode != 0:
-            raise Exception("Graphviz 'dot' command is not available. Please install Graphviz: sudo apt-get install -y graphviz graphviz-dev")
-    except (subprocess.TimeoutExpired, FileNotFoundError):
-        raise Exception("Graphviz is not installed or not accessible. Please install Graphviz: sudo apt-get install -y graphviz graphviz-dev")
-    except subprocess.SubprocessError as e:
-        raise Exception(f"Graphviz check failed: {str(e)}. Please install Graphviz: sudo apt-get install -y graphviz graphviz-dev")
-    
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    unique_id = str(uuid.uuid4())[:8]  # Use first 8 chars of UUID for uniqueness
-    filename = f"azure_landing_zone_{timestamp}_{unique_id}"
-    filepath = os.path.join(output_dir, filename)
-    
-    # Verify output directory is writable
-    if not os.access(output_dir, os.W_OK):
-        raise Exception(f"Output directory {output_dir} is not writable")
-    
-    # Determine organization template
-    template = generate_architecture_template(inputs)
-    org_name = inputs.org_structure or "Enterprise"
+    logger.info("Starting Azure architecture diagram generation")
     
     try:
-        with Diagram(
-            f"Azure Landing Zone - {template['template']['name']}", 
-            filename=filepath, 
-            show=False, 
-            direction="TB",
-            graph_attr={
-                "fontsize": "16",
-                "fontname": "Arial",
-                "rankdir": "TB",
-                "nodesep": "1.0",
-                "ranksep": "1.5",
-                "bgcolor": "#ffffff",
-                "margin": "0.5"
-            },
-            node_attr={
-                "fontsize": "12",
-                "fontname": "Arial"
-            },
-            edge_attr={
-                "fontsize": "10",
-                "fontname": "Arial"
-            }
-        ):
-            
-            # Core Identity and Security Services
-            with Cluster("Identity & Security", graph_attr={"bgcolor": "#e8f4f8", "style": "rounded"}):
-                aad = ActiveDirectory("Azure Active Directory")
-                key_vault = KeyVaults("Key Vault")
-                if inputs.security_services and "security_center" in inputs.security_services:
-                    sec_center = SecurityCenter("Security Center")
-                if inputs.security_services and "sentinel" in inputs.security_services:
-                    sentinel = Sentinel("Sentinel")
-            
-            # Management Groups and Subscriptions Structure
-            with Cluster("Management & Governance", graph_attr={"bgcolor": "#f0f8ff", "style": "rounded"}):
-                root_mg = Subscriptions("Root Management Group")
-                if template['template']['name'] == "Enterprise Scale Landing Zone":
-                    platform_mg = Subscriptions("Platform MG")
-                    workloads_mg = Subscriptions("Landing Zones MG")
-                    root_mg >> [platform_mg, workloads_mg]
-                else:
-                    platform_mg = Subscriptions("Platform MG")
-                    workloads_mg = Subscriptions("Workloads MG")
-                    root_mg >> [platform_mg, workloads_mg]
-            
-            # Networking Architecture
-            with Cluster("Network Architecture", graph_attr={"bgcolor": "#f0fff0", "style": "rounded"}):
-                # Hub VNet
-                hub_vnet = VirtualNetworks("Hub VNet\n(Shared Services)")
+        # Validate inputs first
+        validate_customer_inputs(inputs)
+        logger.info("Input validation completed successfully")
+        
+        # Get safe output directory
+        if output_dir is None:
+            output_dir = get_safe_output_directory()
+        
+        # Clean up old files to prevent disk space issues
+        cleanup_old_files(output_dir)
+        
+        # Verify Graphviz availability before proceeding
+        try:
+            result = subprocess.run(['dot', '-V'], capture_output=True, text=True, timeout=10)
+            if result.returncode != 0:
+                raise Exception(f"Graphviz 'dot' command failed with return code {result.returncode}. stderr: {result.stderr}")
+            logger.info(f"Graphviz version: {result.stderr.strip()}")
+        except subprocess.TimeoutExpired:
+            raise Exception("Graphviz 'dot' command timed out. Graphviz may be unresponsive.")
+        except FileNotFoundError:
+            raise Exception("Graphviz is not installed or not accessible. Please install Graphviz: sudo apt-get install -y graphviz graphviz-dev")
+        except subprocess.SubprocessError as e:
+            raise Exception(f"Graphviz check failed: {str(e)}. Please install Graphviz: sudo apt-get install -y graphviz graphviz-dev")
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        unique_id = str(uuid.uuid4())[:8]  # Use first 8 chars of UUID for uniqueness
+        filename = f"azure_landing_zone_{timestamp}_{unique_id}"
+        filepath = os.path.join(output_dir, filename)
+        
+        logger.info(f"Generating diagram with filename: {filename}")
+        
+        # Verify output directory is writable
+        if not os.access(output_dir, os.W_OK):
+            raise Exception(f"Output directory {output_dir} is not writable")
+        
+        # Determine organization template
+        template = generate_architecture_template(inputs)
+        org_name = inputs.org_structure or "Enterprise"
+        
+        logger.info(f"Using template: {template['template']['name']}")
+        
+        try:
+            with Diagram(
+                f"Azure Landing Zone - {template['template']['name']}", 
+                filename=filepath, 
+                show=False, 
+                direction="TB",
+                graph_attr={
+                    "fontsize": "16",
+                    "fontname": "Arial",
+                    "rankdir": "TB",
+                    "nodesep": "1.0",
+                    "ranksep": "1.5",
+                    "bgcolor": "#ffffff",
+                    "margin": "0.5"
+                },
+                node_attr={
+                    "fontsize": "12",
+                    "fontname": "Arial"
+                },
+                edge_attr={
+                    "fontsize": "10",
+                    "fontname": "Arial"
+                }
+            ):
                 
-                # Network services based on selections
-                network_services = []
-                if inputs.network_services:
-                    for service in inputs.network_services:
-                        if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
-                            diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
-                            service_name = AZURE_SERVICES_MAPPING[service]["name"]
-                            network_services.append(diagram_class(service_name))
+                logger.info("Creating diagram structure...")
                 
-                # Default network services if none specified
-                if not network_services:
-                    firewall = Firewall("Azure Firewall")
-                    vpn_gw = VirtualNetworkGateways("VPN Gateway")
-                    network_services = [firewall, vpn_gw]
+                # Core Identity and Security Services
+                with Cluster("Identity & Security", graph_attr={"bgcolor": "#e8f4f8", "style": "rounded"}):
+                    aad = ActiveDirectory("Azure Active Directory")
+                    key_vault = KeyVaults("Key Vault")
+                    if inputs.security_services and "security_center" in inputs.security_services:
+                        sec_center = SecurityCenter("Security Center")
+                    if inputs.security_services and "sentinel" in inputs.security_services:
+                        sentinel = Sentinel("Sentinel")
                 
-                # Spoke VNets
-                prod_vnet = VirtualNetworks("Production VNet")
-                dev_vnet = VirtualNetworks("Development VNet")
+                # Management Groups and Subscriptions Structure
+                with Cluster("Management & Governance", graph_attr={"bgcolor": "#f0f8ff", "style": "rounded"}):
+                    root_mg = Subscriptions("Root Management Group")
+                    if template['template']['name'] == "Enterprise Scale Landing Zone":
+                        platform_mg = Subscriptions("Platform MG")
+                        workloads_mg = Subscriptions("Landing Zones MG")
+                        root_mg >> [platform_mg, workloads_mg]
+                    else:
+                        platform_mg = Subscriptions("Platform MG")
+                        workloads_mg = Subscriptions("Workloads MG")
+                        root_mg >> [platform_mg, workloads_mg]
                 
-                # Connect hub to spokes
-                hub_vnet >> [prod_vnet, dev_vnet]
-                
-                # Connect platform subscription to hub
-                platform_mg >> hub_vnet
-                
-                # Connect network services to hub
-                for ns in network_services:
-                    hub_vnet >> ns
-            
-            # Compute and Application Services
-            if inputs.compute_services or inputs.workload:
-                with Cluster("Compute & Applications", graph_attr={"bgcolor": "#fff8dc", "style": "rounded"}):
-                    compute_services = []
+                # Networking Architecture
+                with Cluster("Network Architecture", graph_attr={"bgcolor": "#f0fff0", "style": "rounded"}):
+                    # Hub VNet
+                    hub_vnet = VirtualNetworks("Hub VNet\n(Shared Services)")
                     
-                    # Add selected compute services
-                    if inputs.compute_services:
-                        for service in inputs.compute_services:
+                    # Network services based on selections
+                    network_services = []
+                    if inputs.network_services:
+                        for service in inputs.network_services:
                             if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
                                 diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
                                 service_name = AZURE_SERVICES_MAPPING[service]["name"]
-                                compute_services.append(diagram_class(service_name))
+                                network_services.append(diagram_class(service_name))
                     
-                    # Fallback to workload if no specific compute services
-                    if not compute_services and inputs.workload:
-                        if inputs.workload in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[inputs.workload]["diagram_class"]:
-                            diagram_class = AZURE_SERVICES_MAPPING[inputs.workload]["diagram_class"]
-                            service_name = AZURE_SERVICES_MAPPING[inputs.workload]["name"]
-                            compute_services.append(diagram_class(service_name))
+                    # Default network services if none specified
+                    if not network_services:
+                        firewall = Firewall("Azure Firewall")
+                        vpn_gw = VirtualNetworkGateways("VPN Gateway")
+                        network_services = [firewall, vpn_gw]
                     
-                    # Default to App Services if nothing specified
-                    if not compute_services:
-                        compute_services.append(AppServices("Azure App Services"))
+                    # Spoke VNets
+                    prod_vnet = VirtualNetworks("Production VNet")
+                    dev_vnet = VirtualNetworks("Development VNet")
                     
-                    # Connect compute services to production VNet
-                    for cs in compute_services:
-                        prod_vnet >> cs
-                        workloads_mg >> cs
-            
-            # Storage Services
-            if inputs.storage_services:
-                with Cluster("Storage & Data", graph_attr={"bgcolor": "#f5f5dc", "style": "rounded"}):
-                    storage_services = []
-                    for service in inputs.storage_services:
-                        if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
-                            diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
-                            service_name = AZURE_SERVICES_MAPPING[service]["name"]
-                            storage_services.append(diagram_class(service_name))
+                    # Connect hub to spokes
+                    hub_vnet >> [prod_vnet, dev_vnet]
                     
-                    if not storage_services:
-                        storage_services.append(StorageAccounts("Storage Accounts"))
+                    # Connect platform subscription to hub
+                    platform_mg >> hub_vnet
                     
-                    # Connect storage to production VNet and workloads
-                    for ss in storage_services:
-                        prod_vnet >> ss
-                        workloads_mg >> ss
-            
-            # Database Services
-            if inputs.database_services:
-                with Cluster("Databases", graph_attr={"bgcolor": "#e6f3ff", "style": "rounded"}):
-                    database_services = []
-                    for service in inputs.database_services:
-                        if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
-                            diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
-                            service_name = AZURE_SERVICES_MAPPING[service]["name"]
-                            database_services.append(diagram_class(service_name))
-                    
-                    # Connect databases to production VNet and workloads
-                    for ds in database_services:
-                        prod_vnet >> ds
-                        workloads_mg >> ds
-            
-            # Analytics Services
-            if inputs.analytics_services:
-                with Cluster("Analytics & AI", graph_attr={"bgcolor": "#f0e6ff", "style": "rounded"}):
-                    analytics_services = []
-                    for service in inputs.analytics_services:
-                        if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
-                            diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
-                            service_name = AZURE_SERVICES_MAPPING[service]["name"]
-                            analytics_services.append(diagram_class(service_name))
-                    
-                    # Connect analytics to production VNet and workloads
-                    for as_service in analytics_services:
-                        prod_vnet >> as_service
-                        workloads_mg >> as_service
-            
-            # Integration Services
-            if inputs.integration_services:
-                with Cluster("Integration", graph_attr={"bgcolor": "#fff0e6", "style": "rounded"}):
-                    integration_services = []
-                    for service in inputs.integration_services:
-                        if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
-                            diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
-                            service_name = AZURE_SERVICES_MAPPING[service]["name"]
-                            integration_services.append(diagram_class(service_name))
-                    
-                    # Connect integration services to production VNet and workloads
-                    for is_service in integration_services:
-                        prod_vnet >> is_service
-                        workloads_mg >> is_service
-            
-            # DevOps Services
-            if inputs.devops_services:
-                with Cluster("DevOps & Automation", graph_attr={"bgcolor": "#f5f5f5", "style": "rounded"}):
-                    devops_services = []
-                    for service in inputs.devops_services:
-                        if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
-                            diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
-                            service_name = AZURE_SERVICES_MAPPING[service]["name"]
-                            devops_services.append(diagram_class(service_name))
-                    
-                    # Connect DevOps services to management
-                    for ds in devops_services:
-                        platform_mg >> ds
-            
-            # Core security connections
-            aad >> key_vault
-            platform_mg >> [aad, key_vault]
+                    # Connect network services to hub
+                    for ns in network_services:
+                        hub_vnet >> ns
+                
+                # Add other service clusters based on input...
+                _add_service_clusters(inputs, prod_vnet, workloads_mg)
+                
+                # Core security connections
+                aad >> key_vault
+                platform_mg >> [aad, key_vault]
+                
+                logger.info("Diagram structure created successfully")
+        
+        except Exception as e:
+            logger.error(f"Error during diagram creation: {str(e)}")
+            logger.error(traceback.format_exc())
+            raise Exception(f"Error generating Azure architecture diagram: {str(e)}")
+        
+        # Return the file path of the generated PNG
+        png_path = f"{filepath}.png"
+        if os.path.exists(png_path):
+            file_size = os.path.getsize(png_path)
+            logger.info(f"Diagram generated successfully: {png_path} (size: {file_size} bytes)")
+            return png_path
+        else:
+            raise Exception(f"Diagram generation failed - PNG file not found: {png_path}")
             
     except Exception as e:
-        raise Exception(f"Error generating Azure architecture diagram: {str(e)}")
-    
-    # Return the file path of the generated PNG
-    png_path = f"{filepath}.png"
-    if os.path.exists(png_path):
-        return png_path
-    else:
-        raise Exception(f"Diagram generation failed - PNG file not found: {png_path}")
+        logger.error(f"Failed to generate Azure architecture diagram: {str(e)}")
+        logger.error(traceback.format_exc())
+        raise
+
+def _add_service_clusters(inputs: CustomerInputs, prod_vnet, workloads_mg):
+    """Helper method to add service clusters to avoid code duplication"""
+    try:
+        # Compute and Application Services
+        if inputs.compute_services or inputs.workload:
+            with Cluster("Compute & Applications", graph_attr={"bgcolor": "#fff8dc", "style": "rounded"}):
+                compute_services = []
+                
+                # Add selected compute services
+                if inputs.compute_services:
+                    for service in inputs.compute_services:
+                        if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                            diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                            service_name = AZURE_SERVICES_MAPPING[service]["name"]
+                            compute_services.append(diagram_class(service_name))
+                
+                # Fallback to workload if no specific compute services
+                if not compute_services and inputs.workload:
+                    if inputs.workload in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[inputs.workload]["diagram_class"]:
+                        diagram_class = AZURE_SERVICES_MAPPING[inputs.workload]["diagram_class"]
+                        service_name = AZURE_SERVICES_MAPPING[inputs.workload]["name"]
+                        compute_services.append(diagram_class(service_name))
+                
+                # Default to App Services if nothing specified
+                if not compute_services:
+                    compute_services.append(AppServices("Azure App Services"))
+                
+                # Connect compute services to production VNet
+                for cs in compute_services:
+                    prod_vnet >> cs
+                    workloads_mg >> cs
+        
+        # Storage Services
+        if inputs.storage_services:
+            with Cluster("Storage & Data", graph_attr={"bgcolor": "#f5f5dc", "style": "rounded"}):
+                storage_services = []
+                for service in inputs.storage_services:
+                    if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                        diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                        service_name = AZURE_SERVICES_MAPPING[service]["name"]
+                        storage_services.append(diagram_class(service_name))
+                
+                if not storage_services:
+                    storage_services.append(StorageAccounts("Storage Accounts"))
+                
+                # Connect storage to production VNet and workloads
+                for ss in storage_services:
+                    prod_vnet >> ss
+                    workloads_mg >> ss
+        
+        # Database Services
+        if inputs.database_services:
+            with Cluster("Databases", graph_attr={"bgcolor": "#e6f3ff", "style": "rounded"}):
+                database_services = []
+                for service in inputs.database_services:
+                    if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                        diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                        service_name = AZURE_SERVICES_MAPPING[service]["name"]
+                        database_services.append(diagram_class(service_name))
+                
+                # Connect databases to production VNet and workloads
+                for ds in database_services:
+                    prod_vnet >> ds
+                    workloads_mg >> ds
+        
+        # Analytics Services
+        if inputs.analytics_services:
+            with Cluster("Analytics & AI", graph_attr={"bgcolor": "#f0e6ff", "style": "rounded"}):
+                analytics_services = []
+                for service in inputs.analytics_services:
+                    if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                        diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                        service_name = AZURE_SERVICES_MAPPING[service]["name"]
+                        analytics_services.append(diagram_class(service_name))
+                
+                # Connect analytics to production VNet and workloads
+                for as_service in analytics_services:
+                    prod_vnet >> as_service
+                    workloads_mg >> as_service
+        
+        # Integration Services
+        if inputs.integration_services:
+            with Cluster("Integration", graph_attr={"bgcolor": "#fff0e6", "style": "rounded"}):
+                integration_services = []
+                for service in inputs.integration_services:
+                    if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                        diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                        service_name = AZURE_SERVICES_MAPPING[service]["name"]
+                        integration_services.append(diagram_class(service_name))
+                
+                # Connect integration services to production VNet and workloads
+                for is_service in integration_services:
+                    prod_vnet >> is_service
+                    workloads_mg >> is_service
+        
+        # DevOps Services  
+        if inputs.devops_services:
+            with Cluster("DevOps & Automation", graph_attr={"bgcolor": "#f5f5f5", "style": "rounded"}):
+                devops_services = []
+                for service in inputs.devops_services:
+                    if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                        diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                        service_name = AZURE_SERVICES_MAPPING[service]["name"]
+                        devops_services.append(diagram_class(service_name))
+                
+                # Connect DevOps services to management
+                for ds in devops_services:
+                    workloads_mg >> ds
+                    
+    except Exception as e:
+        logger.warning(f"Error adding service clusters: {str(e)}")
+        # Don't fail the entire diagram generation for service cluster issues
 
 
 def generate_architecture_template(inputs: CustomerInputs) -> Dict[str, Any]:
@@ -1309,17 +1441,22 @@ def root():
 @app.get("/health")
 def health_check():
     """Enhanced health check that verifies system dependencies"""
+    logger.info("Running health check...")
     status = "healthy"
     issues = []
     
     # Check Graphviz availability
     try:
-        import subprocess
-        result = subprocess.run(['dot', '-V'], capture_output=True, text=True, timeout=5)
+        result = subprocess.run(['dot', '-V'], capture_output=True, text=True, timeout=10)
         if result.returncode != 0:
-            issues.append("Graphviz 'dot' command not available")
+            issues.append(f"Graphviz 'dot' command failed with return code {result.returncode}")
             status = "degraded"
-    except (subprocess.TimeoutExpired, FileNotFoundError):
+        else:
+            logger.info(f"Graphviz check passed: {result.stderr.strip()}")
+    except subprocess.TimeoutExpired:
+        issues.append("Graphviz 'dot' command timed out")
+        status = "degraded"
+    except FileNotFoundError:
         issues.append("Graphviz not installed or not accessible")
         status = "degraded"
     except Exception as e:
@@ -1329,27 +1466,55 @@ def health_check():
     # Check diagrams library
     try:
         from diagrams import Diagram
+        logger.info("Diagrams library import successful")
     except ImportError as e:
         issues.append(f"Diagrams library import failed: {str(e)}")
         status = "unhealthy"
     
-    # Check /tmp directory accessibility
+    # Check output directory accessibility
     try:
-        import tempfile
-        with tempfile.NamedTemporaryFile(dir="/tmp", delete=True):
-            pass
+        output_dir = get_safe_output_directory()
+        logger.info(f"Output directory accessible: {output_dir}")
     except Exception as e:
-        issues.append(f"Cannot write to /tmp directory: {str(e)}")
+        issues.append(f"Cannot access output directory: {str(e)}")
         status = "degraded"
+    
+    # Check available disk space
+    try:
+        import shutil
+        output_dir = get_safe_output_directory()
+        total, used, free = shutil.disk_usage(output_dir)
+        free_mb = free // (1024*1024)
+        if free_mb < 100:  # Less than 100MB free
+            issues.append(f"Low disk space in output directory: {free_mb}MB free")
+            status = "degraded"
+        logger.info(f"Disk space check passed: {free_mb}MB free")
+    except Exception as e:
+        issues.append(f"Cannot check disk space: {str(e)}")
+        status = "degraded"
+    
+    # Test a simple diagram generation
+    try:
+        from main import CustomerInputs
+        test_inputs = CustomerInputs(business_objective="Health check test")
+        # Just validate inputs, don't generate full diagram
+        validate_customer_inputs(test_inputs)
+        logger.info("Input validation test passed")
+    except Exception as e:
+        issues.append(f"Input validation test failed: {str(e)}")
+        status = "degraded"
+    
+    logger.info(f"Health check completed with status: {status}")
     
     return {
         "status": status,
         "timestamp": datetime.now().isoformat(),
         "issues": issues,
         "dependencies": {
-            "graphviz_available": "Graphviz not installed or not accessible" not in [str(issue) for issue in issues],
-            "diagrams_available": "Diagrams library import failed" not in str(issues),
-            "tmp_writable": "Cannot write to /tmp directory" not in str(issues)
+            "graphviz_available": "Graphviz" not in str(issues),
+            "diagrams_available": "Diagrams library" not in str(issues),
+            "output_directory_accessible": "output directory" not in str(issues),
+            "sufficient_disk_space": "disk space" not in str(issues)
         }
     }
 
@@ -1455,26 +1620,43 @@ def generate_drawio_endpoint(inputs: CustomerInputs):
 @app.post("/generate-comprehensive-azure-architecture")
 def generate_comprehensive_azure_architecture(inputs: CustomerInputs):
     """Generate comprehensive Azure architecture with both Draw.io XML and PNG diagram"""
+    logger.info("Starting comprehensive Azure architecture generation")
+    
     try:
+        # Validate inputs early
+        validate_customer_inputs(inputs)
+        logger.info("Input validation completed successfully")
+        
         # Generate Draw.io XML with comprehensive Azure stencils
+        logger.info("Generating Draw.io XML...")
         drawio_xml = generate_enhanced_drawio_xml(inputs)
+        logger.info(f"Draw.io XML generated successfully (size: {len(drawio_xml)} characters)")
         
         # Generate Azure PNG diagram with proper Azure icons
+        logger.info("Generating Azure PNG diagram...")
         diagram_path = generate_azure_architecture_diagram(inputs)
+        logger.info(f"Azure PNG diagram generated successfully: {diagram_path}")
         
         # Read the PNG file
-        with open(diagram_path, "rb") as f:
-            diagram_data = f.read()
-        diagram_base64 = base64.b64encode(diagram_data).decode('utf-8')
+        try:
+            with open(diagram_path, "rb") as f:
+                diagram_data = f.read()
+            diagram_base64 = base64.b64encode(diagram_data).decode('utf-8')
+            logger.info(f"PNG file read and encoded successfully (size: {len(diagram_data)} bytes)")
+        except Exception as e:
+            logger.error(f"Failed to read PNG file {diagram_path}: {e}")
+            raise Exception(f"Failed to read generated PNG file: {str(e)}")
         
         # Generate professional documentation
+        logger.info("Generating professional documentation...")
         docs = generate_professional_documentation(inputs)
+        logger.info("Professional documentation generated successfully")
         
         # Count Azure stencils used
         import re
         shapes = re.findall(r'shape=mxgraph\.azure\.[^;\"\s]*', drawio_xml)
         
-        return {
+        result = {
             "success": True,
             "drawio_xml": drawio_xml,
             "png_diagram_path": diagram_path,
@@ -1496,9 +1678,27 @@ def generate_comprehensive_azure_architecture(inputs: CustomerInputs):
                 "png_size": len(diagram_data)
             }
         }
+        
+        logger.info("Comprehensive Azure architecture generated successfully")
+        return result
+    
+    except ValueError as ve:
+        # Input validation errors
+        error_msg = f"Invalid input: {str(ve)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=400, detail=error_msg)
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error generating comprehensive architecture: {str(e)}")
+        # Log the full error for debugging
+        error_msg = f"Error generating comprehensive architecture: {str(e)}"
+        logger.error(error_msg)
+        logger.error(traceback.format_exc())
+        
+        # Return a user-friendly error
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to generate architecture. Error: {str(e)}"
+        )
 
 @app.get("/templates")
 def get_templates():
