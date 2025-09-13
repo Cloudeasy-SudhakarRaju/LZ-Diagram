@@ -7,7 +7,7 @@ Professional Azure Landing Zone Architecture Generator that creates comprehensiv
 - **Enterprise-Grade Diagrams**: Generate Azure architecture diagrams with official Microsoft Azure icons
 - **Multiple Output Formats**: PNG diagrams with Python Diagrams library and Draw.io XML
 - **Professional Documentation**: Technical Specification Document (TSD), High-Level Design (HLD), and Low-Level Design (LLD)
-- **Architecture Variety**: Support for multiple Azure architecture patterns and templates
+- **Azure Architecture Templates**: Support for multiple Azure Landing Zone patterns
 - **API-Driven**: RESTful API with comprehensive endpoints
 
 ## System Requirements
@@ -80,12 +80,6 @@ Comprehensive health check that verifies system dependencies including Graphviz 
 POST /generate-comprehensive-azure-architecture
 ```
 Generate comprehensive Azure architecture with both Draw.io XML and PNG diagrams.
-
-### Test Architecture Variety
-```bash
-POST /test-architecture-variety
-```
-Generate multiple different architecture patterns to test variety and ensure different diagrams are created.
 
 ## Troubleshooting
 
