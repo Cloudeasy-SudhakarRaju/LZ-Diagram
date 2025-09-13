@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChakraProvider, Box, Heading, VStack, HStack, Button, Select, Text, SimpleGrid, Card, CardHeader, CardBody, Badge, Container, Checkbox, CheckboxGroup, Wrap, WrapItem } from "@chakra-ui/react";
+import { ChakraProvider, Box, Heading, VStack, HStack, Button, Select, Text, SimpleGrid, Card, CardHeader, CardBody, Badge, Container, Checkbox, CheckboxGroup, Wrap, WrapItem, Textarea, Input, useToast, Progress, Alert, AlertIcon, AlertTitle, AlertDescription } from "@chakra-ui/react";
 
 import Mermaid from "./components/Mermaid";
 
@@ -40,6 +40,11 @@ interface FormData {
   integration_services?: string[];
   devops_services?: string[];
   backup_services?: string[];
+  
+  // Enhanced AI Input Fields
+  free_text_input?: string;
+  url_input?: string;
+  uploaded_files_info?: any[];
 }
 
 interface AzureService {
@@ -80,6 +85,10 @@ function App() {
   const [loading, setLoading] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState(0);
   const [services, setServices] = React.useState<ServicesData | null>(null);
+  const [uploadProgress, setUploadProgress] = React.useState(0);
+  const [urlAnalysis, setUrlAnalysis] = React.useState<string>("");
+  const [fileUploadResults, setFileUploadResults] = React.useState<any[]>([]);
+  const toast = useToast();
 
   // Load available Azure services on component mount
   React.useEffect(() => {
@@ -102,6 +111,134 @@ function App() {
   const handleServiceChange = (category: string, selectedServices: string[]) => {
     const categoryField = `${category}_services` as keyof FormData;
     setFormData({ ...formData, [categoryField]: selectedServices });
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    const allowedTypes = ['.pdf', '.xlsx', '.xls', '.pptx', '.ppt'];
+    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+    
+    if (!allowedTypes.includes(fileExtension)) {
+      toast({
+        title: "Unsupported file type",
+        description: `Please upload: ${allowedTypes.join(', ')}`,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      toast({
+        title: "File too large",
+        description: "Maximum file size is 10MB",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
+      setUploadProgress(10);
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+      
+      setUploadProgress(50);
+      const response = await fetch("http://127.0.0.1:8001/upload-file", {
+        method: "POST",
+        body: uploadFormData,
+      });
+      
+      setUploadProgress(80);
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      setUploadProgress(100);
+      
+      setFileUploadResults(prev => [...prev, result]);
+      
+      // Update form data with file info
+      const updatedFiles = [...(formData.uploaded_files_info || []), {
+        filename: result.filename,
+        file_type: result.file_type,
+        analysis: result.analysis
+      }];
+      setFormData(prev => ({ ...prev, uploaded_files_info: updatedFiles }));
+      
+      toast({
+        title: "File uploaded successfully",
+        description: `${result.filename} has been analyzed`,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast({
+        title: "Upload failed",
+        description: "Error uploading file",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setUploadProgress(0);
+      event.target.value = ''; // Reset input
+    }
+  };
+
+  const handleUrlAnalysis = async () => {
+    if (!formData.url_input) {
+      toast({
+        title: "URL required",
+        description: "Please enter a URL to analyze",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch("http://127.0.0.1:8001/analyze-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: formData.url_input }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Analysis failed: ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      setUrlAnalysis(result.analysis);
+      
+      toast({
+        title: "URL analyzed successfully",
+        description: "Analysis results are available",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      
+    } catch (error) {
+      console.error("URL analysis error:", error);
+      toast({
+        title: "Analysis failed",
+        description: "Error analyzing URL",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
 
@@ -240,7 +377,7 @@ function App() {
               <Card>
                 <CardHeader>
                   <Heading size="lg" color="blue.700">
-                    ⚙️ Customer Requirements Input
+                    Customer Requirements Input
                   </Heading>
                 </CardHeader>
                 <CardBody>
@@ -487,6 +624,94 @@ function App() {
                       </SimpleGrid>
                     </Box>
 
+                    {/* Enhanced AI Input Section */}
+                    <Box>
+                      <Heading size="md" color="green.600" mb="4">8. Enhanced AI-Powered Analysis</Heading>
+                      
+                      {/* Free Text Input */}
+                      <Box mb="6">
+                        <Text mb="2" fontWeight="medium">Additional Requirements & Context</Text>
+                        <Text fontSize="sm" color="gray.600" mb="2">
+                          Describe your specific requirements, constraints, or any additional context (unlimited text)
+                        </Text>
+                        <Textarea
+                          placeholder="Enter any additional requirements, current architecture details, specific constraints, business context, or other relevant information that will help our AI provide better recommendations..."
+                          value={formData.free_text_input || ""}
+                          onChange={(e) => handleChange("free_text_input", e.target.value)}
+                          minH="100px"
+                          resize="vertical"
+                        />
+                      </Box>
+
+                      {/* URL Input and Analysis */}
+                      <Box mb="6">
+                        <Text mb="2" fontWeight="medium">URL Analysis</Text>
+                        <Text fontSize="sm" color="gray.600" mb="2">
+                          Provide a URL to analyze for architecture insights (documentation, requirements, etc.)
+                        </Text>
+                        <HStack>
+                          <Input
+                            placeholder="https://example.com/architecture-docs"
+                            value={formData.url_input || ""}
+                            onChange={(e) => handleChange("url_input", e.target.value)}
+                          />
+                          <Button
+                            colorScheme="green"
+                            onClick={handleUrlAnalysis}
+                            disabled={!formData.url_input}
+                          >
+                            Analyze URL
+                          </Button>
+                        </HStack>
+                        {urlAnalysis && (
+                          <Alert status="info" mt="3">
+                            <AlertIcon />
+                            <Box>
+                              <AlertTitle>URL Analysis Complete!</AlertTitle>
+                              <AlertDescription fontSize="sm">
+                                {urlAnalysis.substring(0, 200)}...
+                              </AlertDescription>
+                            </Box>
+                          </Alert>
+                        )}
+                      </Box>
+
+                      {/* File Upload */}
+                      <Box mb="6">
+                        <Text mb="2" fontWeight="medium">Document Upload & Analysis</Text>
+                        <Text fontSize="sm" color="gray.600" mb="2">
+                          Upload documents for AI analysis (PDF, Excel, PowerPoint - max 10MB)
+                        </Text>
+                        <Input
+                          type="file"
+                          accept=".pdf,.xlsx,.xls,.pptx,.ppt"
+                          onChange={handleFileUpload}
+                          bg="white"
+                          border="2px dashed"
+                          borderColor="gray.300"
+                          p="2"
+                        />
+                        {uploadProgress > 0 && (
+                          <Progress value={uploadProgress} colorScheme="green" mt="2" />
+                        )}
+                        {fileUploadResults.length > 0 && (
+                          <VStack mt="3" align="stretch">
+                            {fileUploadResults.map((result, index) => (
+                              <Alert key={index} status="success">
+                                <AlertIcon />
+                                <Box>
+                                  <AlertTitle>File Analyzed: {result.filename}</AlertTitle>
+                                  <AlertDescription fontSize="sm">
+                                    {result.analysis.substring(0, 150)}...
+                                  </AlertDescription>
+                                </Box>
+                              </Alert>
+                            ))}
+                          </VStack>
+                        )}
+                      </Box>
+                    </Box>
+
                     {/* Generate Button */}
                     <VStack spacing="3">
                       <Button
@@ -496,7 +721,7 @@ function App() {
                         onClick={handleSubmit}
                         isLoading={loading}
                       >
-                        🏗️ Generate Azure Landing Zone Architecture
+                        Generate Azure Landing Zone Architecture
                       </Button>
                     </VStack>
                   </VStack>

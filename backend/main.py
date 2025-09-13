@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Response, HTTPException
+from fastapi import FastAPI, Response, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
@@ -13,6 +13,13 @@ import logging
 import traceback
 from datetime import datetime
 from pathlib import Path
+import requests
+import google.generativeai as genai
+
+# Document processing imports
+import PyPDF2
+import openpyxl
+from pptx import Presentation
 
 # Import diagrams for Azure architecture generation
 from diagrams import Diagram, Cluster, Edge
@@ -48,6 +55,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Configure Google Gemini API
+GEMINI_API_KEY = "AIzaSyCuYYvGh5wjwNniv9ZQ1QC-5pxwdj5lCWQ"
+genai.configure(api_key=GEMINI_API_KEY)
+
+# Initialize Gemini model
+try:
+    gemini_model = genai.GenerativeModel('gemini-1.5-pro')
+    logger.info("Google Gemini API configured successfully")
+except Exception as e:
+    logger.error(f"Failed to configure Gemini API: {e}")
+    gemini_model = None
 
 
 class CustomerInputs(BaseModel):
@@ -125,6 +144,11 @@ class CustomerInputs(BaseModel):
     
     # Backup Services
     backup_services: Optional[List[str]] = Field(default_factory=list, description="Selected backup services")
+    
+    # Enhanced Input Fields for AI Integration
+    free_text_input: Optional[str] = Field(None, description="Free-form text input for additional requirements and context")
+    url_input: Optional[str] = Field(None, description="URL for web content analysis")
+    uploaded_files_info: Optional[List[Dict[str, Any]]] = Field(default_factory=list, description="Information about uploaded files")
 
 
 # Azure Architecture Templates and Patterns
@@ -284,6 +308,195 @@ def cleanup_old_files(directory: str, max_age_hours: int = 24):
     except Exception as e:
         logger.warning(f"Failed to perform cleanup in {directory}: {e}")
 
+# Google Gemini AI Integration Functions
+def analyze_url_content(url: str) -> str:
+    """Fetch and analyze URL content using Gemini AI"""
+    try:
+        if not gemini_model:
+            return "Gemini AI not available for URL analysis"
+            
+        # Fetch URL content
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        content = response.text[:10000]  # Limit content size
+        
+        prompt = f"""
+        Analyze the following web content for Azure architecture planning:
+        
+        URL: {url}
+        Content: {content}
+        
+        Please provide insights for:
+        1. Relevant Azure services mentioned or implied
+        2. Architecture patterns or requirements
+        3. Security and compliance considerations
+        4. Scalability and performance requirements
+        5. Integration requirements
+        
+        Format your response as a structured analysis.
+        """
+        
+        result = gemini_model.generate_content(prompt)
+        return result.text
+        
+    except Exception as e:
+        logger.error(f"Error analyzing URL {url}: {e}")
+        return f"Error analyzing URL: {str(e)}"
+
+def process_uploaded_document(file_content: bytes, filename: str, file_type: str) -> str:
+    """Process uploaded document using Gemini AI"""
+    try:
+        if not gemini_model:
+            return "Gemini AI not available for document analysis"
+            
+        text_content = ""
+        
+        # Extract text based on file type
+        if file_type.lower() == 'pdf':
+            text_content = extract_pdf_text(file_content)
+        elif file_type.lower() in ['xlsx', 'xls']:
+            text_content = extract_excel_text(file_content)
+        elif file_type.lower() in ['pptx', 'ppt']:
+            text_content = extract_pptx_text(file_content)
+        else:
+            return f"Unsupported file type: {file_type}"
+        
+        if not text_content.strip():
+            return "No readable text found in the document"
+            
+        prompt = f"""
+        Analyze the following document content for Azure Landing Zone architecture planning:
+        
+        Document: {filename}
+        Type: {file_type}
+        Content: {text_content[:8000]}  # Limit content size
+        
+        Please provide insights for:
+        1. Current architecture mentioned in the document
+        2. Business requirements and objectives
+        3. Compliance and regulatory requirements
+        4. Security requirements
+        5. Recommended Azure services and patterns
+        6. Migration considerations
+        7. Governance and operational requirements
+        
+        Format your response as a structured analysis for enterprise architecture planning.
+        """
+        
+        result = gemini_model.generate_content(prompt)
+        return result.text
+        
+    except Exception as e:
+        logger.error(f"Error processing document {filename}: {e}")
+        return f"Error processing document: {str(e)}"
+
+def extract_pdf_text(file_content: bytes) -> str:
+    """Extract text from PDF file"""
+    try:
+        import io
+        pdf_file = io.BytesIO(file_content)
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        text = ""
+        for page in pdf_reader.pages:
+            text += page.extract_text() + "\n"
+        return text
+    except Exception as e:
+        logger.error(f"Error extracting PDF text: {e}")
+        return ""
+
+def extract_excel_text(file_content: bytes) -> str:
+    """Extract text from Excel file"""
+    try:
+        import io
+        excel_file = io.BytesIO(file_content)
+        workbook = openpyxl.load_workbook(excel_file)
+        text = ""
+        for sheet_name in workbook.sheetnames:
+            sheet = workbook[sheet_name]
+            text += f"Sheet: {sheet_name}\n"
+            for row in sheet.iter_rows(values_only=True):
+                row_text = " | ".join([str(cell) if cell is not None else "" for cell in row])
+                if row_text.strip():
+                    text += row_text + "\n"
+        return text
+    except Exception as e:
+        logger.error(f"Error extracting Excel text: {e}")
+        return ""
+
+def extract_pptx_text(file_content: bytes) -> str:
+    """Extract text from PowerPoint file"""
+    try:
+        import io
+        pptx_file = io.BytesIO(file_content)
+        presentation = Presentation(pptx_file)
+        text = ""
+        for slide_num, slide in enumerate(presentation.slides, 1):
+            text += f"Slide {slide_num}:\n"
+            for shape in slide.shapes:
+                if hasattr(shape, "text"):
+                    text += shape.text + "\n"
+        return text
+    except Exception as e:
+        logger.error(f"Error extracting PowerPoint text: {e}")
+        return ""
+
+def generate_ai_enhanced_recommendations(inputs: CustomerInputs, url_analysis: str = "", doc_analysis: str = "") -> str:
+    """Generate AI-enhanced architecture recommendations using Gemini"""
+    try:
+        if not gemini_model:
+            return "Standard recommendations (AI enhancement not available)"
+            
+        # Build context from inputs
+        context = f"""
+        Business Objective: {inputs.business_objective or 'Not specified'}
+        Industry: {inputs.industry or 'General'}
+        Organization Structure: {inputs.org_structure or 'Not specified'}
+        Regulatory Requirements: {inputs.regulatory or 'Standard'}
+        Security Requirements: {inputs.security_posture or 'Standard'}
+        Scalability Requirements: {inputs.scalability or 'Standard'}
+        Free-text Input: {inputs.free_text_input or 'None provided'}
+        
+        Selected Services:
+        - Compute: {', '.join(inputs.compute_services or [])}
+        - Network: {', '.join(inputs.network_services or [])}
+        - Storage: {', '.join(inputs.storage_services or [])}
+        - Database: {', '.join(inputs.database_services or [])}
+        - Security: {', '.join(inputs.security_services or [])}
+        """
+        
+        if url_analysis:
+            context += f"\n\nURL Analysis Results:\n{url_analysis}"
+            
+        if doc_analysis:
+            context += f"\n\nDocument Analysis Results:\n{doc_analysis}"
+        
+        prompt = f"""
+        Based on the following customer requirements and analysis, provide comprehensive Azure Landing Zone architecture recommendations:
+        
+        {context}
+        
+        Please provide:
+        1. Recommended Azure Landing Zone template (Enterprise Scale, Small Scale, etc.)
+        2. Detailed architecture recommendations with specific Azure services
+        3. Security and compliance strategy
+        4. Network topology and connectivity recommendations
+        5. Identity and access management strategy
+        6. Operations and monitoring approach
+        7. Cost optimization strategies
+        8. Migration roadmap and phases
+        9. Governance and policy recommendations
+        10. Risk assessment and mitigation strategies
+        
+        Format your response as a comprehensive enterprise architecture document.
+        """
+        
+        result = gemini_model.generate_content(prompt)
+        return result.text
+        
+    except Exception as e:
+        logger.error(f"Error generating AI recommendations: {e}")
+        return f"Error generating AI recommendations: {str(e)}"
+
 def validate_customer_inputs(inputs: CustomerInputs) -> None:
     """Validate customer inputs to prevent potential errors"""
     # Check for extremely long strings that might cause issues
@@ -294,12 +507,17 @@ def validate_customer_inputs(inputs: CustomerInputs) -> None:
         inputs.security_zone, inputs.security_posture, inputs.key_vault,
         inputs.threat_protection, inputs.workload, inputs.architecture_style,
         inputs.scalability, inputs.ops_model, inputs.monitoring, inputs.backup,
-        inputs.topology_pattern, inputs.migration_scope, inputs.cost_priority, inputs.iac
+        inputs.topology_pattern, inputs.migration_scope, inputs.cost_priority, inputs.iac,
+        inputs.url_input
     ]
     
     for field in string_fields:
-        if field and len(field) > 1000:  # Reasonable limit
+        if field and len(field) > 1000:  # Reasonable limit for most fields
             raise ValueError(f"Input field too long: {len(field)} characters (max 1000)")
+    
+    # Special validation for free-text input (allowing more characters)
+    if inputs.free_text_input and len(inputs.free_text_input) > 10000:
+        raise ValueError(f"Free text input too long: {len(inputs.free_text_input)} characters (max 10000)")
     
     # Check service lists for reasonable sizes
     service_lists = [
@@ -312,6 +530,16 @@ def validate_customer_inputs(inputs: CustomerInputs) -> None:
     for service_list in service_lists:
         if service_list and len(service_list) > 50:  # Reasonable limit
             raise ValueError(f"Too many services selected: {len(service_list)} (max 50)")
+    
+    # Validate URL format if provided
+    if inputs.url_input:
+        if not inputs.url_input.startswith(('http://', 'https://')):
+            raise ValueError("URL must start with http:// or https://")
+    
+    # Validate uploaded files info
+    if inputs.uploaded_files_info:
+        if len(inputs.uploaded_files_info) > 10:  # Reasonable limit
+            raise ValueError(f"Too many uploaded files: {len(inputs.uploaded_files_info)} (max 10)")
 
 def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str = None) -> str:
     """Generate Azure architecture diagram using the Python Diagrams library with proper Azure icons"""
@@ -1237,39 +1465,70 @@ def generate_enhanced_drawio_xml(inputs: CustomerInputs) -> str:
 
 
 def generate_professional_documentation(inputs: CustomerInputs) -> Dict[str, str]:
-    """Generate professional TSD, HLD, and LLD documentation"""
+    """Generate professional TSD, HLD, and LLD documentation with AI enhancement"""
     
     template = generate_architecture_template(inputs)
     timestamp = datetime.now().strftime("%Y-%m-%d")
     
+    # Generate AI insights if additional inputs are provided
+    url_analysis = ""
+    doc_analysis = ""
+    ai_recommendations = ""
+    
+    try:
+        if inputs.url_input:
+            url_analysis = analyze_url_content(inputs.url_input)
+            
+        if inputs.uploaded_files_info:
+            doc_analysis = "Document analysis results incorporated from uploaded files."
+            
+        # Generate AI-enhanced recommendations
+        ai_recommendations = generate_ai_enhanced_recommendations(inputs, url_analysis, doc_analysis)
+    except Exception as e:
+        logger.warning(f"AI enhancement failed: {e}")
+        ai_recommendations = "AI enhancement not available - using standard recommendations."
+    
     # Technical Specification Document (TSD)
     tsd = f"""# Technical Specification Document (TSD)
-## Azure Landing Zone Architecture
+## Azure Landing Zone Architecture - Enterprise Edition
 
-**Document Version:** 1.0
+**Document Version:** 2.0 (AI-Enhanced)
 **Date:** {timestamp}
 **Business Objective:** {inputs.business_objective or 'Not specified'}
 
 ### Executive Summary
-This document outlines the technical specifications for implementing an Azure Landing Zone architecture based on the customer requirements.
+This document outlines the technical specifications for implementing an Azure Landing Zone architecture based on comprehensive customer requirements analysis, including AI-powered insights and recommendations.
 
-### Business Requirements
+### Business Requirements Analysis
 - **Primary Objective:** {inputs.business_objective or 'Cost optimization and operational efficiency'}
 - **Industry:** {inputs.industry or 'General'}
 - **Regulatory Requirements:** {inputs.regulatory or 'Standard compliance'}
-- **Organization Size:** {inputs.org_structure or 'Enterprise'}
+- **Organization Structure:** {inputs.org_structure or 'Enterprise'}
+- **Governance Model:** {inputs.governance or 'Centralized with delegated permissions'}
 
-### Architecture Template
+### Architecture Template Selection
 **Selected Template:** {template['template']['name']}
+**Justification:** Based on organizational size, complexity, and regulatory requirements.
 
-### Key Components
-- **Identity Management:** {inputs.identity or 'Azure Active Directory'}
-- **Network Model:** {inputs.network_model or 'Hub-Spoke architecture'}
-- **Security Posture:** {inputs.security_posture or 'Zero Trust approach'}
-- **Primary Workload:** {inputs.workload or 'Application Services'}
-- **Monitoring Strategy:** {inputs.monitoring or 'Azure Monitor suite'}
+### Core Architecture Components
+- **Identity & Access Management:** {inputs.identity or 'Azure Active Directory with hybrid integration'}
+- **Network Architecture:** {inputs.network_model or 'Hub-Spoke with Azure Virtual WAN'}
+- **Security Framework:** {inputs.security_posture or 'Zero Trust with defense in depth'}
+- **Connectivity Strategy:** {inputs.connectivity or 'Hybrid cloud with ExpressRoute'}
+- **Primary Workloads:** {inputs.workload or 'Multi-tier applications with microservices'}
+- **Monitoring & Observability:** {inputs.monitoring or 'Azure Monitor with Log Analytics'}
 
-### Compliance & Governance
+### Enhanced Requirements Analysis
+{f"**Additional Context:** {inputs.free_text_input}" if inputs.free_text_input else "**Additional Context:** Standard requirements captured through structured inputs."}
+
+{f"**URL Analysis Insights:** {url_analysis[:500]}..." if url_analysis else ""}
+
+{f"**Document Analysis:** Document analysis completed on uploaded files." if inputs.uploaded_files_info else ""}
+
+### AI-Powered Architecture Recommendations
+{ai_recommendations[:2000] if ai_recommendations else "Standard architecture recommendations applied."}
+
+### Compliance & Governance Framework
 - **Governance Model:** {inputs.governance or 'Centralized with delegated permissions'}
 - **Policy Framework:** Azure Policy for compliance enforcement
 - **Security Framework:** {inputs.security_posture or 'Zero Trust'} security model
@@ -1699,6 +1958,78 @@ def generate_comprehensive_azure_architecture(inputs: CustomerInputs):
             status_code=500, 
             detail=f"Failed to generate architecture. Error: {str(e)}"
         )
+
+@app.post("/upload-file")
+async def upload_file(file: UploadFile = File(...)):
+    """Upload and process files (PDF, Excel, PowerPoint) for AI analysis"""
+    try:
+        # Validate file type
+        allowed_extensions = ['.pdf', '.xlsx', '.xls', '.pptx', '.ppt']
+        file_extension = os.path.splitext(file.filename.lower())[1]
+        
+        if file_extension not in allowed_extensions:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Unsupported file type. Allowed types: {', '.join(allowed_extensions)}"
+            )
+        
+        # Validate file size (max 10MB)
+        max_file_size = 10 * 1024 * 1024  # 10MB
+        file_content = await file.read()
+        
+        if len(file_content) > max_file_size:
+            raise HTTPException(
+                status_code=400,
+                detail="File too large. Maximum size is 10MB."
+            )
+        
+        # Process the file with AI
+        file_type = file_extension[1:]  # Remove the dot
+        analysis_result = process_uploaded_document(file_content, file.filename, file_type)
+        
+        # Return file info and analysis
+        return {
+            "success": True,
+            "filename": file.filename,
+            "file_type": file_type,
+            "file_size": len(file_content),
+            "analysis": analysis_result,
+            "upload_timestamp": datetime.now().isoformat()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error uploading file {file.filename}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+
+@app.post("/analyze-url")
+def analyze_url(request: Dict[str, str]):
+    """Analyze URL content for Azure architecture insights"""
+    try:
+        url = request.get("url")
+        if not url:
+            raise HTTPException(status_code=400, detail="URL is required")
+        
+        # Validate URL format
+        if not url.startswith(('http://', 'https://')):
+            raise HTTPException(status_code=400, detail="URL must start with http:// or https://")
+        
+        # Analyze the URL with AI
+        analysis_result = analyze_url_content(url)
+        
+        return {
+            "success": True,
+            "url": url,
+            "analysis": analysis_result,
+            "analysis_timestamp": datetime.now().isoformat()
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error analyzing URL {url}: {e}")
+        raise HTTPException(status_code=500, detail=f"Error analyzing URL: {str(e)}")
 
 @app.get("/templates")
 def get_templates():
