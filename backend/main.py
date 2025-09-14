@@ -725,6 +725,152 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
         logger.error(traceback.format_exc())
         raise
 
+def generate_simple_svg_diagram(inputs: CustomerInputs) -> str:
+    """Generate a simple SVG diagram as fallback when Python Diagrams fails"""
+    
+    template = generate_architecture_template(inputs)
+    template_name = template['template']['name']
+    
+    # Create a simple SVG representation
+    svg_width = 800
+    svg_height = 600
+    
+    svg_content = f'''<svg width="{svg_width}" height="{svg_height}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            .title {{ font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; fill: #0078d4; }}
+            .group-title {{ font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #323130; }}
+            .service {{ font-family: Arial, sans-serif; font-size: 12px; fill: #605e5c; }}
+            .mgmt-group {{ fill: #e1f5fe; stroke: #0078d4; stroke-width: 2; }}
+            .subscription {{ fill: #f3e5f5; stroke: #6b69d6; stroke-width: 2; }}
+            .service-box {{ fill: #fff3e0; stroke: #d83b01; stroke-width: 1; cursor: pointer; }}
+            .service-box:hover {{ fill: #ffebdd; }}
+            .network-box {{ fill: #e8f5e8; stroke: #107c10; stroke-width: 1; cursor: pointer; }}
+            .network-box:hover {{ fill: #f3fdf3; }}
+            .security-box {{ fill: #ffebee; stroke: #d13438; stroke-width: 1; cursor: pointer; }}
+            .security-box:hover {{ fill: #fdf3f4; }}
+        </style>
+    </defs>
+    
+    <!-- Background -->
+    <rect width="100%" height="100%" fill="#f8f9fa"/>
+    
+    <!-- Title -->
+    <text x="400" y="30" class="title" text-anchor="middle">Azure Landing Zone - {template_name}</text>
+    
+    <!-- Azure Tenant Container -->
+    <rect x="50" y="60" width="700" height="520" fill="none" stroke="#0078d4" stroke-width="3" stroke-dasharray="5,5"/>
+    <text x="60" y="80" class="group-title">Azure Tenant</text>
+    
+    <!-- Management Groups -->
+    <rect x="70" y="100" width="200" height="150" class="mgmt-group" rx="5"/>
+    <text x="80" y="120" class="group-title">Management Groups</text>
+    
+    <!-- Management Group Items -->
+    <rect x="80" y="130" width="80" height="30" class="service-box" rx="3"/>
+    <text x="120" y="149" class="service" text-anchor="middle">Root MG</text>
+    
+    <rect x="170" y="130" width="80" height="30" class="service-box" rx="3"/>
+    <text x="210" y="149" class="service" text-anchor="middle">Platform</text>
+    
+    <rect x="80" y="170" width="80" height="30" class="service-box" rx="3"/>
+    <text x="120" y="189" class="service" text-anchor="middle">Landing Zones</text>
+    
+    <rect x="170" y="170" width="80" height="30" class="service-box" rx="3"/>
+    <text x="210" y="189" class="service" text-anchor="middle">Sandbox</text>
+    
+    <!-- Subscriptions -->
+    <rect x="290" y="100" width="200" height="150" class="subscription" rx="5"/>
+    <text x="300" y="120" class="group-title">Subscriptions</text>
+    
+    <!-- Subscription Items -->
+    <rect x="300" y="130" width="80" height="30" class="service-box" rx="3"/>
+    <text x="340" y="149" class="service" text-anchor="middle">Connectivity</text>
+    
+    <rect x="390" y="130" width="80" height="30" class="service-box" rx="3"/>
+    <text x="430" y="149" class="service" text-anchor="middle">Identity</text>
+    
+    <rect x="300" y="170" width="80" height="30" class="service-box" rx="3"/>
+    <text x="340" y="189" class="service" text-anchor="middle">Production</text>
+    
+    <rect x="390" y="170" width="80" height="30" class="service-box" rx="3"/>
+    <text x="430" y="189" class="service" text-anchor="middle">Development</text>
+    
+    <!-- Network Architecture -->
+    <rect x="520" y="100" width="200" height="150" class="network-box" rx="5"/>
+    <text x="530" y="120" class="group-title">Network Architecture</text>
+    
+    <rect x="530" y="130" width="80" height="30" class="network-box" rx="3"/>
+    <text x="570" y="149" class="service" text-anchor="middle">Hub VNet</text>
+    
+    <rect x="620" y="130" width="80" height="30" class="network-box" rx="3"/>
+    <text x="660" y="149" class="service" text-anchor="middle">Spoke VNet</text>'''
+    
+    # Add selected services
+    y_offset = 280
+    if inputs.compute_services:
+        svg_content += f'''
+    <!-- Compute Services -->
+    <rect x="70" y="{y_offset}" width="300" height="80" class="service-box" rx="5"/>
+    <text x="80" y="{y_offset + 20}" class="group-title">Compute Services</text>'''
+        
+        x_pos = 80
+        for i, service in enumerate(inputs.compute_services[:4]):  # Max 4 services
+            service_name = service.replace('_', ' ').title()
+            svg_content += f'''
+    <rect x="{x_pos}" y="{y_offset + 30}" width="60" height="25" class="service-box" rx="3"/>
+    <text x="{x_pos + 30}" y="{y_offset + 47}" class="service" text-anchor="middle" font-size="10">{service_name[:8]}</text>'''
+            x_pos += 70
+    
+    if inputs.network_services:
+        svg_content += f'''
+    <!-- Network Services -->
+    <rect x="390" y="{y_offset}" width="300" height="80" class="network-box" rx="5"/>
+    <text x="400" y="{y_offset + 20}" class="group-title">Network Services</text>'''
+        
+        x_pos = 400
+        for i, service in enumerate(inputs.network_services[:4]):  # Max 4 services
+            service_name = service.replace('_', ' ').title()
+            svg_content += f'''
+    <rect x="{x_pos}" y="{y_offset + 30}" width="60" height="25" class="network-box" rx="3"/>
+    <text x="{x_pos + 30}" y="{y_offset + 47}" class="service" text-anchor="middle" font-size="10">{service_name[:8]}</text>'''
+            x_pos += 70
+    
+    # Security Services
+    y_offset += 100
+    svg_content += f'''
+    <!-- Security & Identity -->
+    <rect x="70" y="{y_offset}" width="620" height="80" class="security-box" rx="5"/>
+    <text x="80" y="{y_offset + 20}" class="group-title">Security & Identity Services</text>
+    
+    <rect x="80" y="{y_offset + 30}" width="100" height="25" class="security-box" rx="3"/>
+    <text x="130" y="{y_offset + 47}" class="service" text-anchor="middle">Azure AD</text>
+    
+    <rect x="190" y="{y_offset + 30}" width="100" height="25" class="security-box" rx="3"/>
+    <text x="240" y="{y_offset + 47}" class="service" text-anchor="middle">Key Vault</text>
+    
+    <rect x="300" y="{y_offset + 30}" width="100" height="25" class="security-box" rx="3"/>
+    <text x="350" y="{y_offset + 47}" class="service" text-anchor="middle">Security Center</text>'''
+    
+    # Add connections
+    svg_content += '''
+    <!-- Connections -->
+    <line x1="170" y1="145" x2="290" y2="145" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="390" y1="145" x2="520" y2="145" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- Arrow marker -->
+    <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+        </marker>
+    </defs>
+    
+    <!-- Footer -->
+    <text x="400" y="570" class="service" text-anchor="middle" fill="#8a8886">Generated by Azure Landing Zone Agent - Interactive Mode</text>
+</svg>'''
+    
+    return svg_content
+
 def _add_service_clusters(inputs: CustomerInputs, prod_vnet, workloads_mg):
     """Helper method to add service clusters to avoid code duplication"""
     try:
@@ -2003,19 +2149,25 @@ def generate_interactive_azure_architecture(inputs: CustomerInputs):
         
         # Generate Azure SVG diagram with proper Azure icons
         logger.info("Generating Azure SVG diagram...")
-        svg_diagram_path = generate_azure_architecture_diagram(inputs, format="svg")
-        logger.info(f"Azure SVG diagram generated successfully: {svg_diagram_path}")
-        
-        # Read the SVG file
         svg_content = ""
+        svg_diagram_path = ""
+        
         try:
+            svg_diagram_path = generate_azure_architecture_diagram(inputs, format="svg")
+            # Read the SVG file
             with open(svg_diagram_path, "r", encoding="utf-8") as f:
                 svg_content = f.read()
-            logger.info(f"SVG file read successfully (size: {len(svg_content)} characters)")
-        except Exception as e:
-            logger.error(f"Failed to read SVG file {svg_diagram_path}: {e}")
-            # Fallback to Mermaid only if SVG fails
-            logger.warning("Falling back to Mermaid diagram only")
+            logger.info(f"Azure SVG diagram generated successfully: {svg_diagram_path}")
+        except Exception as svg_error:
+            logger.warning(f"SVG generation failed, using fallback: {str(svg_error)}")
+            # Fallback: Create a simple SVG representation of the architecture
+            svg_content = generate_simple_svg_diagram(inputs)
+            logger.info("Using simple SVG fallback diagram")
+        
+        if svg_content:
+            logger.info(f"SVG content ready (size: {len(svg_content)} characters)")
+        else:
+            logger.warning("No SVG content available, falling back to Mermaid only")
         
         # Generate Draw.io XML for compatibility
         logger.info("Generating Draw.io XML...")
