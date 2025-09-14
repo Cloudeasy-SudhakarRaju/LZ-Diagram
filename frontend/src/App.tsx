@@ -2,6 +2,7 @@ import * as React from "react";
 import { ChakraProvider, Box, Heading, VStack, HStack, Button, Select, Text, SimpleGrid, Card, CardHeader, CardBody, Badge, Container, Checkbox, CheckboxGroup, Wrap, WrapItem, Textarea, Input, useToast, Progress, Alert, AlertIcon, AlertTitle, AlertDescription } from "@chakra-ui/react";
 
 import Mermaid from "./components/Mermaid";
+import InteractiveSVGViewer from "./components/InteractiveSVGViewer";
 
 interface FormData {
   business_objective?: string;
@@ -62,12 +63,20 @@ interface ServicesData {
 interface Results {
   success: boolean;
   mermaid: string;
-  drawio: string;
+  drawio?: string;
+  drawio_xml?: string;
+  svg_diagram?: string;
+  svg_diagram_path?: string;
   tsd: string;
   hld: string;
   lld: string;
   architecture_template: any;
   metadata: any;
+  azure_stencils?: {
+    total_used: number;
+    unique_used: number;
+    stencils_list: string[];
+  };
   azure_diagram?: {
     png_base64: string;
     png_path: string;
@@ -245,8 +254,8 @@ function App() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      // Use the comprehensive Azure architecture endpoint for better results
-      const res = await fetch("http://127.0.0.1:8001/generate-comprehensive-azure-architecture", {
+      // Use the new interactive Azure architecture endpoint for better results
+      const res = await fetch("http://127.0.0.1:8001/generate-interactive-azure-architecture", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -259,25 +268,23 @@ function App() {
       const data = await res.json();
       
       if (data.success) {
-        // Transform the comprehensive data to match the existing interface
+        // Transform the interactive data to match the interface
         const transformedData = {
           success: true,
-          mermaid: "", // We'll generate this from the architecture template
-          drawio: data.drawio_xml,
+          mermaid: data.mermaid,
+          drawio_xml: data.drawio_xml,
+          svg_diagram: data.svg_diagram,
+          svg_diagram_path: data.svg_diagram_path,
           tsd: data.tsd,
           hld: data.hld,
           lld: data.lld,
           architecture_template: data.architecture_template,
           metadata: data.metadata,
-          azure_diagram: {
-            png_base64: data.png_diagram_base64,
-            png_path: data.png_diagram_path,
-            azure_stencils: data.azure_stencils
-          }
+          azure_stencils: data.azure_stencils
         };
         
         setResults(transformedData);
-        alert(`Architecture Generated Successfully! Using ${data.azure_stencils.unique_used} unique Azure stencils.`);
+        alert(`Interactive Architecture Generated Successfully! Using ${data.azure_stencils.unique_used} unique Azure stencils.`);
       } else {
         throw new Error("Failed to generate architecture");
       }
@@ -745,37 +752,39 @@ function App() {
                         >
                           📥 Download Draw.io
                         </Button>
-                        {results.azure_diagram && (
-                          <Button
-                            onClick={() => downloadPNG(results.azure_diagram!.png_base64)}
-                            colorScheme="green"
-                            variant="outline"
-                            size="sm"
-                          >
-                            🖼️ Download PNG
-                          </Button>
-                        )}
+                        <Button
+                          onClick={() => window.open(results.svg_diagram_path, '_blank')}
+                          colorScheme="green"
+                          variant="outline"
+                          size="sm"
+                          isDisabled={!results.svg_diagram_path}
+                        >
+                          📊 View SVG File
+                        </Button>
                       </HStack>
                     </HStack>
                   </CardHeader>
                   <CardBody>
                     <VStack gap="4" align="stretch">
                       <Box p="3" bg="green.50" borderRadius="md" borderLeft="4px solid" borderColor="green.500">
-                        <Text fontWeight="bold" color="green.800">Azure Architecture Generated Successfully!</Text>
+                        <Text fontWeight="bold" color="green.800">Interactive Azure Architecture Generated Successfully!</Text>
                         <Text fontSize="sm" color="green.600">
                           Template: {results.architecture_template?.template?.name}
                         </Text>
-                        {results.azure_diagram && (
+                        {results.azure_stencils && (
                           <Text fontSize="sm" color="green.600">
-                            Azure Stencils: {results.azure_diagram.azure_stencils.unique_used} unique stencils used
+                            Azure Stencils: {results.azure_stencils.unique_used} unique stencils used
                           </Text>
                         )}
+                        <Text fontSize="sm" color="blue.600">
+                          🎯 New: Interactive diagram with zoom, pan, and click functionality!
+                        </Text>
                       </Box>
 
                       {/* Tab Navigation */}
                       <Box>
                         <HStack mb="4" borderBottom="1px solid" borderColor="gray.200">
-                          {["Diagram", "Azure PNG", "TSD", "HLD", "LLD"].map((tab, index) => (
+                          {["Diagram", "Interactive Azure", "TSD", "HLD", "LLD"].map((tab, index) => (
                             <Button
                               key={tab}
                               variant={activeTab === index ? "solid" : "ghost"}
@@ -806,28 +815,15 @@ function App() {
                           </Box>
                         )}
 
-                        {activeTab === 1 && results.azure_diagram && (
+                        {activeTab === 1 && results.svg_diagram && (
                           <Box>
-                            <Heading size="md" mb="4">🎨 Azure Architecture Diagram (Professional)</Heading>
-                            <Text fontSize="sm" color="green.600" mb="4">
-                              Generated with {results.azure_diagram.azure_stencils.unique_used} unique Azure stencils
+                            <InteractiveSVGViewer 
+                              svgContent={results.svg_diagram}
+                              title={`Azure Architecture - ${results.architecture_template?.template?.name || 'Professional'}`}
+                            />
+                            <Text fontSize="sm" color="green.600" mt="2" textAlign="center">
+                              ✨ Generated with {results.azure_stencils?.unique_used || 0} unique Azure stencils
                             </Text>
-                            <Box 
-                              border="1px solid" 
-                              borderColor="gray.200" 
-                              borderRadius="md" 
-                              p="4" 
-                              bg="white"
-                              maxH="600px"
-                              overflowY="auto"
-                              textAlign="center"
-                            >
-                              <img 
-                                src={`data:image/png;base64,${results.azure_diagram.png_base64}`}
-                                alt="Azure Architecture Diagram"
-                                style={{ maxWidth: "100%", height: "auto" }}
-                              />
-                            </Box>
                           </Box>
                         )}
 

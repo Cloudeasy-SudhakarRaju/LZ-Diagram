@@ -541,7 +541,7 @@ def validate_customer_inputs(inputs: CustomerInputs) -> None:
         if len(inputs.uploaded_files_info) > 10:  # Reasonable limit
             raise ValueError(f"Too many uploaded files: {len(inputs.uploaded_files_info)} (max 10)")
 
-def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str = None) -> str:
+def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str = None, format: str = "png") -> str:
     """Generate Azure architecture diagram using the Python Diagrams library with proper Azure icons"""
     
     logger.info("Starting Azure architecture diagram generation")
@@ -684,14 +684,41 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
             logger.error(traceback.format_exc())
             raise Exception(f"Error generating Azure architecture diagram: {str(e)}")
         
-        # Return the file path of the generated PNG
-        png_path = f"{filepath}.png"
-        if os.path.exists(png_path):
-            file_size = os.path.getsize(png_path)
-            logger.info(f"Diagram generated successfully: {png_path} (size: {file_size} bytes)")
-            return png_path
+        # Return the file path of the generated diagram
+        if format.lower() == "svg":
+            # Generate SVG using dot command
+            dot_path = f"{filepath}.gv"
+            svg_path = f"{filepath}.svg"
+            
+            if os.path.exists(dot_path):
+                try:
+                    # Convert dot file to SVG
+                    result = subprocess.run(['dot', '-Tsvg', dot_path, '-o', svg_path], 
+                                          capture_output=True, text=True, timeout=30)
+                    if result.returncode != 0:
+                        raise Exception(f"SVG generation failed: {result.stderr}")
+                    
+                    if os.path.exists(svg_path):
+                        file_size = os.path.getsize(svg_path)
+                        logger.info(f"SVG diagram generated successfully: {svg_path} (size: {file_size} bytes)")
+                        return svg_path
+                    else:
+                        raise Exception(f"SVG generation failed - file not found: {svg_path}")
+                except subprocess.TimeoutExpired:
+                    raise Exception("SVG generation timed out")
+                except Exception as e:
+                    raise Exception(f"Failed to generate SVG: {str(e)}")
+            else:
+                raise Exception(f"Dot file not found: {dot_path}")
         else:
-            raise Exception(f"Diagram generation failed - PNG file not found: {png_path}")
+            # Default PNG generation
+            png_path = f"{filepath}.png"
+            if os.path.exists(png_path):
+                file_size = os.path.getsize(png_path)
+                logger.info(f"Diagram generated successfully: {png_path} (size: {file_size} bytes)")
+                return png_path
+            else:
+                raise Exception(f"Diagram generation failed - PNG file not found: {png_path}")
             
     except Exception as e:
         logger.error(f"Failed to generate Azure architecture diagram: {str(e)}")
@@ -1957,6 +1984,97 @@ def generate_comprehensive_azure_architecture(inputs: CustomerInputs):
         raise HTTPException(
             status_code=500, 
             detail=f"Failed to generate architecture. Error: {str(e)}"
+        )
+
+@app.post("/generate-interactive-azure-architecture")
+def generate_interactive_azure_architecture(inputs: CustomerInputs):
+    """Generate interactive Azure architecture with SVG diagram for web display"""
+    logger.info("Starting interactive Azure architecture generation")
+    
+    try:
+        # Validate inputs early
+        validate_customer_inputs(inputs)
+        logger.info("Input validation completed successfully")
+        
+        # Generate Mermaid diagram
+        logger.info("Generating Mermaid diagram...")
+        mermaid_diagram = generate_professional_mermaid(inputs)
+        logger.info("Mermaid diagram generated successfully")
+        
+        # Generate Azure SVG diagram with proper Azure icons
+        logger.info("Generating Azure SVG diagram...")
+        svg_diagram_path = generate_azure_architecture_diagram(inputs, format="svg")
+        logger.info(f"Azure SVG diagram generated successfully: {svg_diagram_path}")
+        
+        # Read the SVG file
+        svg_content = ""
+        try:
+            with open(svg_diagram_path, "r", encoding="utf-8") as f:
+                svg_content = f.read()
+            logger.info(f"SVG file read successfully (size: {len(svg_content)} characters)")
+        except Exception as e:
+            logger.error(f"Failed to read SVG file {svg_diagram_path}: {e}")
+            # Fallback to Mermaid only if SVG fails
+            logger.warning("Falling back to Mermaid diagram only")
+        
+        # Generate Draw.io XML for compatibility
+        logger.info("Generating Draw.io XML...")
+        drawio_xml = generate_enhanced_drawio_xml(inputs)
+        logger.info(f"Draw.io XML generated successfully (size: {len(drawio_xml)} characters)")
+        
+        # Generate professional documentation
+        logger.info("Generating professional documentation...")
+        docs = generate_professional_documentation(inputs)
+        logger.info("Professional documentation generated successfully")
+        
+        # Count Azure stencils used in Draw.io XML
+        import re
+        shapes = re.findall(r'shape=mxgraph\.azure\.[^;\"\s]*', drawio_xml)
+        
+        result = {
+            "success": True,
+            "mermaid": mermaid_diagram,
+            "svg_diagram": svg_content,
+            "svg_diagram_path": svg_diagram_path,
+            "drawio_xml": drawio_xml,
+            "tsd": docs["tsd"],
+            "hld": docs["hld"],
+            "lld": docs["lld"],
+            "architecture_template": generate_architecture_template(inputs),
+            "azure_stencils": {
+                "total_used": len(shapes),
+                "unique_used": len(set(shapes)),
+                "stencils_list": sorted(list(set(shapes)))
+            },
+            "metadata": {
+                "generated_at": datetime.now().isoformat(),
+                "version": "1.0.0",
+                "agent": "Azure Landing Zone Agent - Interactive Generator",
+                "diagram_format": "SVG with Azure official icons",
+                "svg_size": len(svg_content),
+                "drawio_size": len(drawio_xml)
+            }
+        }
+        
+        logger.info("Interactive Azure architecture generated successfully")
+        return result
+    
+    except ValueError as ve:
+        # Input validation errors
+        error_msg = f"Invalid input: {str(ve)}"
+        logger.error(error_msg)
+        raise HTTPException(status_code=400, detail=error_msg)
+    
+    except Exception as e:
+        # Log the full error for debugging
+        error_msg = f"Error generating interactive architecture: {str(e)}"
+        logger.error(error_msg)
+        logger.error(traceback.format_exc())
+        
+        # Return a user-friendly error
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to generate interactive architecture. Error: {str(e)}"
         )
 
 @app.post("/upload-file")
