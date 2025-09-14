@@ -86,6 +86,11 @@ interface Results {
       stencils_list: string[];
     };
   };
+  feedback_questions?: string[];
+  ai_analysis?: {
+    services_used: string[];
+    reasoning: string;
+  };
 }
 
 function App() {
@@ -97,6 +102,9 @@ function App() {
   const [uploadProgress, setUploadProgress] = React.useState(0);
   const [urlAnalysis, setUrlAnalysis] = React.useState<string>("");
   const [fileUploadResults, setFileUploadResults] = React.useState<any[]>([]);
+  const [showFeedbackQuestions, setShowFeedbackQuestions] = React.useState(false);
+  const [feedbackAnswers, setFeedbackAnswers] = React.useState<Record<string, string>>({});
+  const [aiSuggestedServices, setAiSuggestedServices] = React.useState<any[]>([]);
   const toast = useToast();
 
   // Load available Azure services on component mount
@@ -280,11 +288,25 @@ function App() {
           lld: data.lld,
           architecture_template: data.architecture_template,
           metadata: data.metadata,
-          azure_stencils: data.azure_stencils
+          azure_stencils: data.azure_stencils,
+          feedback_questions: data.feedback_questions,
+          ai_analysis: data.ai_analysis
         };
         
         setResults(transformedData);
-        alert(`Interactive Architecture Generated Successfully! Using ${data.azure_stencils.unique_used} unique Azure stencils.`);
+        
+        // Show feedback questions if available
+        if (data.feedback_questions && data.feedback_questions.length > 0) {
+          setShowFeedbackQuestions(true);
+        }
+        
+        let alertMessage = `Interactive Architecture Generated Successfully! Using ${data.azure_stencils.unique_used} unique Azure stencils.`;
+        
+        if (data.ai_analysis && data.ai_analysis.services_used.length > 0) {
+          alertMessage += `\n\nAI Analysis: Selected ${data.ai_analysis.services_used.length} services based on your requirements.`;
+        }
+        
+        alert(alertMessage);
       } else {
         throw new Error("Failed to generate architecture");
       }
@@ -293,6 +315,53 @@ function App() {
       alert("Error: Failed to generate architecture. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const validateAIServiceSelection = async () => {
+    if (!formData.free_text_input) {
+      toast({
+        title: "No requirements specified",
+        description: "Please enter your requirements in the Additional Requirements field",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch("http://127.0.0.1:8001/validate-ai-service-selection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ free_text_input: formData.free_text_input }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setAiSuggestedServices(data.suggested_services);
+        toast({
+          title: "AI Service Analysis Complete",
+          description: `Found ${data.suggested_services.length} services that match your requirements`,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error("AI validation error:", error);
+      toast({
+        title: "Analysis failed",
+        description: "Error analyzing your requirements",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -732,7 +801,47 @@ function App() {
                           minH="100px"
                           resize="vertical"
                         />
+                        <HStack mt="2">
+                          <Button
+                            size="sm"
+                            colorScheme="blue"
+                            variant="outline"
+                            onClick={validateAIServiceSelection}
+                            isDisabled={!formData.free_text_input}
+                          >
+                            🤖 Analyze Requirements
+                          </Button>
+                          <Text fontSize="xs" color="gray.500">
+                            Let AI suggest the right services for your needs
+                          </Text>
+                        </HStack>
                       </Box>
+
+                      {/* AI Suggested Services */}
+                      {aiSuggestedServices.length > 0 && (
+                        <Box mb="6" p="4" bg="blue.50" borderRadius="md" border="1px solid" borderColor="blue.200">
+                          <Text fontWeight="bold" color="blue.800" mb="3">
+                            🤖 AI Suggested Services Based on Your Requirements
+                          </Text>
+                          <VStack align="stretch" spacing="2">
+                            {aiSuggestedServices.map((service, index) => (
+                              <Alert key={index} status="info" variant="left-accent">
+                                <AlertIcon />
+                                <Box>
+                                  <AlertTitle>{service.name}</AlertTitle>
+                                  <AlertDescription fontSize="sm">
+                                    {service.reasoning}
+                                  </AlertDescription>
+                                </Box>
+                              </Alert>
+                            ))}
+                          </VStack>
+                          <Text fontSize="sm" color="blue.600" mt="3">
+                            These services will be automatically included when you generate the architecture.
+                            You can still manually select additional services above if needed.
+                          </Text>
+                        </Box>
+                      )}
 
                       {/* URL Input and Analysis */}
                       <Box mb="6">
@@ -856,15 +965,7 @@ function App() {
                         >
                           📥 Download Draw.io
                         </Button>
-                        <Button
-                          onClick={() => window.open(results.svg_diagram_path, '_blank')}
-                          colorScheme="orange"
-                          variant="outline"
-                          size="sm"
-                          isDisabled={!results.svg_diagram_path}
-                        >
-                          📊 View SVG File
-                        </Button>
+
                       </HStack>
                     </HStack>
                   </CardHeader>
@@ -883,7 +984,69 @@ function App() {
                         <Text fontSize="sm" color="blue.600">
                           🎯 New: Interactive diagram with zoom, pan, and click functionality!
                         </Text>
+                        {results.ai_analysis && results.ai_analysis.services_used.length > 0 && (
+                          <Text fontSize="sm" color="purple.600">
+                            🤖 AI Analysis: {results.ai_analysis.services_used.length} services selected based on your requirements
+                          </Text>
+                        )}
                       </Box>
+
+                      {/* Human-in-the-loop Feedback Questions */}
+                      {results.feedback_questions && results.feedback_questions.length > 0 && showFeedbackQuestions && (
+                        <Box p="4" bg="orange.50" borderRadius="md" border="1px solid" borderColor="orange.200" mb="4">
+                          <Text fontWeight="bold" color="orange.800" mb="3">
+                            🤔 Help Us Improve Your Architecture
+                          </Text>
+                          <Text fontSize="sm" color="orange.700" mb="4">
+                            To generate an even better architecture, please answer these quick questions:
+                          </Text>
+                          <VStack align="stretch" spacing="3">
+                            {results.feedback_questions.map((question, index) => (
+                              <Box key={index}>
+                                <Text fontSize="sm" fontWeight="medium" mb="2">{question}</Text>
+                                <Textarea
+                                  placeholder="Your answer..."
+                                  value={feedbackAnswers[question] || ""}
+                                  onChange={(e) => setFeedbackAnswers(prev => ({
+                                    ...prev,
+                                    [question]: e.target.value
+                                  }))}
+                                  size="sm"
+                                  resize="vertical"
+                                  minH="60px"
+                                />
+                              </Box>
+                            ))}
+                          </VStack>
+                          <HStack mt="4" spacing="2">
+                            <Button
+                              size="sm"
+                              colorScheme="orange"
+                              onClick={() => {
+                                // TODO: Implement feedback submission
+                                toast({
+                                  title: "Feedback Received",
+                                  description: "Thank you! We'll use this to improve future recommendations.",
+                                  status: "success",
+                                  duration: 3000,
+                                  isClosable: true,
+                                });
+                                setShowFeedbackQuestions(false);
+                              }}
+                              isDisabled={Object.keys(feedbackAnswers).length === 0}
+                            >
+                              Submit Feedback
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setShowFeedbackQuestions(false)}
+                            >
+                              Skip for Now
+                            </Button>
+                          </HStack>
+                        </Box>
+                      )}
 
                       {/* Tab Navigation */}
                       <Box>
