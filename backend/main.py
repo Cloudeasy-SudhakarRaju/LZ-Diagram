@@ -497,6 +497,58 @@ def generate_ai_enhanced_recommendations(inputs: CustomerInputs, url_analysis: s
         logger.error(f"Error generating AI recommendations: {e}")
         return f"Error generating AI recommendations: {str(e)}"
 
+def analyze_free_text_requirements(free_text: str) -> dict:
+    """Analyze free text input to extract specific service requirements using AI"""
+    try:
+        if not gemini_model or not free_text:
+            return {"services": [], "reasoning": "No analysis available"}
+            
+        prompt = f"""
+        Analyze the following user requirement and identify ONLY the specific Azure services that are explicitly needed or implied:
+        
+        User Requirement: "{free_text}"
+        
+        Based on this requirement, provide a JSON response with:
+        1. "services" - array of specific Azure service keys that are actually needed (use keys like: app_services, sql_database, monitor, virtual_network, etc.)
+        2. "reasoning" - brief explanation of why these services were selected
+        3. "architecture_pattern" - suggested pattern (simple, standard, complex)
+        
+        Be very conservative - only include services that are directly mentioned or absolutely required for the stated use case.
+        For example:
+        - "web application hosting" -> app_services, virtual_network
+        - "database backend" -> sql_database or mysql/postgresql depending on context
+        - "basic monitoring" -> monitor, log_analytics
+        
+        Do NOT include full enterprise landing zone services unless specifically requested.
+        
+        Return only valid JSON format.
+        """
+        
+        result = gemini_model.generate_content(prompt)
+        response_text = result.text.strip()
+        
+        # Try to extract JSON from the response
+        import json
+        import re
+        
+        # Look for JSON content
+        json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+        if json_match:
+            json_str = json_match.group()
+            try:
+                analysis = json.loads(json_str)
+                return analysis
+            except json.JSONDecodeError:
+                pass
+        
+        # Fallback parsing if JSON parsing fails
+        logger.warning(f"Failed to parse AI response as JSON: {response_text}")
+        return {"services": [], "reasoning": "Could not parse AI analysis"}
+        
+    except Exception as e:
+        logger.error(f"Error analyzing free text requirements: {e}")
+        return {"services": [], "reasoning": f"Analysis error: {str(e)}"}
+
 def validate_customer_inputs(inputs: CustomerInputs) -> None:
     """Validate customer inputs to prevent potential errors"""
     # Check for extremely long strings that might cause issues
@@ -995,7 +1047,47 @@ def _add_service_clusters(inputs: CustomerInputs, prod_vnet, workloads_mg):
 
 
 def generate_architecture_template(inputs: CustomerInputs) -> Dict[str, Any]:
-    """Generate architecture template based on inputs"""
+    """Generate architecture template based on inputs with AI enhancement for free text"""
+    
+    # First, check if we should use AI analysis for service selection
+    ai_services = []
+    ai_reasoning = ""
+    
+    # If user provided free text but didn't select many services, use AI to determine services
+    total_selected_services = sum([
+        len(inputs.compute_services or []),
+        len(inputs.network_services or []),
+        len(inputs.storage_services or []),
+        len(inputs.database_services or []),
+        len(inputs.security_services or []),
+        len(inputs.monitoring_services or []),
+        len(inputs.ai_services or []),
+        len(inputs.analytics_services or []),
+        len(inputs.integration_services or []),
+        len(inputs.devops_services or []),
+        len(inputs.backup_services or [])
+    ])
+    
+    if inputs.free_text_input and total_selected_services <= 1:  # Very few services selected
+        logger.info("Using AI analysis for service selection based on free text input")
+        ai_analysis = analyze_free_text_requirements(inputs.free_text_input)
+        ai_services = ai_analysis.get("services", [])
+        ai_reasoning = ai_analysis.get("reasoning", "")
+        
+        # Override service selections with AI recommendations
+        if ai_services:
+            # Map AI services to appropriate categories
+            for service in ai_services:
+                if service in AZURE_SERVICES_MAPPING:
+                    category = AZURE_SERVICES_MAPPING[service]["category"]
+                    category_field = f"{category}_services"
+                    
+                    # Add to appropriate service list
+                    if hasattr(inputs, category_field):
+                        current_services = getattr(inputs, category_field) or []
+                        if service not in current_services:
+                            current_services.append(service)
+                            setattr(inputs, category_field, current_services)
     
     # Determine organization size and template
     if inputs.org_structure and "enterprise" in inputs.org_structure.lower():
@@ -1013,7 +1105,9 @@ def generate_architecture_template(inputs: CustomerInputs) -> Dict[str, Any]:
         "workload": inputs.workload or "app-services",
         "security": inputs.security_posture or "zero-trust",
         "monitoring": inputs.monitoring or "azure-monitor",
-        "governance": inputs.governance or "azure-policy"
+        "governance": inputs.governance or "azure-policy",
+        "ai_services": ai_services,
+        "ai_reasoning": ai_reasoning
     }
     
     return components
@@ -2151,6 +2245,9 @@ def generate_interactive_azure_architecture(inputs: CustomerInputs):
         validate_customer_inputs(inputs)
         logger.info("Input validation completed successfully")
         
+        # Check if we should provide human-in-the-loop feedback for better architecture
+        feedback_questions = generate_feedback_questions(inputs)
+        
         # Generate Mermaid diagram
         logger.info("Generating Mermaid diagram...")
         mermaid_diagram = generate_professional_mermaid(inputs)
@@ -2212,6 +2309,9 @@ def generate_interactive_azure_architecture(inputs: CustomerInputs):
         import re
         shapes = re.findall(r'shape=mxgraph\.azure\.[^;\"\s]*', drawio_xml)
         
+        # Get architecture template information
+        template_info = generate_architecture_template(inputs)
+        
         result = {
             "success": True,
             "mermaid": mermaid_diagram,
@@ -2221,11 +2321,16 @@ def generate_interactive_azure_architecture(inputs: CustomerInputs):
             "tsd": docs["tsd"],
             "hld": docs["hld"],
             "lld": docs["lld"],
-            "architecture_template": generate_architecture_template(inputs),
+            "architecture_template": template_info,
             "azure_stencils": {
                 "total_used": len(shapes),
                 "unique_used": len(set(shapes)),
                 "stencils_list": sorted(list(set(shapes)))
+            },
+            "feedback_questions": feedback_questions,
+            "ai_analysis": {
+                "services_used": template_info.get("ai_services", []),
+                "reasoning": template_info.get("ai_reasoning", "")
             },
             "metadata": {
                 "generated_at": datetime.now().isoformat(),
@@ -2257,6 +2362,47 @@ def generate_interactive_azure_architecture(inputs: CustomerInputs):
             status_code=500, 
             detail=f"Failed to generate interactive architecture. Error: {str(e)}"
         )
+
+def generate_feedback_questions(inputs: CustomerInputs) -> List[str]:
+    """Generate human-in-the-loop feedback questions to improve architecture"""
+    questions = []
+    
+    # Check for missing critical information
+    if not inputs.business_objective:
+        questions.append("What is your primary business objective for this Azure deployment? (Cost optimization, agility, innovation, security, etc.)")
+    
+    if not inputs.scalability:
+        questions.append("What are your expected scalability requirements? (Current and future user load, geographic distribution)")
+    
+    if not inputs.security_posture:
+        questions.append("What security and compliance requirements do you have? (Zero trust, industry regulations, data sovereignty)")
+    
+    # Check if AI analysis was used and ask for validation
+    total_selected_services = sum([
+        len(inputs.compute_services or []),
+        len(inputs.network_services or []),
+        len(inputs.storage_services or []),
+        len(inputs.database_services or []),
+        len(inputs.security_services or [])
+    ])
+    
+    if inputs.free_text_input and total_selected_services <= 1:
+        questions.append("I've analyzed your requirements and suggested specific Azure services. Would you like to review and confirm these selections before finalizing the architecture?")
+        questions.append("Are there any specific performance, availability, or disaster recovery requirements I should consider?")
+    
+    # Ask about budget and cost constraints
+    if not inputs.cost_priority:
+        questions.append("What is your cost optimization priority? Should we focus on minimizing costs or optimizing for performance?")
+    
+    # Ask about existing infrastructure
+    if inputs.free_text_input and "existing" not in inputs.free_text_input.lower():
+        questions.append("Do you have any existing Azure infrastructure or on-premises systems that need to be integrated?")
+    
+    # Ask about operational model
+    if not inputs.ops_model and not inputs.monitoring:
+        questions.append("How do you plan to operate and monitor this infrastructure? Do you have a dedicated DevOps team?")
+    
+    return questions[:3]  # Limit to top 3 most relevant questions
 
 @app.post("/generate-png-diagram")
 def generate_png_diagram(inputs: CustomerInputs):
@@ -2441,3 +2587,95 @@ def get_services():
             "backup": "Backup & Recovery"
         }
     }
+
+class FeedbackRequest(BaseModel):
+    original_inputs: CustomerInputs
+    feedback_answers: Dict[str, str]
+    selected_services: Optional[List[str]] = Field(default_factory=list)
+
+@app.post("/refine-architecture-with-feedback")
+def refine_architecture_with_feedback(request: FeedbackRequest):
+    """Refine architecture based on human feedback"""
+    try:
+        logger.info("Processing architecture refinement with human feedback")
+        
+        # Update inputs based on feedback
+        refined_inputs = request.original_inputs
+        
+        # Process feedback answers to update inputs
+        for question, answer in request.feedback_answers.items():
+            if "business objective" in question.lower():
+                refined_inputs.business_objective = answer
+            elif "scalability" in question.lower():
+                refined_inputs.scalability = answer
+            elif "security" in question.lower():
+                refined_inputs.security_posture = answer
+            elif "cost" in question.lower():
+                refined_inputs.cost_priority = answer
+            elif "operational" in question.lower() or "monitor" in question.lower():
+                refined_inputs.ops_model = answer
+        
+        # Add user-confirmed services if provided
+        if request.selected_services:
+            # Clear existing services and add only confirmed ones
+            for service in request.selected_services:
+                if service in AZURE_SERVICES_MAPPING:
+                    category = AZURE_SERVICES_MAPPING[service]["category"]
+                    category_field = f"{category}_services"
+                    
+                    if hasattr(refined_inputs, category_field):
+                        current_services = getattr(refined_inputs, category_field) or []
+                        if service not in current_services:
+                            current_services.append(service)
+                            setattr(refined_inputs, category_field, current_services)
+        
+        # Generate refined architecture
+        return generate_interactive_azure_architecture(refined_inputs)
+        
+    except Exception as e:
+        logger.error(f"Error refining architecture with feedback: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to refine architecture: {str(e)}")
+
+@app.post("/validate-ai-service-selection")
+def validate_ai_service_selection(request: Dict[str, Any]):
+    """Allow users to validate and modify AI-suggested service selection"""
+    try:
+        free_text = request.get("free_text_input", "")
+        
+        if not free_text:
+            raise HTTPException(status_code=400, detail="Free text input is required")
+        
+        # Get AI analysis
+        analysis = analyze_free_text_requirements(free_text)
+        
+        # Get detailed service information
+        suggested_services = []
+        for service_key in analysis.get("services", []):
+            if service_key in AZURE_SERVICES_MAPPING:
+                service_info = AZURE_SERVICES_MAPPING[service_key]
+                suggested_services.append({
+                    "key": service_key,
+                    "name": service_info["name"],
+                    "category": service_info["category"],
+                    "icon": service_info["icon"],
+                    "reasoning": f"Suggested for: {analysis.get('reasoning', 'Meeting your requirements')}"
+                })
+        
+        return {
+            "success": True,
+            "original_text": free_text,
+            "suggested_services": suggested_services,
+            "reasoning": analysis.get("reasoning", ""),
+            "architecture_pattern": analysis.get("architecture_pattern", "simple"),
+            "questions_for_clarification": [
+                "Do these suggested services meet your requirements?",
+                "Are there any additional services you need?",
+                "Would you like to modify any of these selections?"
+            ]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error validating AI service selection: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to validate service selection: {str(e)}")
