@@ -296,29 +296,113 @@ function App() {
     }
   };
 
-  const downloadPNG = (base64Data: string) => {
+  const downloadPNG = async () => {
     try {
-      const byteCharacters = atob(base64Data);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      setLoading(true);
+      const res = await fetch("http://127.0.0.1:8001/generate-png-diagram", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: 'image/png' });
       
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'azure-landing-zone-architecture.png';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      const data = await res.json();
       
-      alert("Azure PNG diagram download started!");
+      if (data.success && data.png_base64) {
+        // Convert base64 to blob and download
+        const byteCharacters = atob(data.png_base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'image/png' });
+        
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'azure-landing-zone-architecture.png';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        toast({
+          title: "PNG Downloaded",
+          description: "Azure PNG diagram downloaded successfully!",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        throw new Error("Failed to generate PNG diagram");
+      }
     } catch (err) {
       console.error(err);
-      alert("Failed to download PNG diagram.");
+      toast({
+        title: "Download Failed",
+        description: "Failed to download PNG diagram. Please try again.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const downloadSVG = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("http://127.0.0.1:8001/generate-svg-diagram", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      
+      if (data.success && data.svg_content) {
+        // Create blob and download
+        const blob = new Blob([data.svg_content], { type: 'image/svg+xml' });
+        
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'azure-landing-zone-architecture.svg';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        toast({
+          title: "SVG Downloaded",
+          description: "Azure SVG diagram downloaded successfully!",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        throw new Error("Failed to generate SVG diagram");
+      }
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Download Failed",
+        description: "Failed to download SVG diagram. Please try again.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -745,8 +829,28 @@ function App() {
                       </Heading>
                       <HStack spacing="2">
                         <Button
-                          onClick={downloadDrawio}
+                          onClick={downloadPNG}
                           colorScheme="blue"
+                          variant="outline"
+                          size="sm"
+                          isLoading={loading}
+                          loadingText="Generating..."
+                        >
+                          📥 Download PNG
+                        </Button>
+                        <Button
+                          onClick={downloadSVG}
+                          colorScheme="green"
+                          variant="outline"
+                          size="sm"
+                          isLoading={loading}
+                          loadingText="Generating..."
+                        >
+                          📥 Download SVG
+                        </Button>
+                        <Button
+                          onClick={downloadDrawio}
+                          colorScheme="purple"
                           variant="outline"
                           size="sm"
                         >
@@ -754,7 +858,7 @@ function App() {
                         </Button>
                         <Button
                           onClick={() => window.open(results.svg_diagram_path, '_blank')}
-                          colorScheme="green"
+                          colorScheme="orange"
                           variant="outline"
                           size="sm"
                           isDisabled={!results.svg_diagram_path}

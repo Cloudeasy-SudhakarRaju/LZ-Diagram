@@ -589,11 +589,15 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
         logger.info(f"Using template: {template['template']['name']}")
         
         try:
+            # Set the format based on the requested output format
+            output_format = "svg" if format.lower() == "svg" else "png"
+            
             with Diagram(
                 f"Azure Landing Zone - {template['template']['name']}", 
                 filename=filepath, 
                 show=False, 
                 direction="TB",
+                outformat=output_format,
                 graph_attr={
                     "fontsize": "16",
                     "fontname": "Arial",
@@ -686,30 +690,35 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
         
         # Return the file path of the generated diagram
         if format.lower() == "svg":
-            # Generate SVG using dot command
-            dot_path = f"{filepath}.gv"
+            # Check for SVG file generated directly by diagrams library
             svg_path = f"{filepath}.svg"
-            
-            if os.path.exists(dot_path):
-                try:
-                    # Convert dot file to SVG
-                    result = subprocess.run(['dot', '-Tsvg', dot_path, '-o', svg_path], 
-                                          capture_output=True, text=True, timeout=30)
-                    if result.returncode != 0:
-                        raise Exception(f"SVG generation failed: {result.stderr}")
-                    
-                    if os.path.exists(svg_path):
-                        file_size = os.path.getsize(svg_path)
-                        logger.info(f"SVG diagram generated successfully: {svg_path} (size: {file_size} bytes)")
-                        return svg_path
-                    else:
-                        raise Exception(f"SVG generation failed - file not found: {svg_path}")
-                except subprocess.TimeoutExpired:
-                    raise Exception("SVG generation timed out")
-                except Exception as e:
-                    raise Exception(f"Failed to generate SVG: {str(e)}")
+            if os.path.exists(svg_path):
+                file_size = os.path.getsize(svg_path)
+                logger.info(f"SVG diagram generated successfully: {svg_path} (size: {file_size} bytes)")
+                return svg_path
             else:
-                raise Exception(f"Dot file not found: {dot_path}")
+                # Fallback: try to generate SVG using dot command from gv file
+                dot_path = f"{filepath}.gv" 
+                if os.path.exists(dot_path):
+                    try:
+                        # Convert dot file to SVG
+                        result = subprocess.run(['dot', '-Tsvg', dot_path, '-o', svg_path], 
+                                              capture_output=True, text=True, timeout=30)
+                        if result.returncode != 0:
+                            raise Exception(f"SVG generation failed: {result.stderr}")
+                        
+                        if os.path.exists(svg_path):
+                            file_size = os.path.getsize(svg_path)
+                            logger.info(f"SVG diagram generated successfully via dot: {svg_path} (size: {file_size} bytes)")
+                            return svg_path
+                        else:
+                            raise Exception(f"SVG generation failed - file not found: {svg_path}")
+                    except subprocess.TimeoutExpired:
+                        raise Exception("SVG generation timed out")
+                    except Exception as e:
+                        raise Exception(f"Failed to generate SVG: {str(e)}")
+                else:
+                    raise Exception(f"Neither SVG nor dot file found: {svg_path}, {dot_path}")
         else:
             # Default PNG generation
             png_path = f"{filepath}.png"
@@ -2176,8 +2185,28 @@ def generate_interactive_azure_architecture(inputs: CustomerInputs):
         
         # Generate professional documentation
         logger.info("Generating professional documentation...")
-        docs = generate_professional_documentation(inputs)
-        logger.info("Professional documentation generated successfully")
+        try:
+            # Use a timeout for the documentation generation
+            import signal
+            
+            def timeout_handler(signum, frame):
+                raise Exception("Documentation generation timed out")
+            
+            signal.signal(signal.SIGALRM, timeout_handler)
+            signal.alarm(10)  # 10 second timeout
+            
+            docs = generate_professional_documentation(inputs)
+            
+            signal.alarm(0)  # Clear the alarm
+            logger.info("Professional documentation generated successfully")
+        except Exception as e:
+            signal.alarm(0)  # Clear the alarm
+            logger.warning(f"Documentation generation failed, using fallback: {str(e)}")
+            docs = {
+                "tsd": f"# Technical Specification Document\n\n## Azure Landing Zone Architecture\n\n**Organization:** {inputs.org_structure or 'Enterprise'}\n**Business Objective:** {inputs.business_objective or 'Not specified'}\n\n### Selected Services\n- Compute: {', '.join(inputs.compute_services or [])}\n- Network: {', '.join(inputs.network_services or [])}\n- Security: {', '.join(inputs.security_services or [])}\n\n*Full documentation requires AI service availability.*",
+                "hld": f"# High Level Design\n\n## Azure Architecture Overview\n\nThis document outlines the high-level design for an Azure Landing Zone.\n\n### Key Components\n- Management Groups\n- Subscriptions\n- Resource Groups\n- Network Architecture\n\n*Detailed design requires AI service availability.*",
+                "lld": f"# Low Level Design\n\n## Implementation Details\n\nThis document provides implementation guidance for the Azure Landing Zone.\n\n### Implementation Steps\n1. Set up Management Groups\n2. Configure Subscriptions\n3. Deploy Network Infrastructure\n4. Implement Security Controls\n\n*Detailed implementation guide requires AI service availability.*"
+            }
         
         # Count Azure stencils used in Draw.io XML
         import re
@@ -2228,6 +2257,76 @@ def generate_interactive_azure_architecture(inputs: CustomerInputs):
             status_code=500, 
             detail=f"Failed to generate interactive architecture. Error: {str(e)}"
         )
+
+@app.post("/generate-png-diagram")
+def generate_png_diagram(inputs: CustomerInputs):
+    """Generate PNG diagram for download"""
+    logger.info("Starting PNG diagram generation for download")
+    
+    try:
+        # Validate inputs early
+        validate_customer_inputs(inputs)
+        logger.info("Input validation completed successfully")
+        
+        # Generate PNG diagram
+        logger.info("Generating PNG diagram...")
+        png_path = generate_azure_architecture_diagram(inputs, format="png")
+        logger.info(f"PNG diagram generated successfully: {png_path}")
+        
+        # Read and encode the PNG file
+        with open(png_path, "rb") as f:
+            png_content = f.read()
+        
+        png_base64 = base64.b64encode(png_content).decode("utf-8")
+        
+        return {
+            "success": True,
+            "png_base64": png_base64,
+            "png_path": png_path,
+            "file_size": len(png_content),
+            "metadata": {
+                "generated_at": datetime.now().isoformat(),
+                "format": "PNG"
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error generating PNG diagram: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate PNG diagram: {str(e)}")
+
+@app.post("/generate-svg-diagram")
+def generate_svg_diagram(inputs: CustomerInputs):
+    """Generate SVG diagram for download"""
+    logger.info("Starting SVG diagram generation for download")
+    
+    try:
+        # Validate inputs early
+        validate_customer_inputs(inputs)
+        logger.info("Input validation completed successfully")
+        
+        # Generate SVG diagram
+        logger.info("Generating SVG diagram...")
+        svg_path = generate_azure_architecture_diagram(inputs, format="svg")
+        logger.info(f"SVG diagram generated successfully: {svg_path}")
+        
+        # Read the SVG file
+        with open(svg_path, "r", encoding="utf-8") as f:
+            svg_content = f.read()
+        
+        return {
+            "success": True,
+            "svg_content": svg_content,
+            "svg_path": svg_path,
+            "file_size": len(svg_content),
+            "metadata": {
+                "generated_at": datetime.now().isoformat(),
+                "format": "SVG"
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error generating SVG diagram: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate SVG diagram: {str(e)}")
 
 @app.post("/upload-file")
 async def upload_file(file: UploadFile = File(...)):
