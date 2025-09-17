@@ -666,16 +666,16 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                     "fontsize": "18",
                     "fontname": "Arial, sans-serif",
                     "rankdir": "TB",
-                    "nodesep": "1.5",      # Optimal spacing for readability
-                    "ranksep": "2.5",      # Clear visual separation between layers
+                    "nodesep": "2.0",      # Increased spacing for larger nodes
+                    "ranksep": "3.0",      # Increased vertical spacing between layers
                     "bgcolor": "#f8f9fa",   # Professional light background
-                    "margin": "0.8",
+                    "margin": "1.0",       # Increased margin
                     "compound": "true",     # Enable cluster-to-cluster connections
                     "splines": "polyline",  # Polyline routing for minimal crossings
                     "overlap": "false",
                     "pack": "true",
                     "packmode": "clust",
-                    "pad": "0.8",
+                    "pad": "1.0",          # Increased padding
                     "dpi": "300",          # High resolution for professional output
                     "concentrate": "true",  # Merge similar edges for clarity
                     "ordering": "out"      # Consistent edge ordering
@@ -687,7 +687,10 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                     "shape": "box",
                     "fillcolor": "#ffffff",
                     "color": "#333333",
-                    "penwidth": "2"
+                    "penwidth": "2",
+                    "width": "2.5",      # Minimum width to accommodate longer labels
+                    "height": "1.5",     # Minimum height for multi-line labels
+                    "fixedsize": "false"  # Allow nodes to grow beyond minimum size
                 },
                 edge_attr={
                     "fontsize": "10",
@@ -705,6 +708,10 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                 
                 # Initialize service counters for numbered workflow
                 service_counter = 1
+                
+                # Initialize service lists at function scope to avoid UnboundLocalError
+                storage_services = []
+                database_services = []
                 
                 # === INTERNET EDGE LAYER (TOP - UNTRUSTED ZONE) ===
                 # Principle 1-5: Clear containers, security zoning, visual hierarchy
@@ -983,9 +990,6 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                         "penwidth": "3",
                         "margin": "16"
                     }):
-                        storage_services = []
-                        database_services = []
-                        
                         # Storage Services with tier information
                         if inputs.storage_services:
                             for service in inputs.storage_services:
