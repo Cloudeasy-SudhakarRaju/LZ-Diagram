@@ -1,33 +1,72 @@
-# Azure Landing Zone Agent - Diagram Generation
+# Azure Landing Zone Agent - Enhanced Diagram Generation
 
 ## Overview
 
-The Azure Landing Zone Agent now supports **enterprise-style Azure architecture diagrams** with official Microsoft Azure icons and stencils, addressing the previous issue where diagrams used emoji icons instead of proper Azure architectural styling.
+The Azure Landing Zone Agent now supports **enterprise-grade Azure architecture diagrams** following 50+ design principles with official Microsoft Azure icons and stencils. This addresses the previous limitation where diagrams used emoji icons instead of proper Azure architectural styling.
 
-## Diagram Generation Options
-
-### 1. Python Diagrams with Official Azure Icons (NEW - RECOMMENDED) 
+## Enhanced Diagram Generation (RECOMMENDED) 
 
 **Endpoint:** `POST /generate-azure-diagram`
 
-- ✅ **Official Microsoft Azure icons and stencils**
-- ✅ **Enterprise-style architectural diagrams**
-- ✅ **High-quality PNG output with proper color coding**
-- ✅ **Industry-standard Azure Landing Zone visualization**
-- ✅ **Graphviz-powered professional rendering**
+### 🎯 Enterprise Architecture Principles (50+ Implemented)
 
-**Features:**
+**Visual Hierarchy & Layout (1-10)**
+- ✅ Clear containers/swimlanes with distinct logical layers
+- ✅ Minimal crossing connections with polyline routing  
+- ✅ Proper visual hierarchy: Internet Edge → Identity/Security → Network/Apps → Data
+- ✅ Enhanced cluster styling with bordered boxes and gradient backgrounds
+- ✅ Clear region separation between Active and Standby regions
+
+**Workflow & Connectivity (11-20)**  
+- ✅ Numbered workflow steps (1. Internet → 2. Front Door → 3. App Service → 4. Database)
+- ✅ Clear connection labeling with descriptive labels for all connection types
+- ✅ All specified components: Front Door, Queue Storage, Table Storage, Redis
+- ✅ Line type distinctions: solid (primary), dashed (governance), dotted (monitoring)
+- ✅ Directional clarity with single/bidirectional connections
+
+**Security & Environment (21-30)**
+- ✅ Security zone shading (Untrusted: Red, Semi-trusted: Green, Trusted: Blue)
+- ✅ Environment labeling: DEV, UAT, PROD, DR with consistent color codes
+- ✅ High Availability indicators (Active-Active, Active-Passive annotations)
+- ✅ Monitoring/observability overlay with Log Analytics, Azure Monitor, Sentinel
+- ✅ Disaster recovery separation with dotted borders and labels
+
+**Legend & Standards (31-40)**
+- ✅ Comprehensive legend covering line types, clusters, icons, security zones
+- ✅ Standardized iconography using latest official Azure icons consistently
+- ✅ Annotation minimization with callouts instead of cluttered text
+- ✅ Cloud-native vs. legacy differentiation (PaaS vs. IaaS)
+- ✅ Service tier notation (Basic/Standard/Premium) for databases
+
+**Advanced Enterprise Features (41-50)**
+- ✅ Scalability indicators with auto-scaling symbols
+- ✅ Compliance/regulatory overlays (GDPR, HIPAA zones)
+- ✅ Cost management integration with budget alerts and optimization
+- ✅ Identity & access clarity with Azure AD, RBAC, Conditional Access
+- ✅ Backup & recovery overlay with cross-region replication arrows
+- ✅ Enhanced readability with improved spacing, sizing, and layout constraints
+
+### 🔧 Technical Features
+
+**Enhanced Rendering:**
 - Uses the Python Diagrams library (https://diagrams.mingrammer.com)
 - Official Azure node components for all service categories
 - Professional clustering and visual hierarchy
-- Proper enterprise architectural styling
-- Base64 encoded response for web integration
-- File download support
+- High-resolution output (300 DPI) for presentations
+- Both PNG and SVG format support
 
-### 2. Legacy Options (Still Available)
+**Enterprise Styling:**
+- Proper enterprise architectural styling following Microsoft CAF/WAF standards
+- Color-coded security zones with proper ranking and positioning
+- Professional font rendering (Arial, sans-serif)
+- Optimal spacing and layout constraints for readability
+
+### 📋 Legacy Options (Still Available)
 
 **Mermaid Diagrams:** `POST /generate-diagram` - Text-based diagrams with emoji icons
 **Draw.io XML:** `POST /generate-drawio` - XML format for Draw.io editor
+
+> **Note:** These legacy options are maintained for backward compatibility but do not include the enhanced 50+ enterprise architecture principles. Use the enhanced diagram generation for professional enterprise architectures.
 
 ## API Usage
 
