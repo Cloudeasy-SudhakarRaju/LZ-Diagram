@@ -146,4 +146,4 @@ Generated files are saved in the `/tmp` directory:
 - Draw.io XML: Compatible with app.diagrams.net for editing
 - Documentation: TSD, HLD, and LLD in structured format
 
-For more details about diagram generation, see [DIAGRAM_GENERATION.md](DIAGRAM_GENERATION.md).
+For more details about diagram generation, see [DIAGRAM_GENERATION.md](DIAGRAM_GENERATION.md).# LZ-Diagram
