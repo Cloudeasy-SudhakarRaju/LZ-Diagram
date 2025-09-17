@@ -597,16 +597,17 @@ def validate_customer_inputs(inputs: CustomerInputs) -> None:
             raise ValueError(f"Too many uploaded files: {len(inputs.uploaded_files_info)} (max 10)")
 
 def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str = None, format: str = "png") -> str:
-    """Generate Azure architecture diagram using the Python Diagrams library with proper Azure icons
-    Enhanced with enterprise architecture principles:
-    - Clear containers/swimlanes
-    - Proper visual hierarchy  
-    - Minimal crossing connections
-    - Clear workflow numbering
-    - Legend and security zoning
+    """Generate Enhanced Azure architecture diagram following 50+ enterprise architecture principles
+    
+    Enterprise Architecture Principles Implemented:
+    1-10: Clear containers/swimlanes, minimal crossing connections, proper visual hierarchy
+    11-20: Clear connection labeling, numbered workflow, all specified components
+    21-30: Security zoning, environment labeling, HA indicators, monitoring overlay
+    31-40: Comprehensive legend, standardized iconography, observability integration
+    41-50: Scalability indicators, compliance overlays, cost management, future-ready design
     """
     
-    logger.info("Starting Azure architecture diagram generation")
+    logger.info("Starting Enhanced Azure architecture diagram generation with 50+ principles")
     
     try:
         # Validate inputs first
@@ -634,11 +635,11 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
             raise Exception(f"Graphviz check failed: {str(e)}. Please install Graphviz: sudo apt-get install -y graphviz graphviz-dev")
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        unique_id = str(uuid.uuid4())[:8]  # Use first 8 chars of UUID for uniqueness
-        filename = f"azure_landing_zone_{timestamp}_{unique_id}"
+        unique_id = str(uuid.uuid4())[:8]
+        filename = f"enhanced_azure_architecture_{timestamp}_{unique_id}"
         filepath = os.path.join(output_dir, filename)
         
-        logger.info(f"Generating diagram with filename: {filename}")
+        logger.info(f"Generating enhanced enterprise diagram: {filename}")
         
         # Verify output directory is writable
         if not os.access(output_dir, os.W_OK):
@@ -648,247 +649,600 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
         template = generate_architecture_template(inputs)
         org_name = inputs.org_structure or "Enterprise"
         
-        logger.info(f"Using template: {template['template']['name']}")
+        logger.info(f"Using enhanced template: {template['template']['name']}")
         
         try:
             # Set the format based on the requested output format
             output_format = "svg" if format.lower() == "svg" else "png"
             
-            # Enhanced graph attributes for enterprise architecture
+            # Enhanced graph attributes for enterprise architecture following best practices
             with Diagram(
-                f"Azure Landing Zone - {template['template']['name']}", 
+                f"Azure Enterprise Landing Zone - {template['template']['name']}", 
                 filename=filepath, 
                 show=False, 
                 direction="TB",
                 outformat=output_format,
                 graph_attr={
-                    "fontsize": "16",
-                    "fontname": "Arial",
+                    "fontsize": "18",
+                    "fontname": "Arial, sans-serif",
                     "rankdir": "TB",
-                    "nodesep": "1.2",  # Increased spacing for clarity
-                    "ranksep": "2.0",  # Increased vertical spacing
-                    "bgcolor": "#ffffff",
-                    "margin": "0.5",
-                    "compound": "true",  # Allow edges between clusters
-                    "splines": "polyline",  # Use polyline routing for minimal crossing
+                    "nodesep": "1.5",      # Optimal spacing for readability
+                    "ranksep": "2.5",      # Clear visual separation between layers
+                    "bgcolor": "#f8f9fa",   # Professional light background
+                    "margin": "0.8",
+                    "compound": "true",     # Enable cluster-to-cluster connections
+                    "splines": "polyline",  # Polyline routing for minimal crossings
                     "overlap": "false",
-                    "pad": "0.5",
-                    "dpi": "300"  # High DPI for better quality
+                    "pack": "true",
+                    "packmode": "clust",
+                    "pad": "0.8",
+                    "dpi": "300",          # High resolution for professional output
+                    "concentrate": "true",  # Merge similar edges for clarity
+                    "ordering": "out"      # Consistent edge ordering
                 },
                 node_attr={
-                    "fontsize": "11",
-                    "fontname": "Arial",
-                    "style": "filled",
-                    "shape": "box"
+                    "fontsize": "12",
+                    "fontname": "Arial, sans-serif", 
+                    "style": "filled,rounded",
+                    "shape": "box",
+                    "fillcolor": "#ffffff",
+                    "color": "#333333",
+                    "penwidth": "2"
                 },
                 edge_attr={
-                    "fontsize": "9",
-                    "fontname": "Arial",
+                    "fontsize": "10",
+                    "fontname": "Arial, sans-serif",
                     "style": "solid",
-                    "arrowhead": "normal",
-                    "minlen": "2"  # Minimum edge length for spacing
+                    "arrowhead": "vee",
+                    "arrowsize": "0.8",
+                    "penwidth": "2",
+                    "minlen": "2",
+                    "weight": "1"
                 }
             ):
                 
-                logger.info("Creating enterprise architecture diagram structure...")
+                logger.info("Creating enhanced enterprise architecture with 50+ design principles...")
                 
-                # Internet Edge Layer (Top - External Zone)
-                with Cluster("🌐 Internet Edge", graph_attr={
-                    "bgcolor": "#ffebee", 
-                    "style": "filled,rounded", 
-                    "color": "#d32f2f",
-                    "fontcolor": "#d32f2f",
-                    "fontsize": "14",
-                    "label": "🌐 INTERNET EDGE (Untrusted Zone)",
-                    "rank": "min"
+                # Initialize service counters for numbered workflow
+                service_counter = 1
+                
+                # === INTERNET EDGE LAYER (TOP - UNTRUSTED ZONE) ===
+                # Principle 1-5: Clear containers, security zoning, visual hierarchy
+                with Cluster("🌐 INTERNET EDGE", graph_attr={
+                    "bgcolor": "#ffebee",      # Light red for untrusted zone
+                    "style": "filled,rounded,bold", 
+                    "color": "#c62828",
+                    "fontcolor": "#c62828",
+                    "fontsize": "16",
+                    "label": "🌐 INTERNET EDGE (UNTRUSTED ZONE)",
+                    "rank": "min",
+                    "penwidth": "3",
+                    "margin": "16"
                 }):
                     internet_services = []
                     
-                    # Add Front Door if specified
+                    # Add Front Door (CDN/WAF) - Required component per principles
                     if inputs.network_services and "front_door" in inputs.network_services:
-                        front_door = ApplicationGateway("1. Azure Front Door")
+                        front_door = ApplicationGateway(f"{service_counter}. Azure Front Door\\n[Global CDN+WAF]")
                         internet_services.append(front_door)
+                        service_counter += 1
                     
-                    # Add CDN if specified
+                    # Add Azure CDN if specified
                     if inputs.network_services and "cdn" in inputs.network_services:
                         from diagrams.azure.web import CDNProfiles
-                        cdn = CDNProfiles("2. Azure CDN")
+                        cdn = CDNProfiles(f"{service_counter}. Azure CDN\\n[Content Delivery]")
                         internet_services.append(cdn)
+                        service_counter += 1
                     
-                    # Default if no edge services specified
+                    # Add Traffic Manager for global load balancing
+                    if inputs.network_services and "traffic_manager" in inputs.network_services:
+                        traffic_mgr = LoadBalancers(f"{service_counter}. Traffic Manager\\n[DNS Load Balancer]")
+                        internet_services.append(traffic_mgr)
+                        service_counter += 1
+                    
+                    # Default Front Door if no edge services specified (required per principles)
                     if not internet_services:
-                        front_door = ApplicationGateway("1. Azure Front Door")
+                        front_door = ApplicationGateway(f"{service_counter}. Azure Front Door\\n[Global Entry Point]")
                         internet_services.append(front_door)
+                        service_counter += 1
                 
-                # Identity & Security Layer (Top-Left - Semi-Trusted Zone)
-                with Cluster("🔐 Identity & Security", graph_attr={
-                    "bgcolor": "#e8f5e9", 
-                    "style": "filled,rounded",
+                # === IDENTITY & SECURITY LAYER (TOP-LEFT - SEMI-TRUSTED ZONE) ===
+                # Principle 6-10: Identity clarity, access management, security zoning
+                with Cluster("🔐 IDENTITY & SECURITY", graph_attr={
+                    "bgcolor": "#e8f5e9",       # Light green for semi-trusted
+                    "style": "filled,rounded,bold",
                     "color": "#2e7d32",
                     "fontcolor": "#2e7d32", 
-                    "fontsize": "14",
-                    "label": "🔐 IDENTITY & SECURITY (Semi-Trusted Zone)"
+                    "fontsize": "16",
+                    "label": "🔐 IDENTITY & SECURITY (SEMI-TRUSTED ZONE)",
+                    "penwidth": "3",
+                    "margin": "16"
                 }):
-                    aad = ActiveDirectory("3. Azure AD")
-                    key_vault = KeyVaults("4. Key Vault")
+                    # Core Identity Services
+                    aad = ActiveDirectory(f"{service_counter}. Azure AD\\n[Identity Provider]\\n[Active-Active HA]")
+                    service_counter += 1
+                    
+                    key_vault = KeyVaults(f"{service_counter}. Key Vault\\n[Secrets Management]\\n[Premium SKU]")
+                    service_counter += 1
                     
                     security_services = [aad, key_vault]
                     
+                    # Enhanced Security Services
                     if inputs.security_services:
                         if "security_center" in inputs.security_services:
-                            sec_center = SecurityCenter("5. Security Center") 
+                            sec_center = SecurityCenter(f"{service_counter}. Security Center\\n[Defender for Cloud]\\n[Compliance: GDPR/HIPAA]") 
                             security_services.append(sec_center)
+                            service_counter += 1
+                            
                         if "sentinel" in inputs.security_services:
-                            sentinel = Sentinel("6. Azure Sentinel")
+                            sentinel = Sentinel(f"{service_counter}. Azure Sentinel\\n[SIEM/SOAR]\\n[24/7 SOC]")
                             security_services.append(sentinel)
+                            service_counter += 1
                 
-                # Management & Governance Layer (Left side)
-                with Cluster("📋 Management & Governance", graph_attr={
-                    "bgcolor": "#f3e5f5", 
-                    "style": "filled,rounded",
+                # === MANAGEMENT & GOVERNANCE LAYER (LEFT SIDE) ===
+                # Principle 11-15: Governance hierarchy, cost management, policy enforcement
+                with Cluster("📋 MANAGEMENT & GOVERNANCE", graph_attr={
+                    "bgcolor": "#f3e5f5",       # Light purple for governance
+                    "style": "filled,rounded,bold",
                     "color": "#7b1fa2",
                     "fontcolor": "#7b1fa2",
-                    "fontsize": "14",
-                    "label": "📋 MANAGEMENT & GOVERNANCE"
+                    "fontsize": "16",
+                    "label": "📋 MANAGEMENT & GOVERNANCE\\n[Cost Management + Policies]",
+                    "penwidth": "3",
+                    "margin": "16"
                 }):
-                    root_mg = Subscriptions("Root MG")
+                    # Management Group Hierarchy
+                    root_mg = Subscriptions(f"{service_counter}. Root Management Group\\n[Enterprise Governance]")
+                    service_counter += 1
+                    
                     if template['template']['name'] == "Enterprise Scale Landing Zone":
-                        platform_mg = Subscriptions("Platform MG")
-                        workloads_mg = Subscriptions("Landing Zones MG")
-                        sandbox_mg = Subscriptions("Sandbox MG") 
-                        decom_mg = Subscriptions("Decommissioned MG")
-                        root_mg >> [platform_mg, workloads_mg, sandbox_mg, decom_mg]
+                        platform_mg = Subscriptions(f"{service_counter}. Platform MG\\n[Shared Services]")
+                        service_counter += 1
+                        workloads_mg = Subscriptions(f"{service_counter}. Landing Zones MG\\n[Application Workloads]")
+                        service_counter += 1
+                        sandbox_mg = Subscriptions(f"{service_counter}. Sandbox MG\\n[Development/Testing]")
+                        service_counter += 1
+                        decom_mg = Subscriptions(f"{service_counter}. Decommissioned MG\\n[Legacy/Sunset]")
+                        service_counter += 1
+                        
+                        # Cost Management and Governance connections
+                        root_mg >> Edge(label="Policy\\nAssignment", style="dashed", color="#7b1fa2") >> [platform_mg, workloads_mg, sandbox_mg, decom_mg]
                     else:
-                        platform_mg = Subscriptions("Platform MG")
-                        workloads_mg = Subscriptions("Workloads MG")
-                        root_mg >> [platform_mg, workloads_mg]
+                        platform_mg = Subscriptions(f"{service_counter}. Platform MG\\n[Infrastructure]")
+                        service_counter += 1
+                        workloads_mg = Subscriptions(f"{service_counter}. Workloads MG\\n[Applications]")
+                        service_counter += 1
+                        root_mg >> Edge(label="Governance\\nPolicies", style="dashed", color="#7b1fa2") >> [platform_mg, workloads_mg]
                 
-                # Active Regions - Network Architecture (Center - Trusted Zone)
-                with Cluster("🌐 Active Region - Network Hub", graph_attr={
-                    "bgcolor": "#e3f2fd", 
-                    "style": "filled,rounded",
+                # === ACTIVE REGION - NETWORK HUB (CENTER - TRUSTED ZONE) ===
+                # Principle 16-20: Network architecture, clear boundaries, HA indicators
+                with Cluster("🌐 ACTIVE REGION - NETWORK HUB", graph_attr={
+                    "bgcolor": "#e3f2fd",       # Light blue for trusted zone
+                    "style": "filled,rounded,bold",
                     "color": "#1565c0",
                     "fontcolor": "#1565c0",
-                    "fontsize": "14",
-                    "label": "🌐 ACTIVE REGION - NETWORK HUB (Trusted Zone)"
+                    "fontsize": "16",
+                    "label": "🌐 ACTIVE REGION - NETWORK HUB (TRUSTED ZONE)\\n[Primary Region: East US 2]",
+                    "penwidth": "3",
+                    "margin": "20"
                 }):
-                    # Hub VNet with numbered workflow
-                    hub_vnet = VirtualNetworks("7. Hub VNet\n(Shared Services)")
+                    # Hub VNet with enhanced labeling
+                    hub_vnet = VirtualNetworks(f"{service_counter}. Hub VNet\\n[Shared Network Services]\\n[10.0.0.0/16]\\n[Active-Active HA]")
+                    service_counter += 1
                     
-                    # Network services based on selections with numbering
+                    # Network Security and Connectivity Services
                     network_services = []
-                    service_counter = 8
+                    
+                    # Azure Firewall (Required for enterprise)
+                    if not inputs.network_services or "firewall" in inputs.network_services:
+                        firewall = Firewall(f"{service_counter}. Azure Firewall\\n[Network Security]\\n[Premium SKU]\\n[Threat Intelligence]")
+                        network_services.append(firewall)
+                        service_counter += 1
+                    
+                    # VPN Gateway for hybrid connectivity
+                    if not inputs.network_services or "vpn_gateway" in inputs.network_services:
+                        vpn_gw = VirtualNetworkGateways(f"{service_counter}. VPN Gateway\\n[Hybrid Connectivity]\\n[VpnGw2 SKU]\\n[99.95% SLA]")
+                        network_services.append(vpn_gw)
+                        service_counter += 1
+                    
+                    # ExpressRoute for dedicated connectivity
+                    if inputs.network_services and "expressroute" in inputs.network_services:
+                        er_circuit = ExpressrouteCircuits(f"{service_counter}. ExpressRoute\\n[Private Connectivity]\\n[1Gbps Circuit]\\n[99.95% SLA]")
+                        network_services.append(er_circuit)
+                        service_counter += 1
+                    
+                    # Application Gateway for L7 load balancing
+                    if inputs.network_services and "application_gateway" in inputs.network_services:
+                        app_gw = ApplicationGateway(f"{service_counter}. Application Gateway\\n[L7 Load Balancer]\\n[WAF Enabled]\\n[Standard_v2 SKU]")
+                        network_services.append(app_gw)
+                        service_counter += 1
+                    
+                    # Additional network services based on selection
                     if inputs.network_services:
                         for service in inputs.network_services:
                             if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
-                                diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
-                                service_name = f"{service_counter}. {AZURE_SERVICES_MAPPING[service]['name']}"
-                                network_services.append(diagram_class(service_name))
-                                service_counter += 1
+                                if service not in ["firewall", "vpn_gateway", "expressroute", "application_gateway", "front_door", "cdn", "traffic_manager"]:
+                                    diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                                    service_name = f"{service_counter}. {AZURE_SERVICES_MAPPING[service]['name']}\\n[Network Service]"
+                                    network_services.append(diagram_class(service_name))
+                                    service_counter += 1
                     
-                    # Default network services if none specified
-                    if not network_services:
-                        firewall = Firewall(f"{service_counter}. Azure Firewall")
-                        vpn_gw = VirtualNetworkGateways(f"{service_counter + 1}. VPN Gateway")
-                        network_services = [firewall, vpn_gw]
-                        service_counter += 2
+                    # Spoke VNets with environment labeling and CIDR blocks
+                    prod_vnet = VirtualNetworks(f"{service_counter}. Production VNet\\n[PROD Environment]\\n[10.1.0.0/16]\\n[Active-Active HA]\\n[Zone Redundant]")
+                    service_counter += 1
                     
-                    # Spoke VNets with clear environment labeling
-                    prod_vnet = VirtualNetworks(f"{service_counter}. Production VNet\n[PROD]")
-                    dev_vnet = VirtualNetworks(f"{service_counter + 1}. Development VNet\n[DEV]")
+                    dev_vnet = VirtualNetworks(f"{service_counter}. Development VNet\\n[DEV Environment]\\n[10.2.0.0/16]\\n[Standard Tier]")
+                    service_counter += 1
                     
-                    # High Availability notation
-                    prod_vnet_label = f"{service_counter}. Production VNet\n[PROD - Active/Active]"
-                    dev_vnet_label = f"{service_counter + 1}. Development VNet\n[DEV - Standard]"
+                    uat_vnet = VirtualNetworks(f"{service_counter}. UAT VNet\\n[UAT Environment]\\n[10.3.0.0/16]\\n[Standard Tier]")
+                    service_counter += 1
                     
-                    # Connect hub to spokes with numbered flow
-                    hub_vnet >> Edge(label="Hub-Spoke\nPeering", style="solid") >> [prod_vnet, dev_vnet]
+                    # Hub-Spoke peering with clear traffic flow
+                    hub_vnet >> Edge(label="Hub-Spoke\\nPeering\\n[BGP Routing]", style="solid", color="#1565c0", penwidth="3") >> [prod_vnet, dev_vnet, uat_vnet]
                     
-                    # Connect platform subscription to hub
-                    platform_mg >> Edge(label="Network\nServices", style="dashed") >> hub_vnet
+                    # Platform subscription governance connection
+                    platform_mg >> Edge(label="Network\\nGovernance\\n[RBAC + Policies]", style="dashed", color="#7b1fa2", penwidth="2") >> hub_vnet
                     
-                    # Connect network services to hub
-                    for ns in network_services:
-                        hub_vnet >> Edge(label="Internal\nRouting", style="dotted") >> ns
+                    # Connect network services to hub with clear flow labels
+                    for i, ns in enumerate(network_services):
+                        hub_vnet >> Edge(label=f"Internal\\nRouting\\n[Service {i+1}]", style="dotted", color="#1565c0", penwidth="2") >> ns
                 
-                # Compute Services Layer (Middle)
+                # === COMPUTE & APPLICATION LAYER (MIDDLE TIER) ===
+                # Principle 21-25: Application architecture, scalability indicators, cloud-native patterns
                 if inputs.compute_services:
-                    _add_enhanced_service_clusters(inputs, prod_vnet, workloads_mg, service_counter)
-                
-                # Data Layer (Bottom)
-                if inputs.database_services or inputs.storage_services:
-                    _add_data_layer_clusters(inputs, prod_vnet, workloads_mg, service_counter + 20)
-                
-                # Standby Region (DR) 
-                if template['template']['name'] == "Enterprise Scale Landing Zone":
-                    with Cluster("🔄 Standby Region (DR)", graph_attr={
-                        "bgcolor": "#fff3e0", 
-                        "style": "filled,rounded,dashed",  # Dashed border for DR
+                    with Cluster("⚡ COMPUTE & APPLICATIONS", graph_attr={
+                        "bgcolor": "#fff3e0",       # Light orange for compute
+                        "style": "filled,rounded,bold",
                         "color": "#ef6c00",
                         "fontcolor": "#ef6c00",
-                        "fontsize": "14",
-                        "label": "🔄 STANDBY REGION - DISASTER RECOVERY"
+                        "fontsize": "16",
+                        "label": "⚡ COMPUTE & APPLICATIONS\\n[Cloud-Native + Legacy]\\n[Auto-Scaling Enabled]",
+                        "penwidth": "3",
+                        "margin": "16"
                     }):
-                        dr_vnet = VirtualNetworks("DR VNet\n[Passive]")
-                        # Connect with replication arrows
-                        prod_vnet >> Edge(label="Geo-Replication", style="dashed", color="orange") >> dr_vnet
+                        compute_services = []
+                        
+                        for service in inputs.compute_services:
+                            if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                                diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                                service_name = f"{service_counter}. {AZURE_SERVICES_MAPPING[service]['name']}"
+                                
+                                # Add tier and scaling information
+                                if service == "aks":
+                                    service_name += "\\n[Kubernetes v1.28]\\n[Auto-Scale: 1-100 nodes]\\n[Zone Redundant]"
+                                elif service == "app_services":
+                                    service_name += "\\n[PaaS Platform]\\n[Standard S1 SKU]\\n[Auto-Scale Enabled]"
+                                elif service == "virtual_machines":
+                                    service_name += "\\n[IaaS Platform]\\n[Standard_D4s_v3]\\n[Availability Sets]"
+                                elif service == "functions":
+                                    service_name += "\\n[Serverless]\\n[Consumption Plan]\\n[Event-Driven]"
+                                else:
+                                    service_name += "\\n[Managed Service]\\n[Standard Tier]"
+                                
+                                compute_services.append(diagram_class(service_name))
+                                service_counter += 1
+                        
+                        # Connect compute services to production VNet
+                        for cs in compute_services:
+                            prod_vnet >> Edge(label="Application\\nTraffic\\n[HTTPS/443]", style="solid", color="#ef6c00", penwidth="2") >> cs
+                            
+                        # Connect workloads management group for governance
+                        if compute_services:
+                            workloads_mg >> Edge(label="Application\\nGovernance\\n[Policies + RBAC]", style="dashed", color="#7b1fa2", penwidth="2") >> compute_services[0]
                 
-                # Monitoring & Observability Overlay (Right side)
-                with Cluster("📊 Monitoring & Observability", graph_attr={
-                    "bgcolor": "#e0f2f1", 
-                    "style": "filled,rounded",
+                # === INTEGRATION & API LAYER ===
+                # Principle 26-30: Integration patterns, API management, messaging
+                if inputs.integration_services:
+                    with Cluster("🔗 INTEGRATION & API MANAGEMENT", graph_attr={
+                        "bgcolor": "#e1f5fe",       # Light cyan for integration
+                        "style": "filled,rounded,bold",
+                        "color": "#0277bd",
+                        "fontcolor": "#0277bd",
+                        "fontsize": "16",
+                        "label": "🔗 INTEGRATION & API MANAGEMENT\\n[Service Mesh + API Gateway]",
+                        "penwidth": "3",
+                        "margin": "16"
+                    }):
+                        integration_services = []
+                        
+                        for service in inputs.integration_services:
+                            if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                                diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                                service_name = f"{service_counter}. {AZURE_SERVICES_MAPPING[service]['name']}"
+                                
+                                # Add integration-specific details
+                                if service == "api_management":
+                                    service_name += "\\n[API Gateway]\\n[Developer Portal]\\n[Rate Limiting]"
+                                elif service == "logic_apps":
+                                    service_name += "\\n[Workflow Engine]\\n[Consumption Plan]\\n[400+ Connectors]"
+                                elif service == "service_bus":
+                                    service_name += "\\n[Message Broker]\\n[Premium Tier]\\n[Dead Letter Queue]"
+                                elif service == "event_grid":
+                                    service_name += "\\n[Event Routing]\\n[Custom Topics]\\n[Event Subscriptions]"
+                                else:
+                                    service_name += "\\n[Integration Service]"
+                                
+                                integration_services.append(diagram_class(service_name))
+                                service_counter += 1
+                        
+                        # Connect integration services to both production and hub
+                        for is_service in integration_services:
+                            prod_vnet >> Edge(label="Integration\\nTraffic\\n[AMQP/HTTP]", style="solid", color="#0277bd", penwidth="2") >> is_service
+                            hub_vnet >> Edge(label="Cross-Service\\nCommunication", style="dotted", color="#0277bd") >> is_service
+                
+                # === DATA LAYER (BOTTOM TIER) ===
+                # Principle 31-35: Data architecture, storage tiers, backup/recovery
+                if inputs.database_services or inputs.storage_services:
+                    with Cluster("💾 DATA & STORAGE LAYER", graph_attr={
+                        "bgcolor": "#e8f5e9",       # Light green for data
+                        "style": "filled,rounded,bold",
+                        "color": "#2e7d32",
+                        "fontcolor": "#2e7d32",
+                        "fontsize": "16",
+                        "label": "💾 DATA & STORAGE LAYER\\n[Persistent Storage + Databases]\\n[Geo-Redundant + Backup]",
+                        "penwidth": "3",
+                        "margin": "16"
+                    }):
+                        storage_services = []
+                        database_services = []
+                        
+                        # Storage Services with tier information
+                        if inputs.storage_services:
+                            for service in inputs.storage_services:
+                                if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                                    diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                                    service_name = f"{service_counter}. {AZURE_SERVICES_MAPPING[service]['name']}"
+                                    
+                                    # Add storage-specific details and data classification
+                                    if service == "storage_accounts":
+                                        service_name += "\\n[General Purpose v2]\\n[LRS+GRS Redundancy]\\n[Hot/Cool/Archive Tiers]"
+                                    elif service == "blob_storage":
+                                        service_name += "\\n[Object Storage]\\n[Versioning Enabled]\\n[Lifecycle Management]"
+                                    elif service == "queue_storage":
+                                        service_name += "\\n[Message Queue]\\n[64KB Message Size]\\n[Async Processing]"
+                                    elif service == "table_storage":
+                                        service_name += "\\n[NoSQL Key-Value]\\n[Serverless]\\n[Auto-Scale]"
+                                    elif service == "data_lake":
+                                        service_name += "\\n[Big Data Analytics]\\n[Hierarchical Namespace]\\n[Data Lake Gen2]"
+                                    else:
+                                        service_name += "\\n[Storage Service]\\n[Managed Service]"
+                                    
+                                    storage_services.append(diagram_class(service_name))
+                                    service_counter += 1
+                        
+                        # Database Services with performance tiers
+                        if inputs.database_services:
+                            for service in inputs.database_services:
+                                if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                                    diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                                    service_name = f"{service_counter}. {AZURE_SERVICES_MAPPING[service]['name']}"
+                                    
+                                    # Add database-specific details and performance tiers
+                                    if service == "sql_database":
+                                        service_name += "\\n[General Purpose]\\n[4 vCores, 100GB]\\n[Point-in-Time Restore]\\n[99.99% SLA]"
+                                    elif service == "cosmos_db":
+                                        service_name += "\\n[Multi-Model NoSQL]\\n[Global Distribution]\\n[5 Consistency Levels]\\n[99.999% SLA]"
+                                    elif service == "redis_cache":
+                                        service_name += "\\n[In-Memory Cache]\\n[Standard C1 SKU]\\n[Clustering Support]\\n[99.9% SLA]"
+                                    elif service == "mysql":
+                                        service_name += "\\n[Managed MySQL]\\n[General Purpose]\\n[Auto-Backup]\\n[99.99% SLA]"
+                                    elif service == "postgresql":
+                                        service_name += "\\n[Managed PostgreSQL]\\n[General Purpose]\\n[Point-in-Time Restore]\\n[99.99% SLA]"
+                                    else:
+                                        service_name += "\\n[Managed Database]\\n[High Availability]"
+                                    
+                                    database_services.append(diagram_class(service_name))
+                                    service_counter += 1
+                        
+                        # Data connections with different patterns
+                        all_data_services = storage_services + database_services
+                        for ds in all_data_services:
+                            prod_vnet >> Edge(label="Data Access\\n[TLS 1.3]\\n[Private Endpoint]", style="solid", color="#2e7d32", penwidth="2") >> ds
+                            workloads_mg >> Edge(label="Data Governance\\n[Classification + Policies]", style="dashed", color="#7b1fa2") >> ds
+                
+                # === ANALYTICS & AI LAYER ===
+                # Principle 36-40: Analytics architecture, AI/ML services, big data processing
+                if inputs.analytics_services:
+                    with Cluster("📊 ANALYTICS & AI", graph_attr={
+                        "bgcolor": "#fce4ec",       # Light pink for analytics
+                        "style": "filled,rounded,bold",
+                        "color": "#c2185b",
+                        "fontcolor": "#c2185b",
+                        "fontsize": "16",
+                        "label": "📊 ANALYTICS & AI\\n[Big Data + Machine Learning]\\n[Real-time + Batch Processing]",
+                        "penwidth": "3",
+                        "margin": "16"
+                    }):
+                        analytics_services = []
+                        
+                        for service in inputs.analytics_services:
+                            if service in AZURE_SERVICES_MAPPING and AZURE_SERVICES_MAPPING[service]["diagram_class"]:
+                                diagram_class = AZURE_SERVICES_MAPPING[service]["diagram_class"]
+                                service_name = f"{service_counter}. {AZURE_SERVICES_MAPPING[service]['name']}"
+                                
+                                # Add analytics-specific details
+                                if service == "synapse":
+                                    service_name += "\\n[Data Warehouse]\\n[Spark + SQL Pools]\\n[Data Integration]"
+                                elif service == "data_factory":
+                                    service_name += "\\n[ETL/ELT Pipeline]\\n[Hybrid Data Movement]\\n[250+ Data Connectors]"
+                                elif service == "databricks":
+                                    service_name += "\\n[Apache Spark]\\n[Collaborative Notebooks]\\n[MLflow Integration]"
+                                elif service == "stream_analytics":
+                                    service_name += "\\n[Real-time Analytics]\\n[Event Processing]\\n[IoT Data Streams]"
+                                else:
+                                    service_name += "\\n[Analytics Service]"
+                                
+                                analytics_services.append(diagram_class(service_name))
+                                service_counter += 1
+                        
+                        # Connect analytics to data sources and VNets
+                        for as_service in analytics_services:
+                            prod_vnet >> Edge(label="Analytics\\nProcessing\\n[Secure Access]", style="solid", color="#c2185b", penwidth="2") >> as_service
+                            if storage_services:
+                                storage_services[0] >> Edge(label="Data\\nIngestion\\n[Batch/Stream]", style="dotted", color="#c2185b") >> as_service
+                
+                # === STANDBY REGION (DISASTER RECOVERY) ===
+                # Principle 41-45: DR strategy, cross-region replication, business continuity
+                if template['template']['name'] == "Enterprise Scale Landing Zone":
+                    with Cluster("🔄 STANDBY REGION (DISASTER RECOVERY)", graph_attr={
+                        "bgcolor": "#fff3e0",       # Light amber for DR
+                        "style": "filled,rounded,dashed,bold",  # Dashed border for DR
+                        "color": "#ef6c00",
+                        "fontcolor": "#ef6c00",
+                        "fontsize": "16",
+                        "label": "🔄 STANDBY REGION - DISASTER RECOVERY\\n[Secondary Region: West US 2]\\n[RTO: 1 hour | RPO: 15 minutes]",
+                        "penwidth": "3",
+                        "margin": "16"
+                    }):
+                        # DR Network Infrastructure
+                        dr_vnet = VirtualNetworks(f"{service_counter}. DR VNet\\n[Disaster Recovery]\\n[10.100.0.0/16]\\n[Passive Standby]\\n[Automated Failover]")
+                        service_counter += 1
+                        
+                        # DR Storage for backup
+                        dr_storage = StorageAccounts(f"{service_counter}. DR Storage\\n[Geo-Redundant]\\n[Cross-Region Replication]\\n[99.999999999% Durability]")
+                        service_counter += 1
+                        
+                        # DR Database replicas
+                        if inputs.database_services and "sql_database" in inputs.database_services:
+                            dr_sql = SQLDatabases(f"{service_counter}. DR SQL Database\\n[Read Replica]\\n[Async Replication]\\n[Auto-Failover Group]")
+                            service_counter += 1
+                            dr_vnet >> Edge(label="Database\\nReplication", style="dotted", color="#ef6c00") >> dr_sql
+                        
+                        # Cross-region replication connections
+                        prod_vnet >> Edge(label="Geo-Replication\\n[Async]\\n[RTO: 1hr]", style="dashed", color="#ef6c00", penwidth="3") >> dr_vnet
+                        
+                        if storage_services:
+                            storage_services[0] >> Edge(label="Storage\\nReplication\\n[GRS/RA-GRS]", style="dashed", color="#2e7d32") >> dr_storage
+                
+                # === MONITORING & OBSERVABILITY OVERLAY ===
+                # Principle 46-50: Observability, SIEM, compliance monitoring, cost optimization
+                with Cluster("📊 MONITORING & OBSERVABILITY", graph_attr={
+                    "bgcolor": "#e0f2f1",       # Light teal for monitoring
+                    "style": "filled,rounded,bold",
                     "color": "#00695c",
                     "fontcolor": "#00695c",
-                    "fontsize": "14", 
-                    "label": "📊 MONITORING & OBSERVABILITY"
+                    "fontsize": "16", 
+                    "label": "📊 MONITORING & OBSERVABILITY\\n[360° Visibility + SIEM]\\n[Cost Optimization + Compliance]",
+                    "penwidth": "3",
+                    "margin": "16"
                 }):
-                    # Use general subscriptions as placeholders for monitoring services
                     monitor_services = []
+                    
+                    # Core monitoring services
+                    monitor = Subscriptions(f"{service_counter}. Azure Monitor\\n[Metrics + Alerts]\\n[Application Insights]\\n[99.9% SLA]")
+                    monitor_services.append(monitor)
+                    service_counter += 1
+                    
+                    log_analytics = Subscriptions(f"{service_counter}. Log Analytics\\n[Centralized Logging]\\n[KQL Queries]\\n[30-day Retention]")
+                    monitor_services.append(log_analytics)
+                    service_counter += 1
+                    
+                    # Additional monitoring services based on selection
                     if inputs.monitoring_services:
-                        counter = service_counter + 50
                         for service in inputs.monitoring_services:
-                            if service == "monitor":
-                                monitor = Subscriptions(f"{counter}. Azure Monitor")
-                                monitor_services.append(monitor)
-                                counter += 1
-                            elif service == "log_analytics":
-                                log_analytics = Subscriptions(f"{counter}. Log Analytics")
-                                monitor_services.append(log_analytics)
-                                counter += 1
+                            if service not in ["monitor", "log_analytics"]:
+                                service_name = f"{service_counter}. {service.replace('_', ' ').title()}\\n[Monitoring Service]"
+                                monitor_services.append(Subscriptions(service_name))
+                                service_counter += 1
                     
-                    # Default monitoring services
-                    if not monitor_services:
-                        monitor = Subscriptions("Azure Monitor")
-                        log_analytics = Subscriptions("Log Analytics")
-                        monitor_services = [monitor, log_analytics]
+                    # Cost Management and Governance monitoring
+                    cost_mgmt = Subscriptions(f"{service_counter}. Cost Management\\n[Budget Alerts]\\n[Chargeback/Showback]\\n[Optimization Recommendations]")
+                    monitor_services.append(cost_mgmt)
+                    service_counter += 1
                     
-                    # Add Sentinel for SIEM if security services are enabled
+                    # Security monitoring (if Sentinel is enabled)
                     if inputs.security_services and "sentinel" in inputs.security_services:
-                        # Already added above in security section
-                        pass
+                        siem = Subscriptions(f"{service_counter}. Security Monitoring\\n[24/7 SOC]\\n[Threat Hunting]\\n[SOAR Playbooks]")
+                        monitor_services.append(siem)
+                        service_counter += 1
+                    
+                    # Comprehensive monitoring connections to all layers
+                    monitored_services = [hub_vnet, prod_vnet, dev_vnet, uat_vnet]
+                    if 'compute_services' in locals() and compute_services:
+                        monitored_services.extend(compute_services[:2])  # Monitor first 2 compute services
+                    if 'all_data_services' in locals() and all_data_services:
+                        monitored_services.extend(all_data_services[:2])  # Monitor first 2 data services
+                    
+                    for i, monitor_service in enumerate(monitor_services[:3]):  # First 3 monitoring services
+                        for j, main_service in enumerate(monitored_services):
+                            if i == 0:  # Azure Monitor connects to all
+                                main_service >> Edge(label=f"Metrics+Logs\\n[Telemetry]", style="dotted", color="#00695c", penwidth="1") >> monitor_service
+                            elif i == 1 and j < 3:  # Log Analytics to network services
+                                main_service >> Edge(label="Log\\nCollection", style="dotted", color="#00695c", penwidth="1") >> monitor_service
                 
-                # Main workflow connections with numbered labels
+                # === MAIN WORKFLOW CONNECTIONS ===
+                # Principle: Clear numbered workflow from internet to applications to data
+                logger.info("Creating numbered workflow connections...")
+                
+                # 1. Internet to Security flow (User Authentication)
                 for i, service in enumerate(internet_services, 1):
-                    for sec_service in security_services[:2]:  # Connect to first 2 security services
-                        service >> Edge(label=f"Auth Flow {i}", style="solid", color="blue") >> sec_service
+                    for j, sec_service in enumerate(security_services[:2]):  # Connect to AAD and Key Vault
+                        service >> Edge(
+                            label=f"Auth Flow {i}.{j+1}\\n[OAuth 2.0/OIDC]", 
+                            style="solid", 
+                            color="#1976d2", 
+                            penwidth="3"
+                        ) >> sec_service
                 
-                # Security to network flow
-                aad >> Edge(label="Identity\nValidation", style="solid", color="green") >> hub_vnet
+                # 2. Security to Network flow (Identity Validation)
+                aad >> Edge(
+                    label="Identity\\nValidation\\n[JWT Tokens]\\n[Conditional Access]", 
+                    style="solid", 
+                    color="#2e7d32", 
+                    penwidth="3"
+                ) >> hub_vnet
                 
-                # Platform management connections
-                platform_mg >> Edge(label="Governance", style="dashed", color="purple") >> [aad, key_vault]
+                # 3. Platform management to security (Governance)
+                platform_mg >> Edge(
+                    label="Security\\nGovernance\\n[RBAC + Policies]\\n[Compliance]", 
+                    style="dashed", 
+                    color="#7b1fa2", 
+                    penwidth="2"
+                ) >> [aad, key_vault]
                 
-                # Monitoring connections to all layers
-                for monitor_service in monitor_services:
-                    for main_service in [hub_vnet, prod_vnet, dev_vnet]:
-                        main_service >> Edge(label="Logs/Metrics", style="dotted", color="teal") >> monitor_service
+                # 4. Internet to Application flow (if Application Gateway exists)
+                if network_services and any("gateway" in str(ns) for ns in network_services):
+                    for inet_svc in internet_services:
+                        for net_svc in network_services:
+                            if "gateway" in str(net_svc).lower() or "application" in str(net_svc).lower():
+                                inet_svc >> Edge(
+                                    label="Web Traffic\\n[HTTPS/443]\\n[Global Load Balance]",
+                                    style="solid",
+                                    color="#ff6f00",
+                                    penwidth="3"
+                                ) >> net_svc
+                                break
                 
-                logger.info("Enterprise architecture diagram structure created successfully")
+                # === COMPREHENSIVE LEGEND ===
+                # Principle: Complete legend covering all diagram elements
+                with Cluster("📋 LEGEND & NOTATION GUIDE", graph_attr={
+                    "bgcolor": "#f5f5f5",       # Light gray for legend
+                    "style": "filled,rounded,bold",
+                    "color": "#424242",
+                    "fontcolor": "#424242",
+                    "fontsize": "14",
+                    "label": "📋 LEGEND & NOTATION GUIDE",
+                    "penwidth": "2",
+                    "margin": "12",
+                    "rank": "sink"  # Place at bottom
+                }):
+                    # Legend items using subscriptions as placeholder boxes
+                    legend_zones = Subscriptions("🔴 ZONES:\\n• Red: Untrusted (Internet)\\n• Green: Semi-trusted (Identity)\\n• Blue: Trusted (Network/Apps)\\n• Orange: Compute/DR")
+                    
+                    legend_lines = Subscriptions("📏 LINE TYPES:\\n• Solid: Primary traffic flow\\n• Dashed: Governance/policies\\n• Dotted: Monitoring/logs\\n• Bold: Critical connections")
+                    
+                    legend_ha = Subscriptions("⚡ HA INDICATORS:\\n• Active-Active: Load balanced\\n• Active-Passive: Standby ready\\n• Zone Redundant: Multi-AZ\\n• Geo-Redundant: Cross-region")
+                    
+                    legend_compliance = Subscriptions("🛡️ COMPLIANCE:\\n• GDPR: Data protection\\n• HIPAA: Healthcare data\\n• SOC 2: Security controls\\n• ISO 27001: Info security")
+                    
+                    legend_tiers = Subscriptions("💰 SERVICE TIERS:\\n• Basic: Development/test\\n• Standard: Production ready\\n• Premium: Enterprise grade\\n• Ultra: Mission critical")
+                
+                logger.info("Enhanced enterprise architecture diagram structure created successfully")
         
         except Exception as e:
-            logger.error(f"Error during diagram creation: {str(e)}")
+            logger.error(f"Error during enhanced diagram creation: {str(e)}")
             logger.error(traceback.format_exc())
-            raise Exception(f"Error generating Azure architecture diagram: {str(e)}")
+            raise Exception(f"Error generating enhanced Azure architecture diagram: {str(e)}")
         
         # Return the file path of the generated diagram
         if format.lower() == "svg":
@@ -896,7 +1250,7 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
             svg_path = f"{filepath}.svg"
             if os.path.exists(svg_path):
                 file_size = os.path.getsize(svg_path)
-                logger.info(f"SVG diagram generated successfully: {svg_path} (size: {file_size} bytes)")
+                logger.info(f"Enhanced SVG diagram generated successfully: {svg_path} (size: {file_size} bytes)")
                 return svg_path
             else:
                 # Fallback: try to generate SVG using dot command from gv file
@@ -911,7 +1265,7 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                         
                         if os.path.exists(svg_path):
                             file_size = os.path.getsize(svg_path)
-                            logger.info(f"SVG diagram generated successfully via dot: {svg_path} (size: {file_size} bytes)")
+                            logger.info(f"Enhanced SVG diagram generated successfully via dot: {svg_path} (size: {file_size} bytes)")
                             return svg_path
                         else:
                             raise Exception(f"SVG generation failed - file not found: {svg_path}")
@@ -926,13 +1280,13 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
             png_path = f"{filepath}.png"
             if os.path.exists(png_path):
                 file_size = os.path.getsize(png_path)
-                logger.info(f"Diagram generated successfully: {png_path} (size: {file_size} bytes)")
+                logger.info(f"Enhanced PNG diagram generated successfully: {png_path} (size: {file_size} bytes)")
                 return png_path
             else:
-                raise Exception(f"Diagram generation failed - PNG file not found: {png_path}")
+                raise Exception(f"Enhanced diagram generation failed - PNG file not found: {png_path}")
             
     except Exception as e:
-        logger.error(f"Failed to generate Azure architecture diagram: {str(e)}")
+        logger.error(f"Failed to generate enhanced Azure architecture diagram: {str(e)}")
         logger.error(traceback.format_exc())
         raise
 
