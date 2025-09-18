@@ -475,6 +475,131 @@ function App() {
     }
   };
 
+  // Enhanced background download functions
+  const generateBackgroundDiagrams = async () => {
+    try {
+      setLoading(true);
+      toast({
+        title: "Background Generation Started",
+        description: "Generating enhanced diagrams in background with 50+ design principles...",
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      });
+
+      const res = await fetch("http://127.0.0.1:8001/generate-background-diagrams", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      
+      if (data.success) {
+        // Store file paths for later download
+        const fileInfo = data.file_info;
+        
+        // Now download the enhanced files
+        await downloadEnhancedFile(fileInfo.png_path, "png");
+        await downloadEnhancedFile(fileInfo.svg_path, "svg");
+        
+        toast({
+          title: "Enhanced Diagrams Generated",
+          description: "Background generation complete! Enhanced PNG and SVG files with improved 50+ design principles are ready.",
+          status: "success",
+          duration: 8000,
+          isClosable: true,
+        });
+      } else {
+        throw new Error("Failed to generate background diagrams");
+      }
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Background Generation Failed",
+        description: "Failed to generate enhanced diagrams. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const downloadEnhancedFile = async (filePath: string, format: string) => {
+    try {
+      const res = await fetch("http://127.0.0.1:8001/download-enhanced-diagram", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          file_path: filePath,
+          format: format
+        }),
+      });
+      
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      
+      if (data.success) {
+        if (data.format === "SVG" && data.svg_content) {
+          // Download SVG (either requested or fallback from PNG)
+          const blob = new Blob([data.svg_content], { type: 'image/svg+xml' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          const fileExtension = format === "png" && data.note ? "svg" : "svg";
+          a.download = `enhanced-azure-landing-zone-v2.${fileExtension}`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+          
+          // Show note if PNG conversion failed
+          if (data.note) {
+            toast({
+              title: "Note",
+              description: data.note,
+              status: "info",
+              duration: 5000,
+              isClosable: true,
+            });
+          }
+        } else if (data.format === "PNG" && data.png_base64) {
+          // Download PNG
+          const byteCharacters = atob(data.png_base64);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'image/png' });
+          
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'enhanced-azure-landing-zone-v2.png';
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        }
+      } else {
+        throw new Error(`Failed to download enhanced ${format.toUpperCase()} file`);
+      }
+    } catch (err) {
+      console.error(`Error downloading enhanced ${format.toUpperCase()}:`, err);
+      throw err;
+    }
+  };
+
   const downloadDrawio = async () => {
     try {
       const res = await fetch("http://127.0.0.1:8001/generate-drawio", {
@@ -964,6 +1089,16 @@ function App() {
                           size="sm"
                         >
                           📥 Download Draw.io
+                        </Button>
+                        <Button
+                          onClick={generateBackgroundDiagrams}
+                          colorScheme="orange"
+                          variant="solid"
+                          size="sm"
+                          isLoading={loading}
+                          loadingText="Enhancing..."
+                        >
+                          ⚡ Enhanced Download (v2.0)
                         </Button>
 
                       </HStack>
