@@ -3006,10 +3006,10 @@ Use the generated diagrams for implementation planning and detailed resource con
 
 @app.post("/generate-azure-diagram")
 def generate_azure_diagram_endpoint(inputs: CustomerInputs):
-    """Generate Azure architecture diagram using Python Diagrams library with proper Azure icons"""
+    """Generate Azure architecture diagram using enhanced simple SVG generation with 50+ design principles"""
     try:
-        # Generate Azure architecture diagram with proper icons
-        diagram_path = generate_azure_architecture_diagram(inputs)
+        # Generate Azure architecture diagram with enhanced design principles
+        diagram_path = generate_enhanced_azure_architecture_diagram(inputs)
         
         # Read the generated PNG file
         with open(diagram_path, "rb") as f:
@@ -3147,9 +3147,9 @@ def generate_comprehensive_azure_architecture(inputs: CustomerInputs):
         drawio_xml = generate_enhanced_drawio_xml(inputs)
         logger.info(f"Draw.io XML generated successfully (size: {len(drawio_xml)} characters)")
         
-        # Generate Azure PNG diagram with proper Azure icons
-        logger.info("Generating Azure PNG diagram...")
-        diagram_path = generate_azure_architecture_diagram(inputs)
+        # Generate Azure PNG diagram with enhanced design principles
+        logger.info("Generating enhanced Azure PNG diagram...")
+        diagram_path = generate_enhanced_azure_architecture_diagram(inputs)
         logger.info(f"Azure PNG diagram generated successfully: {diagram_path}")
         
         # Read the PNG file
@@ -3300,7 +3300,7 @@ def generate_interactive_azure_architecture(inputs: CustomerInputs):
         svg_diagram_path = ""
         
         try:
-            svg_diagram_path = generate_azure_architecture_diagram(inputs, format="svg")
+            svg_diagram_path = generate_enhanced_azure_architecture_diagram(inputs, format="svg")
             # Read the SVG file
             with open(svg_diagram_path, "r", encoding="utf-8") as f:
                 svg_content = f.read()
@@ -3455,9 +3455,9 @@ def generate_png_diagram(inputs: CustomerInputs):
         validate_customer_inputs(inputs)
         logger.info("Input validation completed successfully")
         
-        # Generate PNG diagram
-        logger.info("Generating PNG diagram...")
-        png_path = generate_azure_architecture_diagram(inputs, format="png")
+        # Generate PNG diagram with enhanced design principles
+        logger.info("Generating enhanced PNG diagram...")
+        png_path = generate_enhanced_azure_architecture_diagram(inputs, format="png")
         logger.info(f"PNG diagram generated successfully: {png_path}")
         
         # Read and encode the PNG file
@@ -3491,9 +3491,9 @@ def generate_svg_diagram(inputs: CustomerInputs):
         validate_customer_inputs(inputs)
         logger.info("Input validation completed successfully")
         
-        # Generate SVG diagram
-        logger.info("Generating SVG diagram...")
-        svg_path = generate_azure_architecture_diagram(inputs, format="svg")
+        # Generate SVG diagram with enhanced design principles
+        logger.info("Generating enhanced SVG diagram...")
+        svg_path = generate_enhanced_azure_architecture_diagram(inputs, format="svg")
         logger.info(f"SVG diagram generated successfully: {svg_path}")
         
         # Read the SVG file
@@ -3955,62 +3955,62 @@ def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "
     
     <!-- Internet Zone -->
     <rect x="50" y="80" width="1100" height="120" class="internet-zone enhanced-shadow" rx="10"/>
-    <text x="600" y="105" class="cluster-title">🌐 INTERNET EDGE - EXTERNAL ACCESS</text>
+    <text x="600" y="105" class="cluster-title">INTERNET EDGE - EXTERNAL ACCESS</text>
     <rect x="520" y="120" width="160" height="60" class="service-box" rx="5"/>
     <text x="600" y="140" class="service">[1] Public Internet</text>
-    <text x="600" y="155" class="service">🌍 External Users</text>
+    <text x="600" y="155" class="service">External Users</text>
     
     <!-- DMZ Zone -->
     <rect x="50" y="220" width="1100" height="120" class="dmz-zone enhanced-shadow" rx="10"/>
-    <text x="600" y="245" class="cluster-title">🔒 SECURITY PERIMETER - DMZ</text>
+    <text x="600" y="245" class="cluster-title">SECURITY PERIMETER - DMZ</text>
     <rect x="200" y="265" width="150" height="60" class="service-box" rx="5"/>
     <text x="275" y="285" class="service">[2] Azure Firewall</text>
-    <text x="275" y="300" class="service">🛡️ Next-Gen Security</text>
+    <text x="275" y="300" class="service">Next-Gen Security</text>
     
     <rect x="450" y="265" width="150" height="60" class="service-box" rx="5"/>
     <text x="525" y="280" class="service">[3] App Gateway</text>
-    <text x="525" y="295" class="service">⚖️ L7 Load Balancer</text>
-    <text x="525" y="310" class="service">🔐 WAF Protection</text>
+    <text x="525" y="295" class="service">L7 Load Balancer</text>
+    <text x="525" y="310" class="service">WAF Protection</text>
     
     <rect x="700" y="265" width="150" height="60" class="service-box" rx="5"/>
     <text x="775" y="285" class="service">[4] Azure Sentinel</text>
-    <text x="775" y="300" class="service">👁️ SIEM & SOAR</text>
+    <text x="775" y="300" class="service">SIEM &amp; SOAR</text>
     
     <!-- Hub Zone -->
     <rect x="50" y="360" width="1100" height="120" class="hub-zone enhanced-shadow" rx="10"/>
-    <text x="600" y="385" class="cluster-title">🏗️ NETWORK HUB - CENTRAL CONNECTIVITY</text>
+    <text x="600" y="385" class="cluster-title">NETWORK HUB - CENTRAL CONNECTIVITY</text>
     <rect x="400" y="400" width="160" height="60" class="service-box" rx="5"/>
     <text x="480" y="415" class="service">[5] Hub VNet</text>
-    <text x="480" y="430" class="service">🌐 Central Network Hub</text>
-    <text x="480" y="445" class="service">📍 10.0.0.0/16</text>
+    <text x="480" y="430" class="service">Central Network Hub</text>
+    <text x="480" y="445" class="service">10.0.0.0/16</text>
     
     <rect x="600" y="400" width="160" height="60" class="service-box" rx="5"/>
     <text x="680" y="420" class="service">[6] VPN Gateway</text>
-    <text x="680" y="435" class="service">🔗 Hybrid Connectivity</text>
-    <text x="680" y="450" class="service">📶 Site-to-Site VPN</text>
+    <text x="680" y="435" class="service">Hybrid Connectivity</text>
+    <text x="680" y="450" class="service">Site-to-Site VPN</text>
     
     <!-- Production Zone -->
     <rect x="50" y="500" width="1100" height="220" class="prod-zone enhanced-shadow" rx="10"/>
-    <text x="600" y="525" class="cluster-title">🏭 PRODUCTION WORKLOADS - SPOKE NETWORKS</text>
+    <text x="600" y="525" class="cluster-title">PRODUCTION WORKLOADS - SPOKE NETWORKS</text>
     
     <!-- Production VNet -->
     <rect x="100" y="545" width="200" height="80" class="service-box" rx="5"/>
     <text x="200" y="565" class="service">[7] Production VNet</text>
-    <text x="200" y="580" class="service">🏭 Workload Network</text>
-    <text x="200" y="595" class="service">📍 10.1.0.0/16</text>
+    <text x="200" y="580" class="service">Workload Network</text>
+    <text x="200" y="595" class="service">10.1.0.0/16</text>
     
     <!-- Resource Groups -->
     <rect x="330" y="545" width="150" height="60" class="service-box" rx="5"/>
     <text x="405" y="565" class="service">[8] Compute RG</text>
-    <text x="405" y="580" class="service">📦 Compute Resources</text>
+    <text x="405" y="580" class="service">Compute Resources</text>
     
     <rect x="500" y="545" width="150" height="60" class="service-box" rx="5"/>
     <text x="575" y="565" class="service">[9] Network RG</text>
-    <text x="575" y="580" class="service">🌐 Network Resources</text>
+    <text x="575" y="580" class="service">Network Resources</text>
     
     <rect x="670" y="545" width="150" height="60" class="service-box" rx="5"/>
     <text x="745" y="565" class="service">[10] Storage RG</text>
-    <text x="745" y="580" class="service">💾 Storage Resources</text>'''
+    <text x="745" y="580" class="service">Storage Resources</text>'''
     
     # Add selected services dynamically
     y_offset = 640
@@ -4021,7 +4021,7 @@ def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "
         svg_content += f'''
     <!-- Compute Services -->
     <rect x="{x_offset}" y="{y_offset}" width="240" height="60" class="service-box" rx="5"/>
-    <text x="{x_offset + 20}" y="{y_offset + 20}" class="cluster-title">💻 COMPUTE SERVICES</text>'''
+    <text x="{x_offset + 20}" y="{y_offset + 20}" class="cluster-title">COMPUTE SERVICES</text>'''
         
         for i, service in enumerate(inputs.compute_services[:3]):
             service_name = service.replace('_', ' ').title()
@@ -4034,7 +4034,7 @@ def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "
         svg_content += f'''
     <!-- Storage Services -->
     <rect x="{x_offset}" y="{y_offset}" width="240" height="60" class="service-box" rx="5"/>
-    <text x="{x_offset + 20}" y="{y_offset + 20}" class="cluster-title">💾 STORAGE SERVICES</text>'''
+    <text x="{x_offset + 20}" y="{y_offset + 20}" class="cluster-title">STORAGE SERVICES</text>'''
         
         for i, service in enumerate(inputs.storage_services[:3]):
             service_name = service.replace('_', ' ').title()
@@ -4047,7 +4047,7 @@ def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "
         svg_content += f'''
     <!-- Database Services -->
     <rect x="{x_offset}" y="{y_offset}" width="240" height="60" class="service-box" rx="5"/>
-    <text x="{x_offset + 20}" y="{y_offset + 20}" class="cluster-title">🗄️ DATABASE SERVICES</text>'''
+    <text x="{x_offset + 20}" y="{y_offset + 20}" class="cluster-title">DATABASE SERVICES</text>'''
         
         for i, service in enumerate(inputs.database_services[:3]):
             service_name = service.replace('_', ' ').title()
@@ -4059,13 +4059,13 @@ def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "
     svg_content += '''
     <!-- Enhanced Connections -->
     <line x1="600" y1="180" x2="525" y2="265" stroke="#d32f2f" stroke-width="3" marker-end="url(#arrowhead)"/>
-    <text x="550" y="220" class="connection-label">HTTPS/443 🔒 TLS 1.3</text>
+    <text x="550" y="220" class="connection-label">HTTPS/443 TLS 1.3</text>
     
     <line x1="275" y1="325" x2="480" y2="400" stroke="#f57c00" stroke-width="3" marker-end="url(#arrowhead)"/>
-    <text x="360" y="365" class="connection-label">Filtered Traffic 🛡️ WAF Inspected</text>
+    <text x="360" y="365" class="connection-label">Filtered Traffic WAF Inspected</text>
     
     <line x1="480" y1="460" x2="200" y2="545" stroke="#1976d2" stroke-width="3" marker-end="url(#arrowhead)"/>
-    <text x="320" y="505" class="connection-label">Spoke Routing 🔄 UDR Applied</text>
+    <text x="320" y="505" class="connection-label">Spoke Routing UDR Applied</text>
     
     <!-- Arrow marker definition -->
     <defs>
@@ -4076,7 +4076,7 @@ def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "
     
     <!-- Enhanced Legend -->
     <rect x="850" y="640" width="300" height="180" class="service-box enhanced-shadow" rx="5"/>
-    <text x="1000" y="660" class="cluster-title">📋 ENHANCED LEGEND</text>
+    <text x="1000" y="660" class="cluster-title">ENHANCED LEGEND</text>
     
     <rect x="870" y="675" width="20" height="15" class="internet-zone"/>
     <text x="900" y="687" class="service">Internet Edge (Untrusted)</text>
@@ -4093,8 +4093,8 @@ def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "
     <line x1="870" y1="760" x2="890" y2="760" stroke="#333" stroke-width="3" marker-end="url(#arrowhead)"/>
     <text x="900" y="765" class="service">Secure Connections</text>
     
-    <text x="1000" y="790" class="service">✅ Enhanced v2.0 Design</text>
-    <text x="1000" y="805" class="service">🏗️ 55+ Architecture Principles Applied</text>
+    <text x="1000" y="790" class="service">Enhanced v2.0 Design</text>
+    <text x="1000" y="805" class="service">55+ Architecture Principles Applied</text>
     
 </svg>'''
     
