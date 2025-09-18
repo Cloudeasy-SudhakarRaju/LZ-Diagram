@@ -785,6 +785,15 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
             # Set the format based on the requested output format
             output_format = "svg" if format.lower() == "svg" else "png"
             
+            # Set environment variables to prevent Pango font fallback issues
+            # This helps prevent SIGTRAP errors when fonts can't be loaded
+            os.environ["PANGO_FONT_CONFIG"] = "1"
+            os.environ["FONTCONFIG_FONT_CACHE"] = "/tmp/fontconfig-cache"
+            
+            # Ensure font cache directory exists
+            fontconfig_cache_dir = "/tmp/fontconfig-cache"
+            os.makedirs(fontconfig_cache_dir, exist_ok=True)
+            
             # Enhanced graph attributes for enterprise architecture following best practices
             with Diagram(
                 f"Azure Enterprise Landing Zone - {template['template']['name']}", 
@@ -794,7 +803,7 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                 outformat=output_format,
                 graph_attr={
                     "fontsize": "18",
-                    "fontname": "Arial, sans-serif",
+                    "fontname": "DejaVu Sans, Liberation Sans, sans-serif",
                     "rankdir": "TB",
                     "nodesep": "2.0",      # Increased spacing for larger nodes
                     "ranksep": "3.0",      # Increased vertical spacing between layers
@@ -812,7 +821,7 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                 },
                 node_attr={
                     "fontsize": "12",
-                    "fontname": "Arial, sans-serif", 
+                    "fontname": "DejaVu Sans, Liberation Sans, sans-serif", 
                     "style": "filled,rounded",
                     "shape": "box",
                     "fillcolor": "#ffffff",
@@ -824,7 +833,7 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                 },
                 edge_attr={
                     "fontsize": "10",
-                    "fontname": "Arial, sans-serif",
+                    "fontname": "DejaVu Sans, Liberation Sans, sans-serif",
                     "style": "solid",
                     "arrowhead": "vee",
                     "arrowsize": "0.8",
@@ -1437,9 +1446,9 @@ def generate_simple_svg_diagram(inputs: CustomerInputs) -> str:
     svg_content = f'''<svg width="{svg_width}" height="{svg_height}" xmlns="http://www.w3.org/2000/svg">
     <defs>
         <style>
-            .title {{ font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; fill: #0078d4; }}
-            .group-title {{ font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #323130; }}
-            .service {{ font-family: Arial, sans-serif; font-size: 12px; fill: #605e5c; }}
+            .title {{ font-family: "DejaVu Sans", "Liberation Sans", sans-serif; font-size: 18px; font-weight: bold; fill: #0078d4; }}
+            .group-title {{ font-family: "DejaVu Sans", "Liberation Sans", sans-serif; font-size: 14px; font-weight: bold; fill: #323130; }}
+            .service {{ font-family: "DejaVu Sans", "Liberation Sans", sans-serif; font-size: 12px; fill: #605e5c; }}
             .mgmt-group {{ fill: #e1f5fe; stroke: #0078d4; stroke-width: 2; }}
             .subscription {{ fill: #f3e5f5; stroke: #6b69d6; stroke-width: 2; }}
             .service-box {{ fill: #fff3e0; stroke: #d83b01; stroke-width: 1; cursor: pointer; }}
@@ -2893,6 +2902,39 @@ def health_check():
         issues.append(f"Cannot check disk space: {str(e)}")
         status = "degraded"
     
+    # Check font availability to prevent SIGTRAP errors
+    try:
+        result = subprocess.run(['fc-list'], capture_output=True, text=True, timeout=10)
+        if result.returncode != 0:
+            issues.append("Font configuration check failed")
+            status = "degraded"
+        else:
+            fonts = result.stdout.lower()
+            reliable_fonts = ["dejavu sans", "liberation sans", "noto"]
+            found_fonts = [font for font in reliable_fonts if font in fonts]
+            
+            if len(found_fonts) == 0:
+                issues.append("No reliable fonts found - may cause SIGTRAP errors")
+                status = "degraded"
+            else:
+                logger.info(f"Font check passed: Found {len(found_fonts)} reliable fonts")
+                
+            # Check specifically for emoji font issues
+            if "noto color emoji" in fonts:
+                logger.info("Emoji font (Noto Color Emoji) available")
+            else:
+                logger.warning("Emoji font not found - may cause rendering issues")
+                
+    except subprocess.TimeoutExpired:
+        issues.append("Font configuration check timed out")
+        status = "degraded"
+    except FileNotFoundError:
+        issues.append("Font configuration tools not available")
+        status = "degraded"
+    except Exception as e:
+        issues.append(f"Font check failed: {str(e)}")
+        status = "degraded"
+    
     # Test a simple diagram generation
     try:
         from main import CustomerInputs
@@ -2914,7 +2956,8 @@ def health_check():
             "graphviz_available": "Graphviz" not in str(issues),
             "diagrams_available": "Diagrams library" not in str(issues),
             "output_directory_accessible": "output directory" not in str(issues),
-            "sufficient_disk_space": "disk space" not in str(issues)
+            "sufficient_disk_space": "disk space" not in str(issues),
+            "fonts_available": "font" not in str(issues).lower()
         }
     }
 
