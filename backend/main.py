@@ -24,7 +24,7 @@ from pptx import Presentation
 # Import diagrams for Azure architecture generation
 from diagrams import Diagram, Cluster, Edge
 from diagrams.azure.compute import VM, AKS, AppServices, FunctionApps, ContainerInstances, ServiceFabricClusters, BatchAccounts
-from diagrams.azure.network import VirtualNetworks, ApplicationGateway, LoadBalancers, Firewall, ExpressrouteCircuits, VirtualNetworkGateways
+from diagrams.azure.network import VirtualNetworks, ApplicationGateway, LoadBalancers, Firewall, ExpressrouteCircuits, VirtualNetworkGateways, CDNProfiles
 from diagrams.azure.storage import StorageAccounts, BlobStorage, DataLakeStorage
 from diagrams.azure.database import SQLDatabases, CosmosDb, DatabaseForMysqlServers, DatabaseForPostgresqlServers
 from diagrams.azure.security import KeyVaults, SecurityCenter, Sentinel
@@ -866,7 +866,6 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                     
                     # Add Azure CDN if specified
                     if inputs.network_services and "cdn" in inputs.network_services:
-                        from diagrams.azure.web import CDNProfiles
                         cdn = CDNProfiles(f"{service_counter}. Azure CDN\\n[Content Delivery]")
                         internet_services.append(cdn)
                         service_counter += 1
