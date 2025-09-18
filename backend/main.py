@@ -175,59 +175,59 @@ AZURE_TEMPLATES = {
 
 AZURE_SERVICES_MAPPING = {
     # Compute Services
-    "virtual_machines": {"name": "Azure Virtual Machines", "icon": "🖥️", "drawio_shape": "virtual_machine", "diagram_class": VM, "category": "compute"},
-    "aks": {"name": "Azure Kubernetes Service", "icon": "☸️", "drawio_shape": "kubernetes_service", "diagram_class": AKS, "category": "compute"},
-    "app_services": {"name": "Azure App Services", "icon": "🌐", "drawio_shape": "app_services", "diagram_class": AppServices, "category": "compute"},
-    "web_apps": {"name": "Azure Web Apps", "icon": "🌐", "drawio_shape": "app_services", "diagram_class": WebApps, "category": "compute"},
-    "functions": {"name": "Azure Functions", "icon": "⚡", "drawio_shape": "function_app", "diagram_class": FunctionApps, "category": "compute"},
-    "container_instances": {"name": "Container Instances", "icon": "📦", "drawio_shape": "container_instances", "diagram_class": ContainerInstances, "category": "compute"},
-    "service_fabric": {"name": "Service Fabric", "icon": "🏗️", "drawio_shape": "service_fabric", "diagram_class": ServiceFabricClusters, "category": "compute"},
-    "batch": {"name": "Azure Batch", "icon": "⚙️", "drawio_shape": "batch_accounts", "diagram_class": BatchAccounts, "category": "compute"},
+    "virtual_machines": {"name": "Azure Virtual Machines", "icon": "[VM]", "drawio_shape": "virtual_machine", "diagram_class": VM, "category": "compute"},
+    "aks": {"name": "Azure Kubernetes Service", "icon": "[K8S]", "drawio_shape": "kubernetes_service", "diagram_class": AKS, "category": "compute"},
+    "app_services": {"name": "Azure App Services", "icon": "[WEB]", "drawio_shape": "app_services", "diagram_class": AppServices, "category": "compute"},
+    "web_apps": {"name": "Azure Web Apps", "icon": "[WEB]", "drawio_shape": "app_services", "diagram_class": WebApps, "category": "compute"},
+    "functions": {"name": "Azure Functions", "icon": "[FUNC]", "drawio_shape": "function_app", "diagram_class": FunctionApps, "category": "compute"},
+    "container_instances": {"name": "Container Instances", "icon": "[CI]", "drawio_shape": "container_instances", "diagram_class": ContainerInstances, "category": "compute"},
+    "service_fabric": {"name": "Service Fabric", "icon": "[SF]", "drawio_shape": "service_fabric", "diagram_class": ServiceFabricClusters, "category": "compute"},
+    "batch": {"name": "Azure Batch", "icon": "[BATCH]", "drawio_shape": "batch_accounts", "diagram_class": BatchAccounts, "category": "compute"},
     
     # Networking Services
-    "virtual_network": {"name": "Virtual Network", "icon": "🌐", "drawio_shape": "virtual_network", "diagram_class": VirtualNetworks, "category": "network"},
-    "vpn_gateway": {"name": "VPN Gateway", "icon": "🔒", "drawio_shape": "vpn_gateway", "diagram_class": VirtualNetworkGateways, "category": "network"},
-    "expressroute": {"name": "ExpressRoute", "icon": "⚡", "drawio_shape": "expressroute_circuits", "diagram_class": ExpressrouteCircuits, "category": "network"},
-    "load_balancer": {"name": "Load Balancer", "icon": "⚖️", "drawio_shape": "load_balancer", "diagram_class": LoadBalancers, "category": "network"},
-    "application_gateway": {"name": "Application Gateway", "icon": "🚪", "drawio_shape": "application_gateway", "diagram_class": ApplicationGateway, "category": "network"},
-    "firewall": {"name": "Azure Firewall", "icon": "🛡️", "drawio_shape": "firewall", "diagram_class": Firewall, "category": "network"},
-    "waf": {"name": "Web Application Firewall", "icon": "🛡️", "drawio_shape": "application_gateway", "diagram_class": ApplicationGateway, "category": "network"},
-    "cdn": {"name": "Content Delivery Network", "icon": "🌍", "drawio_shape": "cdn_profiles", "diagram_class": None, "category": "network"},
-    "front_door": {"name": "Azure Front Door", "icon": "🚪", "drawio_shape": "front_door", "diagram_class": ApplicationGateway, "category": "network"},
-    "traffic_manager": {"name": "Traffic Manager", "icon": "🚦", "drawio_shape": "traffic_manager_profiles", "diagram_class": None, "category": "network"},
-    "virtual_wan": {"name": "Virtual WAN", "icon": "🌐", "drawio_shape": "virtual_wan", "diagram_class": VirtualNetworks, "category": "network"},
+    "virtual_network": {"name": "Virtual Network", "icon": "[NET]", "drawio_shape": "virtual_network", "diagram_class": VirtualNetworks, "category": "network"},
+    "vpn_gateway": {"name": "VPN Gateway", "icon": "[VPN]", "drawio_shape": "vpn_gateway", "diagram_class": VirtualNetworkGateways, "category": "network"},
+    "expressroute": {"name": "ExpressRoute", "icon": "[ER]", "drawio_shape": "expressroute_circuits", "diagram_class": ExpressrouteCircuits, "category": "network"},
+    "load_balancer": {"name": "Load Balancer", "icon": "[LB]", "drawio_shape": "load_balancer", "diagram_class": LoadBalancers, "category": "network"},
+    "application_gateway": {"name": "Application Gateway", "icon": "[AGW]", "drawio_shape": "application_gateway", "diagram_class": ApplicationGateway, "category": "network"},
+    "firewall": {"name": "Azure Firewall", "icon": "[FW]", "drawio_shape": "firewall", "diagram_class": Firewall, "category": "network"},
+    "waf": {"name": "Web Application Firewall", "icon": "[WAF]", "drawio_shape": "application_gateway", "diagram_class": ApplicationGateway, "category": "network"},
+    "cdn": {"name": "Content Delivery Network", "icon": "[CDN]", "drawio_shape": "cdn_profiles", "diagram_class": None, "category": "network"},
+    "front_door": {"name": "Azure Front Door", "icon": "[AFD]", "drawio_shape": "front_door", "diagram_class": ApplicationGateway, "category": "network"},
+    "traffic_manager": {"name": "Traffic Manager", "icon": "[TM]", "drawio_shape": "traffic_manager_profiles", "diagram_class": None, "category": "network"},
+    "virtual_wan": {"name": "Virtual WAN", "icon": "[WAN]", "drawio_shape": "virtual_wan", "diagram_class": VirtualNetworks, "category": "network"},
     
     # Storage Services
-    "storage_accounts": {"name": "Storage Accounts", "icon": "💾", "drawio_shape": "storage_accounts", "diagram_class": StorageAccounts, "category": "storage"},
-    "blob_storage": {"name": "Blob Storage", "icon": "📄", "drawio_shape": "blob_storage", "diagram_class": BlobStorage, "category": "storage"},
-    "queue_storage": {"name": "Queue Storage", "icon": "📋", "drawio_shape": "queue_storage", "diagram_class": StorageAccounts, "category": "storage"},
-    "table_storage": {"name": "Table Storage", "icon": "📊", "drawio_shape": "table_storage", "diagram_class": StorageAccounts, "category": "storage"},
-    "file_storage": {"name": "Azure Files", "icon": "📁", "drawio_shape": "files", "diagram_class": StorageAccounts, "category": "storage"},
-    "disk_storage": {"name": "Managed Disks", "icon": "💿", "drawio_shape": "managed_disks", "diagram_class": StorageAccounts, "category": "storage"},
-    "data_lake": {"name": "Data Lake Storage", "icon": "🏞️", "drawio_shape": "data_lake_storage", "diagram_class": DataLakeStorage, "category": "storage"},
+    "storage_accounts": {"name": "Storage Accounts", "icon": "[STOR]", "drawio_shape": "storage_accounts", "diagram_class": StorageAccounts, "category": "storage"},
+    "blob_storage": {"name": "Blob Storage", "icon": "[BLOB]", "drawio_shape": "blob_storage", "diagram_class": BlobStorage, "category": "storage"},
+    "queue_storage": {"name": "Queue Storage", "icon": "[QUEUE]", "drawio_shape": "queue_storage", "diagram_class": StorageAccounts, "category": "storage"},
+    "table_storage": {"name": "Table Storage", "icon": "[TABLE]", "drawio_shape": "table_storage", "diagram_class": StorageAccounts, "category": "storage"},
+    "file_storage": {"name": "Azure Files", "icon": "[FILES]", "drawio_shape": "files", "diagram_class": StorageAccounts, "category": "storage"},
+    "disk_storage": {"name": "Managed Disks", "icon": "[DISK]", "drawio_shape": "managed_disks", "diagram_class": StorageAccounts, "category": "storage"},
+    "data_lake": {"name": "Data Lake Storage", "icon": "[LAKE]", "drawio_shape": "data_lake_storage", "diagram_class": DataLakeStorage, "category": "storage"},
     
     # Database Services
-    "sql_database": {"name": "Azure SQL Database", "icon": "🗄️", "drawio_shape": "sql_database", "diagram_class": SQLDatabases, "category": "database"},
-    "sql_managed_instance": {"name": "SQL Managed Instance", "icon": "🗄️", "drawio_shape": "sql_managed_instance", "diagram_class": SQLDatabases, "category": "database"},
-    "cosmos_db": {"name": "Cosmos DB", "icon": "🌍", "drawio_shape": "cosmos_db", "diagram_class": CosmosDb, "category": "database"},
-    "mysql": {"name": "Azure Database for MySQL", "icon": "🐬", "drawio_shape": "database_for_mysql_servers", "diagram_class": DatabaseForMysqlServers, "category": "database"},
-    "postgresql": {"name": "Azure Database for PostgreSQL", "icon": "🐘", "drawio_shape": "database_for_postgresql_servers", "diagram_class": DatabaseForPostgresqlServers, "category": "database"},
-    "mariadb": {"name": "Azure Database for MariaDB", "icon": "🗄️", "drawio_shape": "database_for_mariadb_servers", "diagram_class": DatabaseForMysqlServers, "category": "database"},
-    "redis_cache": {"name": "Azure Cache for Redis", "icon": "⚡", "drawio_shape": "cache_redis", "diagram_class": None, "category": "database"},
+    "sql_database": {"name": "Azure SQL Database", "icon": "[SQL]", "drawio_shape": "sql_database", "diagram_class": SQLDatabases, "category": "database"},
+    "sql_managed_instance": {"name": "SQL Managed Instance", "icon": "[SQLMI]", "drawio_shape": "sql_managed_instance", "diagram_class": SQLDatabases, "category": "database"},
+    "cosmos_db": {"name": "Cosmos DB", "icon": "[COSMOS]", "drawio_shape": "cosmos_db", "diagram_class": CosmosDb, "category": "database"},
+    "mysql": {"name": "Azure Database for MySQL", "icon": "[MYSQL]", "drawio_shape": "database_for_mysql_servers", "diagram_class": DatabaseForMysqlServers, "category": "database"},
+    "postgresql": {"name": "Azure Database for PostgreSQL", "icon": "[PGSQL]", "drawio_shape": "database_for_postgresql_servers", "diagram_class": DatabaseForPostgresqlServers, "category": "database"},
+    "mariadb": {"name": "Azure Database for MariaDB", "icon": "[MARIA]", "drawio_shape": "database_for_mariadb_servers", "diagram_class": DatabaseForMysqlServers, "category": "database"},
+    "redis_cache": {"name": "Azure Cache for Redis", "icon": "[REDIS]", "drawio_shape": "cache_redis", "diagram_class": None, "category": "database"},
     
     # Security Services
-    "key_vault": {"name": "Azure Key Vault", "icon": "🔐", "drawio_shape": "key_vault", "diagram_class": KeyVaults, "category": "security"},
-    "active_directory": {"name": "Azure Active Directory", "icon": "👤", "drawio_shape": "azure_active_directory", "diagram_class": ActiveDirectory, "category": "security"},
-    "security_center": {"name": "Azure Security Center", "icon": "🛡️", "drawio_shape": "security_center", "diagram_class": SecurityCenter, "category": "security"},
-    "sentinel": {"name": "Azure Sentinel", "icon": "👁️", "drawio_shape": "sentinel", "diagram_class": Sentinel, "category": "security"},
-    "defender": {"name": "Microsoft Defender", "icon": "🛡️", "drawio_shape": "defender_easm", "diagram_class": SecurityCenter, "category": "security"},
-    "information_protection": {"name": "Azure Information Protection", "icon": "🔒", "drawio_shape": "information_protection", "diagram_class": None, "category": "security"},
+    "key_vault": {"name": "Azure Key Vault", "icon": "[KV]", "drawio_shape": "key_vault", "diagram_class": KeyVaults, "category": "security"},
+    "active_directory": {"name": "Azure Active Directory", "icon": "[AAD]", "drawio_shape": "azure_active_directory", "diagram_class": ActiveDirectory, "category": "security"},
+    "security_center": {"name": "Azure Security Center", "icon": "[SEC]", "drawio_shape": "security_center", "diagram_class": SecurityCenter, "category": "security"},
+    "sentinel": {"name": "Azure Sentinel", "icon": "[SENT]", "drawio_shape": "sentinel", "diagram_class": Sentinel, "category": "security"},
+    "defender": {"name": "Microsoft Defender", "icon": "[DEF]", "drawio_shape": "defender_easm", "diagram_class": SecurityCenter, "category": "security"},
+    "information_protection": {"name": "Azure Information Protection", "icon": "[AIP]", "drawio_shape": "information_protection", "diagram_class": None, "category": "security"},
     
     # Monitoring & Management
-    "monitor": {"name": "Azure Monitor", "icon": "📊", "drawio_shape": "monitor", "diagram_class": None, "category": "monitoring"},
-    "log_analytics": {"name": "Log Analytics", "icon": "📋", "drawio_shape": "log_analytics_workspaces", "diagram_class": None, "category": "monitoring"},
-    "application_insights": {"name": "Application Insights", "icon": "📈", "drawio_shape": "application_insights", "diagram_class": None, "category": "monitoring"},
-    "service_health": {"name": "Service Health", "icon": "❤️", "drawio_shape": "service_health", "diagram_class": None, "category": "monitoring"},
+    "monitor": {"name": "Azure Monitor", "icon": "[MON]", "drawio_shape": "monitor", "diagram_class": None, "category": "monitoring"},
+    "log_analytics": {"name": "Log Analytics", "icon": "[LOG]", "drawio_shape": "log_analytics_workspaces", "diagram_class": None, "category": "monitoring"},
+    "application_insights": {"name": "Application Insights", "icon": "[AI]", "drawio_shape": "application_insights", "diagram_class": None, "category": "monitoring"},
+    "service_health": {"name": "Service Health", "icon": "[HLTH]", "drawio_shape": "service_health", "diagram_class": None, "category": "monitoring"},
     "advisor": {"name": "Azure Advisor", "icon": "💡", "drawio_shape": "advisor", "diagram_class": None, "category": "monitoring"},
     
     # AI/ML Services  
@@ -237,29 +237,29 @@ AZURE_SERVICES_MAPPING = {
     "form_recognizer": {"name": "Form Recognizer", "icon": "📄", "drawio_shape": "form_recognizer", "diagram_class": None, "category": "ai"},
     
     # Data & Analytics
-    "synapse": {"name": "Azure Synapse Analytics", "icon": "📊", "drawio_shape": "synapse_analytics", "diagram_class": SynapseAnalytics, "category": "analytics"},
-    "data_factory": {"name": "Azure Data Factory", "icon": "🏭", "drawio_shape": "data_factory", "diagram_class": DataFactories, "category": "analytics"},
-    "databricks": {"name": "Azure Databricks", "icon": "📊", "drawio_shape": "databricks", "diagram_class": Databricks, "category": "analytics"},
-    "stream_analytics": {"name": "Stream Analytics", "icon": "🌊", "drawio_shape": "stream_analytics", "diagram_class": StreamAnalyticsJobs, "category": "analytics"},
-    "power_bi": {"name": "Power BI", "icon": "📊", "drawio_shape": "power_bi", "diagram_class": None, "category": "analytics"},
+    "synapse": {"name": "Azure Synapse Analytics", "icon": "[SYN]", "drawio_shape": "synapse_analytics", "diagram_class": SynapseAnalytics, "category": "analytics"},
+    "data_factory": {"name": "Azure Data Factory", "icon": "[ADF]", "drawio_shape": "data_factory", "diagram_class": DataFactories, "category": "analytics"},
+    "databricks": {"name": "Azure Databricks", "icon": "[DBR]", "drawio_shape": "databricks", "diagram_class": Databricks, "category": "analytics"},
+    "stream_analytics": {"name": "Stream Analytics", "icon": "[ASA]", "drawio_shape": "stream_analytics", "diagram_class": StreamAnalyticsJobs, "category": "analytics"},
+    "power_bi": {"name": "Power BI", "icon": "[PBI]", "drawio_shape": "power_bi", "diagram_class": None, "category": "analytics"},
     
     # Integration Services
-    "logic_apps": {"name": "Logic Apps", "icon": "🔗", "drawio_shape": "logic_apps", "diagram_class": LogicApps, "category": "integration"},
-    "service_bus": {"name": "Service Bus", "icon": "🚌", "drawio_shape": "service_bus", "diagram_class": ServiceBus, "category": "integration"},
-    "event_grid": {"name": "Event Grid", "icon": "⚡", "drawio_shape": "event_grid_topics", "diagram_class": EventGridTopics, "category": "integration"},
-    "event_hubs": {"name": "Event Hubs", "icon": "📡", "drawio_shape": "event_hubs", "diagram_class": EventHubs, "category": "integration"},
-    "api_management": {"name": "API Management", "icon": "🔌", "drawio_shape": "api_management", "diagram_class": APIManagement, "category": "integration"},
+    "logic_apps": {"name": "Logic Apps", "icon": "[LA]", "drawio_shape": "logic_apps", "diagram_class": LogicApps, "category": "integration"},
+    "service_bus": {"name": "Service Bus", "icon": "[SB]", "drawio_shape": "service_bus", "diagram_class": ServiceBus, "category": "integration"},
+    "event_grid": {"name": "Event Grid", "icon": "[EG]", "drawio_shape": "event_grid_topics", "diagram_class": EventGridTopics, "category": "integration"},
+    "event_hubs": {"name": "Event Hubs", "icon": "[EH]", "drawio_shape": "event_hubs", "diagram_class": EventHubs, "category": "integration"},
+    "api_management": {"name": "API Management", "icon": "[APIM]", "drawio_shape": "api_management", "diagram_class": APIManagement, "category": "integration"},
     
     # DevOps & Management
-    "devops": {"name": "Azure DevOps", "icon": "⚙️", "drawio_shape": "devops", "diagram_class": Devops, "category": "devops"},
-    "automation": {"name": "Azure Automation", "icon": "🤖", "drawio_shape": "automation_accounts", "diagram_class": None, "category": "devops"},
-    "policy": {"name": "Azure Policy", "icon": "📋", "drawio_shape": "policy", "diagram_class": None, "category": "governance"},
-    "blueprints": {"name": "Azure Blueprints", "icon": "📐", "drawio_shape": "blueprints", "diagram_class": None, "category": "governance"},
-    "resource_manager": {"name": "Azure Resource Manager", "icon": "🏗️", "drawio_shape": "resource_groups", "diagram_class": Resourcegroups, "category": "governance"},
+    "devops": {"name": "Azure DevOps", "icon": "[ADO]", "drawio_shape": "devops", "diagram_class": Devops, "category": "devops"},
+    "automation": {"name": "Azure Automation", "icon": "[AUTO]", "drawio_shape": "automation_accounts", "diagram_class": None, "category": "devops"},
+    "policy": {"name": "Azure Policy", "icon": "[POL]", "drawio_shape": "policy", "diagram_class": None, "category": "governance"},
+    "blueprints": {"name": "Azure Blueprints", "icon": "[BP]", "drawio_shape": "blueprints", "diagram_class": None, "category": "governance"},
+    "resource_manager": {"name": "Azure Resource Manager", "icon": "[ARM]", "drawio_shape": "resource_groups", "diagram_class": Resourcegroups, "category": "governance"},
     
     # Backup & Recovery
-    "backup": {"name": "Azure Backup", "icon": "💾", "drawio_shape": "backup", "diagram_class": None, "category": "backup"},
-    "site_recovery": {"name": "Azure Site Recovery", "icon": "🔄", "drawio_shape": "site_recovery", "diagram_class": None, "category": "backup"},
+    "backup": {"name": "Azure Backup", "icon": "[BAK]", "drawio_shape": "backup", "diagram_class": None, "category": "backup"},
+    "site_recovery": {"name": "Azure Site Recovery", "icon": "[ASR]", "drawio_shape": "site_recovery", "diagram_class": None, "category": "backup"},
 }
 
 def get_safe_output_directory() -> str:
@@ -845,13 +845,13 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                 
                 # === INTERNET EDGE LAYER (TOP - UNTRUSTED ZONE) ===
                 # Principle 1-5: Clear containers, security zoning, visual hierarchy
-                with Cluster("🌐 INTERNET EDGE", graph_attr={
+                with Cluster("[ INTERNET EDGE ]", graph_attr={
                     "bgcolor": "#ffebee",      # Light red for untrusted zone
                     "style": "filled,rounded,bold", 
                     "color": "#c62828",
                     "fontcolor": "#c62828",
                     "fontsize": "16",
-                    "label": "🌐 INTERNET EDGE (UNTRUSTED ZONE)",
+                    "label": "[ INTERNET EDGE ] (UNTRUSTED ZONE)",
                     "rank": "min",
                     "penwidth": "3",
                     "margin": "16"
@@ -885,13 +885,13 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                 
                 # === IDENTITY & SECURITY LAYER (TOP-LEFT - SEMI-TRUSTED ZONE) ===
                 # Principle 6-10: Identity clarity, access management, security zoning
-                with Cluster("🔐 IDENTITY & SECURITY", graph_attr={
+                with Cluster("[ IDENTITY & SECURITY ]", graph_attr={
                     "bgcolor": "#e8f5e9",       # Light green for semi-trusted
                     "style": "filled,rounded,bold",
                     "color": "#2e7d32",
                     "fontcolor": "#2e7d32", 
                     "fontsize": "16",
-                    "label": "🔐 IDENTITY & SECURITY (SEMI-TRUSTED ZONE)",
+                    "label": "[ IDENTITY & SECURITY ] (SEMI-TRUSTED ZONE)",
                     "penwidth": "3",
                     "margin": "16"
                 }):
@@ -918,13 +918,13 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                 
                 # === MANAGEMENT & GOVERNANCE LAYER (LEFT SIDE) ===
                 # Principle 11-15: Governance hierarchy, cost management, policy enforcement
-                with Cluster("📋 MANAGEMENT & GOVERNANCE", graph_attr={
+                with Cluster("[ MANAGEMENT & GOVERNANCE ]", graph_attr={
                     "bgcolor": "#f3e5f5",       # Light purple for governance
                     "style": "filled,rounded,bold",
                     "color": "#7b1fa2",
                     "fontcolor": "#7b1fa2",
                     "fontsize": "16",
-                    "label": "📋 MANAGEMENT & GOVERNANCE\\n[Cost Management + Policies]",
+                    "label": "[ MANAGEMENT & GOVERNANCE ]\\n[Cost Management + Policies]",
                     "penwidth": "3",
                     "margin": "16"
                 }):
@@ -953,13 +953,13 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                 
                 # === ACTIVE REGION - NETWORK HUB (CENTER - TRUSTED ZONE) ===
                 # Principle 16-20: Network architecture, clear boundaries, HA indicators
-                with Cluster("🌐 ACTIVE REGION - NETWORK HUB", graph_attr={
+                with Cluster("[ ACTIVE REGION - NETWORK HUB ]", graph_attr={
                     "bgcolor": "#e3f2fd",       # Light blue for trusted zone
                     "style": "filled,rounded,bold",
                     "color": "#1565c0",
                     "fontcolor": "#1565c0",
                     "fontsize": "16",
-                    "label": "🌐 ACTIVE REGION - NETWORK HUB (TRUSTED ZONE)\\n[Primary Region: East US 2]",
+                    "label": "[ ACTIVE REGION - NETWORK HUB ] (TRUSTED ZONE)\\n[Primary Region: East US 2]",
                     "penwidth": "3",
                     "margin": "20"
                 }):
@@ -1027,13 +1027,13 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                 # === COMPUTE & APPLICATION LAYER (MIDDLE TIER) ===
                 # Principle 21-25: Application architecture, scalability indicators, cloud-native patterns
                 if inputs.compute_services:
-                    with Cluster("⚡ COMPUTE & APPLICATIONS", graph_attr={
+                    with Cluster("[ COMPUTE & APPLICATIONS ]", graph_attr={
                         "bgcolor": "#fff3e0",       # Light orange for compute
                         "style": "filled,rounded,bold",
                         "color": "#ef6c00",
                         "fontcolor": "#ef6c00",
                         "fontsize": "16",
-                        "label": "⚡ COMPUTE & APPLICATIONS\\n[Cloud-Native + Legacy]\\n[Auto-Scaling Enabled]",
+                        "label": "[ COMPUTE & APPLICATIONS ]\\n[Cloud-Native + Legacy]\\n[Auto-Scaling Enabled]",
                         "penwidth": "3",
                         "margin": "16"
                     }):
@@ -1110,13 +1110,13 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                 # === DATA LAYER (BOTTOM TIER) ===
                 # Principle 31-35: Data architecture, storage tiers, backup/recovery
                 if inputs.database_services or inputs.storage_services:
-                    with Cluster("💾 DATA & STORAGE LAYER", graph_attr={
+                    with Cluster("[ DATA & STORAGE LAYER ]", graph_attr={
                         "bgcolor": "#e8f5e9",       # Light green for data
                         "style": "filled,rounded,bold",
                         "color": "#2e7d32",
                         "fontcolor": "#2e7d32",
                         "fontsize": "16",
-                        "label": "💾 DATA & STORAGE LAYER\\n[Persistent Storage + Databases]\\n[Geo-Redundant + Backup]",
+                        "label": "[ DATA & STORAGE LAYER ]\\n[Persistent Storage + Databases]\\n[Geo-Redundant + Backup]",
                         "penwidth": "3",
                         "margin": "16"
                     }):
@@ -1177,13 +1177,13 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                 # === ANALYTICS & AI LAYER ===
                 # Principle 36-40: Analytics architecture, AI/ML services, big data processing
                 if inputs.analytics_services:
-                    with Cluster("📊 ANALYTICS & AI", graph_attr={
+                    with Cluster("[ ANALYTICS & AI ]", graph_attr={
                         "bgcolor": "#fce4ec",       # Light pink for analytics
                         "style": "filled,rounded,bold",
                         "color": "#c2185b",
                         "fontcolor": "#c2185b",
                         "fontsize": "16",
-                        "label": "📊 ANALYTICS & AI\\n[Big Data + Machine Learning]\\n[Real-time + Batch Processing]",
+                        "label": "[ ANALYTICS & AI ]\\n[Big Data + Machine Learning]\\n[Real-time + Batch Processing]",
                         "penwidth": "3",
                         "margin": "16"
                     }):
@@ -1250,13 +1250,13 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                 
                 # === MONITORING & OBSERVABILITY OVERLAY ===
                 # Principle 46-50: Observability, SIEM, compliance monitoring, cost optimization
-                with Cluster("📊 MONITORING & OBSERVABILITY", graph_attr={
+                with Cluster("[ MONITORING & OBSERVABILITY ]", graph_attr={
                     "bgcolor": "#e0f2f1",       # Light teal for monitoring
                     "style": "filled,rounded,bold",
                     "color": "#00695c",
                     "fontcolor": "#00695c",
                     "fontsize": "16", 
-                    "label": "📊 MONITORING & OBSERVABILITY\\n[360° Visibility + SIEM]\\n[Cost Optimization + Compliance]",
+                    "label": "[ MONITORING & OBSERVABILITY ]\\n[360° Visibility + SIEM]\\n[Cost Optimization + Compliance]",
                     "penwidth": "3",
                     "margin": "16"
                 }):
@@ -1349,27 +1349,27 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                 
                 # === COMPREHENSIVE LEGEND ===
                 # Principle: Complete legend covering all diagram elements
-                with Cluster("📋 LEGEND & NOTATION GUIDE", graph_attr={
+                with Cluster("[ LEGEND & NOTATION GUIDE ]", graph_attr={
                     "bgcolor": "#f5f5f5",       # Light gray for legend
                     "style": "filled,rounded,bold",
                     "color": "#424242",
                     "fontcolor": "#424242",
                     "fontsize": "14",
-                    "label": "📋 LEGEND & NOTATION GUIDE",
+                    "label": "[ LEGEND & NOTATION GUIDE ]",
                     "penwidth": "2",
                     "margin": "12",
                     "rank": "sink"  # Place at bottom
                 }):
                     # Legend items using subscriptions as placeholder boxes
-                    legend_zones = Subscriptions("🔴 ZONES:\\n• Red: Untrusted (Internet)\\n• Green: Semi-trusted (Identity)\\n• Blue: Trusted (Network/Apps)\\n• Orange: Compute/DR")
+                    legend_zones = Subscriptions("ZONES:\\n• Red: Untrusted (Internet)\\n• Green: Semi-trusted (Identity)\\n• Blue: Trusted (Network/Apps)\\n• Orange: Compute/DR")
                     
-                    legend_lines = Subscriptions("📏 LINE TYPES:\\n• Solid: Primary traffic flow\\n• Dashed: Governance/policies\\n• Dotted: Monitoring/logs\\n• Bold: Critical connections")
+                    legend_lines = Subscriptions("LINE TYPES:\\n• Solid: Primary traffic flow\\n• Dashed: Governance/policies\\n• Dotted: Monitoring/logs\\n• Bold: Critical connections")
                     
-                    legend_ha = Subscriptions("⚡ HA INDICATORS:\\n• Active-Active: Load balanced\\n• Active-Passive: Standby ready\\n• Zone Redundant: Multi-AZ\\n• Geo-Redundant: Cross-region")
+                    legend_ha = Subscriptions("HA INDICATORS:\\n• Active-Active: Load balanced\\n• Active-Passive: Standby ready\\n• Zone Redundant: Multi-AZ\\n• Geo-Redundant: Cross-region")
                     
-                    legend_compliance = Subscriptions("🛡️ COMPLIANCE:\\n• GDPR: Data protection\\n• HIPAA: Healthcare data\\n• SOC 2: Security controls\\n• ISO 27001: Info security")
+                    legend_compliance = Subscriptions("COMPLIANCE:\\n• GDPR: Data protection\\n• HIPAA: Healthcare data\\n• SOC 2: Security controls\\n• ISO 27001: Info security")
                     
-                    legend_tiers = Subscriptions("💰 SERVICE TIERS:\\n• Basic: Development/test\\n• Standard: Production ready\\n• Premium: Enterprise grade\\n• Ultra: Mission critical")
+                    legend_tiers = Subscriptions("SERVICE TIERS:\\n• Basic: Development/test\\n• Standard: Production ready\\n• Premium: Enterprise grade\\n• Ultra: Mission critical")
                 
                 logger.info("Enhanced enterprise architecture diagram structure created successfully")
         
@@ -1675,13 +1675,13 @@ def _add_data_layer_clusters(inputs: CustomerInputs, prod_vnet, workloads_mg, se
     try:
         # Storage Services (Data Layer - Bottom)
         if inputs.storage_services:
-            with Cluster("💾 Storage Services", graph_attr={
+            with Cluster("[ Storage Services ]", graph_attr={
                 "bgcolor": "#e8f5e9", 
                 "style": "filled,rounded",
                 "color": "#2e7d32",
                 "fontcolor": "#2e7d32",
                 "fontsize": "14",
-                "label": "💾 STORAGE SERVICES (Data Layer)"
+                "label": "[ STORAGE SERVICES ] (Data Layer)"
             }):
                 storage_services = []
                 counter = service_counter
@@ -1746,13 +1746,13 @@ def _add_data_layer_clusters(inputs: CustomerInputs, prod_vnet, workloads_mg, se
         
         # Analytics Services (Data Analytics Layer)
         if inputs.analytics_services:
-            with Cluster("📊 Analytics & AI", graph_attr={
+            with Cluster("[ Analytics & AI ]", graph_attr={
                 "bgcolor": "#f3e5f5", 
                 "style": "filled,rounded",
                 "color": "#7b1fa2",
                 "fontcolor": "#7b1fa2",
                 "fontsize": "14",
-                "label": "📊 ANALYTICS & AI (Insights Layer)"
+                "label": "[ ANALYTICS & AI ] (Insights Layer)"
             }):
                 analytics_services = []
                 counter = service_counter + 10
@@ -1770,13 +1770,13 @@ def _add_data_layer_clusters(inputs: CustomerInputs, prod_vnet, workloads_mg, se
         
         # Backup & Recovery Services (Resilience Layer) 
         if inputs.backup_services:
-            with Cluster("💾 Backup & Recovery", graph_attr={
+            with Cluster("[ Backup & Recovery ]", graph_attr={
                 "bgcolor": "#e0f2f1", 
                 "style": "filled,rounded",
                 "color": "#00695c",
                 "fontcolor": "#00695c",
                 "fontsize": "14",
-                "label": "💾 BACKUP & RECOVERY (Resilience Layer)"
+                "label": "[ BACKUP & RECOVERY ] (Resilience Layer)"
             }):
                 backup_services = []
                 counter = service_counter + 15
@@ -1993,10 +1993,10 @@ def generate_professional_mermaid(inputs: CustomerInputs) -> str:
     # Add management group hierarchy
     if template["template"]["name"] == "Enterprise Scale Landing Zone":
         lines.extend([
-            "            PLATFORM[\"🏗️ Platform\"]",
-            "            LANDINGZONES[\"🚀 Landing Zones\"]", 
-            "            SANDBOX[\"🧪 Sandbox\"]",
-            "            DECOM[\"🗑️ Decommissioned\"]",
+            "            PLATFORM[\"[PLAT] Platform\"]",
+            "            LANDINGZONES[\"[LZ] Landing Zones\"]", 
+            "            SANDBOX[\"[SBX] Sandbox\"]",
+            "            DECOM[\"[DECOM] Decommissioned\"]",
             "            ROOT --> PLATFORM",
             "            ROOT --> LANDINGZONES",
             "            ROOT --> SANDBOX", 
@@ -2004,8 +2004,8 @@ def generate_professional_mermaid(inputs: CustomerInputs) -> str:
         ])
     else:
         lines.extend([
-            "            PLATFORM[\"🏗️ Platform\"]",
-            "            WORKLOADS[\"💼 Workloads\"]",
+            "            PLATFORM[\"[PLAT] Platform\"]",
+            "            WORKLOADS[\"[WL] Workloads\"]",
             "            ROOT --> PLATFORM",
             "            ROOT --> WORKLOADS"
         ])
@@ -2015,11 +2015,11 @@ def generate_professional_mermaid(inputs: CustomerInputs) -> str:
     # Add subscription structure
     lines.extend([
         "        subgraph \"Subscriptions\"",
-        "            CONN[\"🌐 Connectivity\"]",
-        "            IDENTITY[\"🔐 Identity\"]",
-        "            MGMT[\"📊 Management\"]",
-        "            PROD[\"🏭 Production\"]",
-        "            DEV[\"👩‍💻 Development\"]"
+        "            CONN[\"[NET] Connectivity\"]",
+        "            IDENTITY[\"[ID] Identity\"]",
+        "            MGMT[\"[MGMT] Management\"]",
+        "            PROD[\"[PROD] Production\"]",
+        "            DEV[\"[DEV] Development\"]"
     ])
     
     if template["template"]["name"] == "Enterprise Scale Landing Zone":
