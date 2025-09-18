@@ -4114,26 +4114,38 @@ def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "
                 detail1 = "IaaS Compute"
                 detail2 = "Auto-Scale Enabled"
                 ha_indicator = "Zone Distribution"
+                compliance = "ISO 27001"
             elif service == "aks":
                 detail1 = "Kubernetes Service"
                 detail2 = "Container Orchestration"  
                 ha_indicator = "Multi-Zone Nodes"
+                compliance = "CIS Benchmark"
             elif service == "app_services":
                 detail1 = "PaaS Web Apps"
                 detail2 = "Managed Platform"
                 ha_indicator = "Auto-Scale Rules"
+                compliance = "SOC 2 Type II"
             else:
                 detail1 = "Compute Service"
                 detail2 = "Managed Service"
                 ha_indicator = "High Availability"
+                compliance = "Compliant"
             
             svg_content += f'''
-    <rect x="{x_offset}" y="605" width="180" height="90" class="service-box enhanced-shadow" rx="8"/>
+    <rect x="{x_offset}" y="605" width="180" height="110" class="service-box enhanced-shadow" rx="8"/>
     <text x="{x_offset + 90}" y="625" class="service">{service_name}</text>
     <text x="{x_offset + 90}" y="640" class="service-detail">{detail1}</text>
     <text x="{x_offset + 90}" y="655" class="service-detail">{detail2}</text>
     <text x="{x_offset + 90}" y="670" class="service-detail">Service Tier: Standard</text>
-    <text x="{x_offset + 90}" y="685" class="ha-indicator">{ha_indicator}</text>'''
+    <text x="{x_offset + 90}" y="685" class="ha-indicator">{ha_indicator}</text>
+    <text x="{x_offset + 90}" y="700" class="legend-text">{compliance}</text>
+    
+    <!-- Scalability & Security indicators -->
+    <rect x="{x_offset + 155}" y="610" width="20" height="12" fill="#2196f3" rx="2"/>
+    <text x="{x_offset + 165}" y="620" style="font: 8px Arial; fill: white; text-anchor: middle;">📈</text>
+    
+    <rect x="{x_offset + 155}" y="625" width="20" height="12" fill="#9c27b0" rx="2"/>
+    <text x="{x_offset + 165}" y="635" style="font: 8px Arial; fill: white; text-anchor: middle;">🔒</text>'''
             x_offset += 200
             service_counter += 1
     
@@ -4157,21 +4169,29 @@ def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "
                 detail1 = "General Purpose v2"
                 detail2 = "LRS/GRS Options"
                 ha_indicator = "99.999999999% Durability"
+                compliance = "GDPR | SOC 2"
             elif service == "blob_storage":
                 detail1 = "Object Storage"
                 detail2 = "Hot/Cool/Archive Tiers"
                 ha_indicator = "Geo-Replication"
+                compliance = "HIPAA | PCI-DSS"
             else:
                 detail1 = "Storage Service"
                 detail2 = "Managed Storage"
                 ha_indicator = "High Durability"
+                compliance = "Compliant"
             
             svg_content += f'''
-    <rect x="{x_offset}" y="785" width="180" height="70" class="service-box enhanced-shadow" rx="8"/>
+    <rect x="{x_offset}" y="785" width="180" height="90" class="service-box enhanced-shadow" rx="8"/>
     <text x="{x_offset + 90}" y="805" class="service">{service_name}</text>
     <text x="{x_offset + 90}" y="820" class="service-detail">{detail1}</text>
     <text x="{x_offset + 90}" y="835" class="service-detail">{detail2}</text>
-    <text x="{x_offset + 90}" y="850" class="ha-indicator">{ha_indicator}</text>'''
+    <text x="{x_offset + 90}" y="850" class="ha-indicator">{ha_indicator}</text>
+    <text x="{x_offset + 90}" y="865" class="legend-text">{compliance}</text>
+    
+    <!-- Auto-scaling indicator -->
+    <rect x="{x_offset + 155}" y="790" width="20" height="12" fill="#4caf50" rx="2"/>
+    <text x="{x_offset + 165}" y="800" style="font: 8px Arial; fill: white; text-anchor: middle;">⚡</text>'''
             x_offset += 200
     
     # Add database services
@@ -4182,21 +4202,29 @@ def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "
                 detail1 = "Relational Database"
                 detail2 = "Always Encrypted"
                 ha_indicator = "Auto-Failover Groups"
+                compliance = "SOX | GDPR"
             elif service == "cosmos_db":
                 detail1 = "Multi-Model NoSQL"
                 detail2 = "Global Distribution"
                 ha_indicator = "99.999% Availability"
+                compliance = "ISO 27001"
             else:
                 detail1 = "Database Service"
                 detail2 = "Managed Database"
                 ha_indicator = "Automatic Backup"
+                compliance = "Compliant"
             
             svg_content += f'''
-    <rect x="{x_offset}" y="785" width="180" height="70" class="service-box enhanced-shadow" rx="8"/>
+    <rect x="{x_offset}" y="785" width="180" height="90" class="service-box enhanced-shadow" rx="8"/>
     <text x="{x_offset + 90}" y="805" class="service">{service_name}</text>
     <text x="{x_offset + 90}" y="820" class="service-detail">{detail1}</text>
     <text x="{x_offset + 90}" y="835" class="service-detail">{detail2}</text>
-    <text x="{x_offset + 90}" y="850" class="ha-indicator">{ha_indicator}</text>'''
+    <text x="{x_offset + 90}" y="850" class="ha-indicator">{ha_indicator}</text>
+    <text x="{x_offset + 90}" y="865" class="legend-text">{compliance}</text>
+    
+    <!-- Cost optimization indicator -->
+    <rect x="{x_offset + 155}" y="790" width="20" height="12" fill="#ff9800" rx="2"/>
+    <text x="{x_offset + 165}" y="800" style="font: 8px Arial; fill: white; text-anchor: middle;">💰</text>'''
             x_offset += 200
     
     # Add disaster recovery zone and monitoring overlay
@@ -4257,9 +4285,12 @@ def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "
     <path d="M 250 695 L 250 720 L 380 720 L 380 785" stroke="#7b1fa2" stroke-width="4" fill="none" marker-end="url(#dataArrow)"/>
     <text x="315" y="740" class="connection-label">4→5: Data Access | Always Encrypted</text>
     
-    <!-- DR Replication Connections -->
-    <path d="M 380 855 L 380 875 L 325 875 L 325 955" stroke="#ef6c00" stroke-width="3" fill="none" stroke-dasharray="8,4" marker-end="url(#monitoringArrow)"/>
-    <text x="320" y="885" class="connection-label">DR Replication</text>
+    <!-- Backup & Recovery Connections -->
+    <path d="M 490 695 L 490 720 L 155 720 L 155 955" stroke="#4caf50" stroke-width="3" fill="none" stroke-dasharray="6,6" marker-end="url(#monitoringArrow)"/>
+    <text x="325" y="740" class="connection-label">Backup & Recovery</text>
+    
+    <path d="M 290 855 L 290 875 L 325 875 L 325 955" stroke="#4caf50" stroke-width="3" fill="none" stroke-dasharray="6,6" marker-end="url(#monitoringArrow)"/>
+    <text x="280" y="885" class="connection-label">Data Backup</text>
     
     <!-- Monitoring Connections (dotted lines) -->
     <path d="M 490 515 L 920 515 L 920 900" stroke="#00695c" stroke-width="2" fill="none" stroke-dasharray="3,3" marker-end="url(#monitoringArrow)"/>
@@ -4303,19 +4334,53 @@ def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "
     <line x1="800" y1="1150" x2="850" y2="1150" stroke="#00695c" stroke-width="2" stroke-dasharray="3,3" marker-end="url(#monitoringArrow)"/>
     <text x="860" y="1155" class="legend-text">Monitoring/Observability</text>
     
-    <!-- HA/DR Indicators -->
-    <text x="50" y="1180" class="legend-title">HA/DR Indicators:</text>
-    <text x="50" y="1200" class="ha-indicator">Active-Active</text>
-    <text x="150" y="1200" class="legend-text">| </text>
-    <text x="160" y="1200" class="ha-indicator">Multi-Zone</text>
-    <text x="240" y="1200" class="legend-text">| </text>
-    <text x="250" y="1200" class="ha-indicator">Geo-Redundant</text>
-    <text x="350" y="1200" class="legend-text">| </text>
-    <text x="360" y="1200" class="ha-indicator">Auto-Failover</text>
+    <line x1="1050" y1="1150" x2="1100" y2="1150" stroke="#4caf50" stroke-width="3" stroke-dasharray="6,6" marker-end="url(#monitoringArrow)"/>
+    <text x="1110" y="1155" class="legend-text">Backup & Recovery</text>
     
-    <!-- Architecture Principles -->
-    <text x="700" y="1180" class="legend-title">Architecture Principles Applied:</text>
-    <text x="700" y="1200" class="legend-text">✓ Clear Swimlanes ✓ Numbered Workflow ✓ Security Zones ✓ HA/DR ✓ Monitoring</text>
+    <!-- Indicators Legend -->
+    <text x="50" y="1180" class="legend-title">Service Indicators:</text>
+    <rect x="50" y="1185" width="20" height="12" fill="#2196f3" rx="2"/>
+    <text x="55" y="1193" style="font: 8px Arial; fill: white; text-anchor: start;">📈</text>
+    <text x="80" y="1195" class="legend-text">Auto-Scale</text>
+    
+    <rect x="150" y="1185" width="20" height="12" fill="#9c27b0" rx="2"/>
+    <text x="155" y="1193" style="font: 8px Arial; fill: white; text-anchor: start;">🔒</text>
+    <text x="180" y="1195" class="legend-text">Security</text>
+    
+    <rect x="240" y="1185" width="20" height="12" fill="#4caf50" rx="2"/>
+    <text x="245" y="1193" style="font: 8px Arial; fill: white; text-anchor: start;">⚡</text>
+    <text x="270" y="1195" class="legend-text">High Performance</text>
+    
+    <rect x="380" y="1185" width="20" height="12" fill="#ff9800" rx="2"/>
+    <text x="385" y="1193" style="font: 8px Arial; fill: white; text-anchor: start;">💰</text>
+    <text x="410" y="1195" class="legend-text">Cost Optimized</text>
+    
+    <!-- HA/DR Indicators -->
+    <text x="50" y="1210" class="legend-title">HA/DR Indicators:</text>
+    <text x="50" y="1225" class="ha-indicator">Active-Active</text>
+    <text x="150" y="1225" class="legend-text">| </text>
+    <text x="160" y="1225" class="ha-indicator">Multi-Zone</text>
+    <text x="240" y="1225" class="legend-text">| </text>
+    <text x="250" y="1225" class="ha-indicator">Geo-Redundant</text>
+    <text x="350" y="1225" class="legend-text">| </text>
+    <text x="360" y="1225" class="ha-indicator">Auto-Failover</text>
+    <text x="460" y="1225" class="legend-text">| </text>
+    <text x="470" y="1225" class="ha-indicator">RTO: &lt;1hr</text>
+    <text x="540" y="1225" class="legend-text">| </text>
+    <text x="550" y="1225" class="ha-indicator">RPO: &lt;15min</text>
+    
+    <!-- Compliance & Architecture Principles -->
+    <text x="700" y="1210" class="legend-title">Compliance & Standards:</text>
+    <text x="700" y="1225" class="legend-text">✓ ISO 27001 ✓ SOC 2 ✓ GDPR ✓ HIPAA ✓ PCI-DSS ✓ CIS Benchmarks ✓ SOX</text>
+    
+    <!-- Future Ready -->
+    <rect x="1150" y="900" width="220" height="120" fill="none" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="10,5" rx="15"/>
+    <text x="1170" y="925" class="swimlane-title" style="fill: #9e9e9e;">🚀 FUTURE EXPANSION ZONE</text>
+    <text x="1170" y="945" class="service-detail" style="fill: #9e9e9e;">Reserved for Future Workloads</text>
+    <text x="1170" y="965" class="service-detail" style="fill: #9e9e9e;">• AI/ML Services</text>
+    <text x="1170" y="980" class="service-detail" style="fill: #9e9e9e;">• IoT Analytics</text>
+    <text x="1170" y="995" class="service-detail" style="fill: #9e9e9e;">• Edge Computing</text>
+    <text x="1170" y="1010" class="service-detail" style="fill: #9e9e9e;">• Blockchain Services</text>
     
 </svg>'''
     
