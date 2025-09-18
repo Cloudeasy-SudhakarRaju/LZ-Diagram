@@ -666,16 +666,16 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                     "fontsize": "18",
                     "fontname": "Arial, sans-serif",
                     "rankdir": "TB",
-                    "nodesep": "1.5",      # Optimal spacing for readability
-                    "ranksep": "2.5",      # Clear visual separation between layers
+                    "nodesep": "2.0",      # Increased from 1.5 for better node spacing
+                    "ranksep": "3.0",      # Increased from 2.5 for better layer separation
                     "bgcolor": "#f8f9fa",   # Professional light background
-                    "margin": "0.8",
+                    "margin": "1.0",       # Increased from 0.8 to accommodate larger nodes
                     "compound": "true",     # Enable cluster-to-cluster connections
                     "splines": "polyline",  # Polyline routing for minimal crossings
                     "overlap": "false",
                     "pack": "true",
                     "packmode": "clust",
-                    "pad": "0.8",
+                    "pad": "1.0",          # Increased from 0.8 to accommodate larger nodes
                     "dpi": "300",          # High resolution for professional output
                     "concentrate": "true",  # Merge similar edges for clarity
                     "ordering": "out"      # Consistent edge ordering
@@ -687,7 +687,10 @@ def generate_azure_architecture_diagram(inputs: CustomerInputs, output_dir: str 
                     "shape": "box",
                     "fillcolor": "#ffffff",
                     "color": "#333333",
-                    "penwidth": "2"
+                    "penwidth": "2",
+                    "width": "2.5",        # Minimum width to accommodate multi-line labels
+                    "height": "1.5",       # Minimum height to accommodate multi-line labels  
+                    "fixedsize": "false"   # Allow dynamic sizing based on label content
                 },
                 edge_attr={
                     "fontsize": "10",
