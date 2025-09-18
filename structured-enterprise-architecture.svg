@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+    <rect x="0" y="0" width="800" height="600" fill="#f0f0f0"/>
+    <text x="400" y="30" font-size="24" text-anchor="middle" fill="#333">Structured Azure Enterprise Architecture</text>
+
+    <!-- Swimlanes -->
+    <rect x="0" y="50" width="800" height="40" fill="#d9d9d9"/>
+    <text x="10" y="75" font-size="16">Internet Edge</text>
+
+    <rect x="0" y="100" width="800" height="40" fill="#e6e6e6"/>
+    <text x="10" y="125" font-size="16">Identity Security</text>
+
+    <rect x="0" y="150" width="800" height="40" fill="#d9d9d9"/>
+    <text x="10" y="175" font-size="16">Active Regions</text>
+
+    <rect x="0" y="200" width="800" height="40" fill="#e6e6e6"/>
+    <text x="10" y="225" font-size="16">Standby Region</text>
+
+    <rect x="0" y="250" width="800" height="40" fill="#d9d9d9"/>
+    <text x="10" y="275" font-size="16">Monitoring</text>
+
+    <!-- Components Placeholders -->
+    <text x="10" y="320" font-size="14">Components:</text>
+    <text x="10" y="340" font-size="12">Root Management Group</text>
+    <text x="10" y="360" font-size="12">Platform MG</text>
+    <text x="10" y="380" font-size="12">Workloads MG</text>
+    <text x="10" y="400" font-size="12">Azure Active Directory</text>
+    <text x="10" y="420" font-size="12">Key Vault</text>
+    <text x="10" y="440" font-size="12">Hub VNet</text>
+    <text x="10" y="460" font-size="12">Production VNet</text>
+    <text x="10" y="480" font-size="12">Development VNet</text>
+    <text x="10" y="500" font-size="12">Virtual Network</text>
+    <text x="10" y="520" font-size="12">ExpressRoute</text>
+    <text x="10" y="540" font-size="12">Virtual WANs</text>
+    <text x="10" y="560" font-size="12">Container Instances</text>
+    <text x="10" y="580" font-size="12">Azure Virtual Machines</text>
+    <text x="10" y="600" font-size="12">Azure Kubernetes Service</text>
+    <text x="10" y="620" font-size="12">Data Lake Storage</text>
+    <text x="10" y="640" font-size="12">Storage Accounts</text>
+    <text x="10" y="660" font-size="12">Azure Database for MySQL</text>
+    <text x="10" y="680" font-size="12">Azure Synapse Analytics</text>
+    <text x="10" y="700" font-size="12">Logic Apps</text>
+    <text x="10" y="720" font-size="12">Service Bus</text>
+    <text x="10" y="740" font-size="12">Azure DevOps</text>
+    <text x="10" y="760" font-size="12">Front Door</text>
+    <text x="10" y="780" font-size="12">Queue Storage</text>
+    <text x="10" y="800" font-size="12">Table Storage</text>
+    <text x="10" y="820" font-size="12">Redis Cache</text>
+
+    <!-- Workflow Placeholder -->
+    <text x="10" y="850" font-size="14">Workflow (1-15):</text>
+    <text x="10" y="870" font-size="12">1. Start</text>
+    <text x="10" y="890" font-size="12">2. ...</text>
+    <text x="10" y="910" font-size="12">3. ...</text>
+    <text x="10" y="930" font-size="12">4. ...</text>
+    <text x="10" y="950" font-size="12">5. ...</text>
+    <text x="10" y="970" font-size="12">6. ...</text>
+    <text x="10" y="990" font-size="12">7. ...</text>
+    <text x="10" y="1010" font-size="12">8. ...</text>
+    <text x="10" y="1030" font-size="12">9. ...</text>
+    <text x="10" y="1050" font-size="12">10. ...</text>
+    <text x="10" y="1070" font-size="12">11. ...</text>
+    <text x="10" y="1090" font-size="12">12. ...</text>
+    <text x="10" y="1110" font-size="12">13. ...</text>
+    <text x="10" y="1130" font-size="12">14. ...</text>
+    <text x="10" y="1150" font-size="12">15. End</text>
+
+    <!-- Legend Placeholder -->
+    <text x="400" y="850" font-size="14" text-anchor="middle">Legend</text>
+
+    <!-- Monitoring Overlay Placeholder -->
+    <text x="400" y="900" font-size="14" text-anchor="middle">Monitoring Overlay</text>
+</svg>
