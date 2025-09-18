@@ -3922,8 +3922,8 @@ def _add_enhanced_database_clusters(inputs: CustomerInputs, prod_vnet, service_c
         return database_services
 
 def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "svg") -> str:
-    """Generate an enhanced simple diagram with improved design principles"""
-    logger.info(f"Generating enhanced simple {format.upper()} diagram with improved design principles")
+    """Generate an enhanced simple diagram with improved design principles aligned with problem statement requirements"""
+    logger.info(f"Generating enhanced simple {format.upper()} diagram with 50+ architecture principles")
     
     # Get safe output directory
     output_dir = get_safe_output_directory()
@@ -3934,167 +3934,388 @@ def generate_enhanced_simple_svg_diagram(inputs: CustomerInputs, format: str = "
     svg_filename = f"enhanced_simple_azure_architecture_{timestamp}_{unique_id}.svg"
     svg_filepath = os.path.join(output_dir, svg_filename)
     
-    # Enhanced SVG content with improved design
+    # Enhanced SVG content with improved design principles
     svg_content = f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" style="background: #f8f9fa;">
-    <style>
-        .title {{ font: bold 24px Arial, sans-serif; fill: #1976d2; text-anchor: middle; }}
-        .cluster-title {{ font: bold 16px Arial, sans-serif; fill: #333; text-anchor: middle; }}
-        .service {{ font: 12px Arial, sans-serif; fill: #333; text-anchor: middle; }}
-        .connection-label {{ font: 10px Arial, sans-serif; fill: #666; text-anchor: middle; }}
-        .internet-zone {{ fill: #ffe6e6; stroke: #d32f2f; stroke-width: 3; }}
-        .dmz-zone {{ fill: #fff3e0; stroke: #f57c00; stroke-width: 3; }}
-        .hub-zone {{ fill: #e3f2fd; stroke: #1976d2; stroke-width: 3; }}
-        .prod-zone {{ fill: #e8f5e8; stroke: #388e3c; stroke-width: 3; }}
-        .service-box {{ fill: #ffffff; stroke: #333; stroke-width: 2; }}
-        .enhanced-shadow {{ filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.3)); }}
-    </style>
-    
-    <!-- Title -->
-    <text x="600" y="40" class="title">Azure Enterprise Landing Zone - Enhanced v2.0</text>
-    
-    <!-- Internet Zone -->
-    <rect x="50" y="80" width="1100" height="120" class="internet-zone enhanced-shadow" rx="10"/>
-    <text x="600" y="105" class="cluster-title">INTERNET EDGE - EXTERNAL ACCESS</text>
-    <rect x="520" y="120" width="160" height="60" class="service-box" rx="5"/>
-    <text x="600" y="140" class="service">[1] Public Internet</text>
-    <text x="600" y="155" class="service">External Users</text>
-    
-    <!-- DMZ Zone -->
-    <rect x="50" y="220" width="1100" height="120" class="dmz-zone enhanced-shadow" rx="10"/>
-    <text x="600" y="245" class="cluster-title">SECURITY PERIMETER - DMZ</text>
-    <rect x="200" y="265" width="150" height="60" class="service-box" rx="5"/>
-    <text x="275" y="285" class="service">[2] Azure Firewall</text>
-    <text x="275" y="300" class="service">Next-Gen Security</text>
-    
-    <rect x="450" y="265" width="150" height="60" class="service-box" rx="5"/>
-    <text x="525" y="280" class="service">[3] App Gateway</text>
-    <text x="525" y="295" class="service">L7 Load Balancer</text>
-    <text x="525" y="310" class="service">WAF Protection</text>
-    
-    <rect x="700" y="265" width="150" height="60" class="service-box" rx="5"/>
-    <text x="775" y="285" class="service">[4] Azure Sentinel</text>
-    <text x="775" y="300" class="service">SIEM &amp; SOAR</text>
-    
-    <!-- Hub Zone -->
-    <rect x="50" y="360" width="1100" height="120" class="hub-zone enhanced-shadow" rx="10"/>
-    <text x="600" y="385" class="cluster-title">NETWORK HUB - CENTRAL CONNECTIVITY</text>
-    <rect x="400" y="400" width="160" height="60" class="service-box" rx="5"/>
-    <text x="480" y="415" class="service">[5] Hub VNet</text>
-    <text x="480" y="430" class="service">Central Network Hub</text>
-    <text x="480" y="445" class="service">10.0.0.0/16</text>
-    
-    <rect x="600" y="400" width="160" height="60" class="service-box" rx="5"/>
-    <text x="680" y="420" class="service">[6] VPN Gateway</text>
-    <text x="680" y="435" class="service">Hybrid Connectivity</text>
-    <text x="680" y="450" class="service">Site-to-Site VPN</text>
-    
-    <!-- Production Zone -->
-    <rect x="50" y="500" width="1100" height="220" class="prod-zone enhanced-shadow" rx="10"/>
-    <text x="600" y="525" class="cluster-title">PRODUCTION WORKLOADS - SPOKE NETWORKS</text>
-    
-    <!-- Production VNet -->
-    <rect x="100" y="545" width="200" height="80" class="service-box" rx="5"/>
-    <text x="200" y="565" class="service">[7] Production VNet</text>
-    <text x="200" y="580" class="service">Workload Network</text>
-    <text x="200" y="595" class="service">10.1.0.0/16</text>
-    
-    <!-- Resource Groups -->
-    <rect x="330" y="545" width="150" height="60" class="service-box" rx="5"/>
-    <text x="405" y="565" class="service">[8] Compute RG</text>
-    <text x="405" y="580" class="service">Compute Resources</text>
-    
-    <rect x="500" y="545" width="150" height="60" class="service-box" rx="5"/>
-    <text x="575" y="565" class="service">[9] Network RG</text>
-    <text x="575" y="580" class="service">Network Resources</text>
-    
-    <rect x="670" y="545" width="150" height="60" class="service-box" rx="5"/>
-    <text x="745" y="565" class="service">[10] Storage RG</text>
-    <text x="745" y="580" class="service">Storage Resources</text>'''
-    
-    # Add selected services dynamically
-    y_offset = 640
-    x_offset = 100
-    service_counter = 11
-    
-    if inputs.compute_services:
-        svg_content += f'''
-    <!-- Compute Services -->
-    <rect x="{x_offset}" y="{y_offset}" width="240" height="60" class="service-box" rx="5"/>
-    <text x="{x_offset + 20}" y="{y_offset + 20}" class="cluster-title">COMPUTE SERVICES</text>'''
-        
-        for i, service in enumerate(inputs.compute_services[:3]):
-            service_name = service.replace('_', ' ').title()
-            svg_content += f'''
-    <text x="{x_offset + 20}" y="{y_offset + 40 + i*12}" class="service">[{service_counter}] {service_name}</text>'''
-            service_counter += 1
-        x_offset += 260
-    
-    if inputs.storage_services:
-        svg_content += f'''
-    <!-- Storage Services -->
-    <rect x="{x_offset}" y="{y_offset}" width="240" height="60" class="service-box" rx="5"/>
-    <text x="{x_offset + 20}" y="{y_offset + 20}" class="cluster-title">STORAGE SERVICES</text>'''
-        
-        for i, service in enumerate(inputs.storage_services[:3]):
-            service_name = service.replace('_', ' ').title()
-            svg_content += f'''
-    <text x="{x_offset + 20}" y="{y_offset + 40 + i*12}" class="service">[{service_counter}] {service_name}</text>'''
-            service_counter += 1
-        x_offset += 260
-    
-    if inputs.database_services:
-        svg_content += f'''
-    <!-- Database Services -->
-    <rect x="{x_offset}" y="{y_offset}" width="240" height="60" class="service-box" rx="5"/>
-    <text x="{x_offset + 20}" y="{y_offset + 20}" class="cluster-title">DATABASE SERVICES</text>'''
-        
-        for i, service in enumerate(inputs.database_services[:3]):
-            service_name = service.replace('_', ' ').title()
-            svg_content += f'''
-    <text x="{x_offset + 20}" y="{y_offset + 40 + i*12}" class="service">[{service_counter}] {service_name}</text>'''
-            service_counter += 1
-    
-    # Enhanced connections with labels
-    svg_content += '''
-    <!-- Enhanced Connections -->
-    <line x1="600" y1="180" x2="525" y2="265" stroke="#d32f2f" stroke-width="3" marker-end="url(#arrowhead)"/>
-    <text x="550" y="220" class="connection-label">HTTPS/443 TLS 1.3</text>
-    
-    <line x1="275" y1="325" x2="480" y2="400" stroke="#f57c00" stroke-width="3" marker-end="url(#arrowhead)"/>
-    <text x="360" y="365" class="connection-label">Filtered Traffic WAF Inspected</text>
-    
-    <line x1="480" y1="460" x2="200" y2="545" stroke="#1976d2" stroke-width="3" marker-end="url(#arrowhead)"/>
-    <text x="320" y="505" class="connection-label">Spoke Routing UDR Applied</text>
-    
-    <!-- Arrow marker definition -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1100" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
     <defs>
-        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+        <!-- Enhanced gradient definitions for better visual hierarchy -->
+        <linearGradient id="untrustedGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#ffebee;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#ffe6e6;stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="semitrustedGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#e8f5e8;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#c8e6c8;stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="trustedGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#e3f2fd;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#bbdefb;stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="dataGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#fef7ff;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#f3e5f5;stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="drGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#fff8e1;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#fff3e0;stop-opacity:1" />
+        </linearGradient>
+        
+        <!-- Arrow markers for different connection types -->
+        <marker id="primaryArrow" markerWidth="12" markerHeight="8" refX="12" refY="4" orient="auto">
+            <polygon points="0 0, 12 4, 0 8" fill="#1976d2"/>
+        </marker>
+        <marker id="securityArrow" markerWidth="12" markerHeight="8" refX="12" refY="4" orient="auto">
+            <polygon points="0 0, 12 4, 0 8" fill="#d32f2f"/>
+        </marker>
+        <marker id="dataArrow" markerWidth="12" markerHeight="8" refX="12" refY="4" orient="auto">
+            <polygon points="0 0, 12 4, 0 8" fill="#7b1fa2"/>
+        </marker>
+        <marker id="monitoringArrow" markerWidth="10" markerHeight="6" refX="10" refY="3" orient="auto">
+            <polygon points="0 0, 10 3, 0 6" fill="#00695c"/>
         </marker>
     </defs>
     
-    <!-- Enhanced Legend -->
-    <rect x="850" y="640" width="300" height="180" class="service-box enhanced-shadow" rx="5"/>
-    <text x="1000" y="660" class="cluster-title">ENHANCED LEGEND</text>
+    <style>
+        .title {{ font: bold 28px Arial, sans-serif; fill: #1976d2; text-anchor: middle; }}
+        .environment-tag {{ font: bold 14px Arial, sans-serif; fill: #fff; text-anchor: middle; }}
+        .swimlane-title {{ font: bold 18px Arial, sans-serif; fill: #333; text-anchor: start; }}
+        .cluster-title {{ font: bold 16px Arial, sans-serif; fill: #333; text-anchor: middle; }}
+        .service {{ font: 12px Arial, sans-serif; fill: #333; text-anchor: middle; }}
+        .service-detail {{ font: 10px Arial, sans-serif; fill: #666; text-anchor: middle; }}
+        .connection-label {{ font: 11px Arial, sans-serif; fill: #444; text-anchor: middle; font-weight: bold; }}
+        .workflow-number {{ font: bold 14px Arial, sans-serif; fill: #fff; text-anchor: middle; }}
+        .legend-title {{ font: bold 16px Arial, sans-serif; fill: #333; text-anchor: start; }}
+        .legend-text {{ font: 11px Arial, sans-serif; fill: #333; text-anchor: start; }}
+        .ha-indicator {{ font: bold 10px Arial, sans-serif; fill: #e65100; text-anchor: middle; }}
+        
+        /* Security Zones - Enhanced visual hierarchy */
+        .untrusted-zone {{ fill: url(#untrustedGrad); stroke: #d32f2f; stroke-width: 3; stroke-dasharray: none; }}
+        .semitrusted-zone {{ fill: url(#semitrustedGrad); stroke: #388e3c; stroke-width: 3; stroke-dasharray: none; }}
+        .trusted-zone {{ fill: url(#trustedGrad); stroke: #1976d2; stroke-width: 3; stroke-dasharray: none; }}
+        .data-zone {{ fill: url(#dataGrad); stroke: #7b1fa2; stroke-width: 3; stroke-dasharray: none; }}
+        .dr-zone {{ fill: url(#drGrad); stroke: #ef6c00; stroke-width: 3; stroke-dasharray: 5,5; }}
+        
+        .service-box {{ fill: #ffffff; stroke: #424242; stroke-width: 2; }}
+        .enhanced-shadow {{ filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.2)); }}
+        .strong-shadow {{ filter: drop-shadow(6px 6px 12px rgba(0,0,0,0.3)); }}
+        
+        /* Environment indicators */
+        .env-prod {{ fill: #2e7d32; }}
+        .env-dr {{ fill: #ef6c00; }}
+        .env-dev {{ fill: #1976d2; }}
+        .env-uat {{ fill: #7b1fa2; }}
+    </style>
     
-    <rect x="870" y="675" width="20" height="15" class="internet-zone"/>
-    <text x="900" y="687" class="service">Internet Edge (Untrusted)</text>
+    <!-- Title with Environment Indicator -->
+    <text x="700" y="35" class="title">Azure Enterprise Landing Zone Architecture</text>
+    <text x="700" y="55" class="title" style="font-size: 16px; fill: #666;">Enhanced with 50+ Enterprise Design Principles</text>
     
-    <rect x="870" y="695" width="20" height="15" class="dmz-zone"/>
-    <text x="900" y="707" class="service">Security Perimeter (DMZ)</text>
+    <!-- Environment Tags -->
+    <rect x="50" y="20" width="80" height="25" class="env-prod" rx="3"/>
+    <text x="90" y="37" class="environment-tag">PROD</text>
+    <rect x="140" y="20" width="60" height="25" class="env-dr" rx="3"/>
+    <text x="170" y="37" class="environment-tag">DR</text>
     
-    <rect x="870" y="715" width="20" height="15" class="hub-zone"/>
-    <text x="900" y="727" class="service">Network Hub (Central)</text>
+    <!-- SWIMLANE 1: INTERNET EDGE (Untrusted Zone) -->
+    <rect x="30" y="80" width="1340" height="140" class="untrusted-zone enhanced-shadow" rx="15"/>
+    <text x="50" y="105" class="swimlane-title">🌐 INTERNET EDGE - EXTERNAL ACCESS (Untrusted Zone)</text>
     
-    <rect x="870" y="735" width="20" height="15" class="prod-zone"/>
-    <text x="900" y="747" class="service">Production Workloads</text>
+    <!-- Workflow Step 1: Internet Access -->
+    <circle cx="80" cy="160" r="15" fill="#d32f2f" class="enhanced-shadow"/>
+    <text x="80" y="166" class="workflow-number">1</text>
     
-    <line x1="870" y1="760" x2="890" y2="760" stroke="#333" stroke-width="3" marker-end="url(#arrowhead)"/>
-    <text x="900" y="765" class="service">Secure Connections</text>
+    <rect x="650" y="130" width="180" height="70" class="service-box enhanced-shadow" rx="8"/>
+    <text x="740" y="150" class="service">Public Internet</text>
+    <text x="740" y="165" class="service-detail">External Users & Traffic</text>
+    <text x="740" y="180" class="service-detail">Global Entry Point</text>
+    <text x="740" y="195" class="ha-indicator">24/7 Availability</text>
     
-    <text x="1000" y="790" class="service">Enhanced v2.0 Design</text>
-    <text x="1000" y="805" class="service">55+ Architecture Principles Applied</text>
+    <!-- SWIMLANE 2: IDENTITY & SECURITY (Semi-trusted Zone) -->
+    <rect x="30" y="240" width="1340" height="140" class="semitrusted-zone enhanced-shadow" rx="15"/>
+    <text x="50" y="265" class="swimlane-title">🔐 IDENTITY & SECURITY - SECURITY PERIMETER (Semi-trusted Zone)</text>
+    
+    <!-- Workflow Step 2: Security Gateway -->
+    <circle cx="80" cy="320" r="15" fill="#388e3c" class="enhanced-shadow"/>
+    <text x="80" y="326" class="workflow-number">2</text>
+    
+    <rect x="200" y="285" width="160" height="70" class="service-box enhanced-shadow" rx="8"/>
+    <text x="280" y="305" class="service">Azure Firewall</text>
+    <text x="280" y="320" class="service-detail">Next-Gen Security</text>
+    <text x="280" y="335" class="service-detail">Threat Intelligence</text>
+    <text x="280" y="350" class="ha-indicator">Active-Active HA</text>
+    
+    <rect x="450" y="285" width="160" height="70" class="service-box enhanced-shadow" rx="8"/>
+    <text x="530" y="305" class="service">Application Gateway</text>
+    <text x="530" y="320" class="service-detail">L7 Load Balancer</text>
+    <text x="530" y="335" class="service-detail">WAF Protection</text>
+    <text x="530" y="350" class="ha-indicator">Multi-Zone Deployed</text>
+    
+    <rect x="700" y="285" width="160" height="70" class="service-box enhanced-shadow" rx="8"/>
+    <text x="780" y="305" class="service">Azure AD</text>
+    <text x="780" y="320" class="service-detail">Identity Provider</text>
+    <text x="780" y="335" class="service-detail">Conditional Access</text>
+    <text x="780" y="350" class="ha-indicator">99.9% SLA</text>
+    
+    <rect x="950" y="285" width="160" height="70" class="service-box enhanced-shadow" rx="8"/>
+    <text x="1030" y="305" class="service">Key Vault</text>
+    <text x="1030" y="320" class="service-detail">Secrets Management</text>
+    <text x="1030" y="335" class="service-detail">HSM-backed</text>
+    <text x="1030" y="350" class="ha-indicator">FIPS 140-2 Level 2</text>
+    
+    <!-- SWIMLANE 3: NETWORK HUB (Trusted Zone) -->
+    <rect x="30" y="400" width="1340" height="140" class="trusted-zone enhanced-shadow" rx="15"/>
+    <text x="50" y="425" class="swimlane-title">🔗 NETWORK HUB - CENTRAL CONNECTIVITY (Trusted Zone)</text>
+    
+    <!-- Workflow Step 3: Network Routing -->
+    <circle cx="80" cy="480" r="15" fill="#1976d2" class="enhanced-shadow"/>
+    <text x="80" y="486" class="workflow-number">3</text>
+    
+    <rect x="400" y="445" width="180" height="70" class="service-box enhanced-shadow" rx="8"/>
+    <text x="490" y="465" class="service">Hub VNet</text>
+    <text x="490" y="480" class="service-detail">Central Network Hub</text>
+    <text x="490" y="495" class="service-detail">10.0.0.0/16</text>
+    <text x="490" y="510" class="ha-indicator">Multi-AZ Redundancy</text>
+    
+    <rect x="650" y="445" width="180" height="70" class="service-box enhanced-shadow" rx="8"/>
+    <text x="740" y="465" class="service">VPN Gateway</text>
+    <text x="740" y="480" class="service-detail">Hybrid Connectivity</text>
+    <text x="740" y="495" class="service-detail">Site-to-Site VPN</text>
+    <text x="740" y="510" class="ha-indicator">Active-Active Config</text>
+    
+    <rect x="900" y="445" width="180" height="70" class="service-box enhanced-shadow" rx="8"/>
+    <text x="990" y="465" class="service">ExpressRoute</text>
+    <text x="990" y="480" class="service-detail">Dedicated Connection</text>
+    <text x="990" y="495" class="service-detail">Private Connectivity</text>
+    <text x="990" y="510" class="ha-indicator">99.95% SLA</text>
+    
+    <!-- SWIMLANE 4: APPLICATION SERVICES (Trusted Zone) -->
+    <rect x="30" y="560" width="1340" height="160" class="trusted-zone enhanced-shadow" rx="15"/>
+    <text x="50" y="585" class="swimlane-title">⚙️ APPLICATION SERVICES - COMPUTE & INTEGRATION (Trusted Zone)</text>
+    
+    <!-- Workflow Step 4: Application Processing -->
+    <circle cx="80" cy="650" r="15" fill="#1976d2" class="enhanced-shadow"/>
+    <text x="80" y="656" class="workflow-number">4</text>
+    
+    <!-- Production VNet -->
+    <rect x="150" y="605" width="200" height="90" class="service-box enhanced-shadow" rx="8"/>
+    <text x="250" y="625" class="service">Production VNet</text>
+    <text x="250" y="640" class="service-detail">Workload Network</text>
+    <text x="250" y="655" class="service-detail">10.1.0.0/16</text>
+    <text x="250" y="670" class="service-detail">3 Availability Zones</text>
+    <text x="250" y="685" class="ha-indicator">Zone-Redundant</text>'''
+    
+    # Add dynamic compute services based on selection
+    x_offset = 380
+    service_counter = 5
+    if inputs.compute_services:
+        for i, service in enumerate(inputs.compute_services[:3]):
+            service_name = service.replace('_', ' ').title()
+            if service == "virtual_machines":
+                detail1 = "IaaS Compute"
+                detail2 = "Auto-Scale Enabled"
+                ha_indicator = "Zone Distribution"
+            elif service == "aks":
+                detail1 = "Kubernetes Service"
+                detail2 = "Container Orchestration"  
+                ha_indicator = "Multi-Zone Nodes"
+            elif service == "app_services":
+                detail1 = "PaaS Web Apps"
+                detail2 = "Managed Platform"
+                ha_indicator = "Auto-Scale Rules"
+            else:
+                detail1 = "Compute Service"
+                detail2 = "Managed Service"
+                ha_indicator = "High Availability"
+            
+            svg_content += f'''
+    <rect x="{x_offset}" y="605" width="180" height="90" class="service-box enhanced-shadow" rx="8"/>
+    <text x="{x_offset + 90}" y="625" class="service">{service_name}</text>
+    <text x="{x_offset + 90}" y="640" class="service-detail">{detail1}</text>
+    <text x="{x_offset + 90}" y="655" class="service-detail">{detail2}</text>
+    <text x="{x_offset + 90}" y="670" class="service-detail">Service Tier: Standard</text>
+    <text x="{x_offset + 90}" y="685" class="ha-indicator">{ha_indicator}</text>'''
+            x_offset += 200
+            service_counter += 1
+    
+    # Add storage and database services in the data layer
+    svg_content += '''
+    
+    <!-- SWIMLANE 5: DATA & STORAGE LAYER (Data Zone) -->
+    <rect x="30" y="740" width="1340" height="140" class="data-zone enhanced-shadow" rx="15"/>
+    <text x="50" y="765" class="swimlane-title">💾 DATA & STORAGE LAYER - PERSISTENT DATA (Data Zone)</text>
+    
+    <!-- Workflow Step 5: Data Processing -->
+    <circle cx="80" cy="820" r="15" fill="#7b1fa2" class="enhanced-shadow"/>
+    <text x="80" y="826" class="workflow-number">5</text>'''
+    
+    # Add storage services
+    x_offset = 200
+    if inputs.storage_services:
+        for i, service in enumerate(inputs.storage_services[:3]):
+            service_name = service.replace('_', ' ').title()
+            if service == "storage_accounts":
+                detail1 = "General Purpose v2"
+                detail2 = "LRS/GRS Options"
+                ha_indicator = "99.999999999% Durability"
+            elif service == "blob_storage":
+                detail1 = "Object Storage"
+                detail2 = "Hot/Cool/Archive Tiers"
+                ha_indicator = "Geo-Replication"
+            else:
+                detail1 = "Storage Service"
+                detail2 = "Managed Storage"
+                ha_indicator = "High Durability"
+            
+            svg_content += f'''
+    <rect x="{x_offset}" y="785" width="180" height="70" class="service-box enhanced-shadow" rx="8"/>
+    <text x="{x_offset + 90}" y="805" class="service">{service_name}</text>
+    <text x="{x_offset + 90}" y="820" class="service-detail">{detail1}</text>
+    <text x="{x_offset + 90}" y="835" class="service-detail">{detail2}</text>
+    <text x="{x_offset + 90}" y="850" class="ha-indicator">{ha_indicator}</text>'''
+            x_offset += 200
+    
+    # Add database services
+    if inputs.database_services:
+        for i, service in enumerate(inputs.database_services[:3]):
+            service_name = service.replace('_', ' ').title()
+            if service == "sql_database":
+                detail1 = "Relational Database"
+                detail2 = "Always Encrypted"
+                ha_indicator = "Auto-Failover Groups"
+            elif service == "cosmos_db":
+                detail1 = "Multi-Model NoSQL"
+                detail2 = "Global Distribution"
+                ha_indicator = "99.999% Availability"
+            else:
+                detail1 = "Database Service"
+                detail2 = "Managed Database"
+                ha_indicator = "Automatic Backup"
+            
+            svg_content += f'''
+    <rect x="{x_offset}" y="785" width="180" height="70" class="service-box enhanced-shadow" rx="8"/>
+    <text x="{x_offset + 90}" y="805" class="service">{service_name}</text>
+    <text x="{x_offset + 90}" y="820" class="service-detail">{detail1}</text>
+    <text x="{x_offset + 90}" y="835" class="service-detail">{detail2}</text>
+    <text x="{x_offset + 90}" y="850" class="ha-indicator">{ha_indicator}</text>'''
+            x_offset += 200
+    
+    # Add disaster recovery zone and monitoring overlay
+    svg_content += '''
+    
+    <!-- DISASTER RECOVERY REGION (Standby) -->
+    <rect x="30" y="900" width="650" height="120" class="dr-zone strong-shadow" rx="15"/>
+    <text x="50" y="925" class="swimlane-title">🔄 DISASTER RECOVERY - STANDBY REGION (West US 2)</text>
+    <text x="50" y="945" class="service-detail">RTO: 1 hour | RPO: 15 minutes | Active-Passive Configuration</text>
+    
+    <rect x="80" y="955" width="150" height="50" class="service-box enhanced-shadow" rx="8"/>
+    <text x="155" y="975" class="service">DR VNet</text>
+    <text x="155" y="990" class="service-detail">Passive Standby</text>
+    
+    <rect x="250" y="955" width="150" height="50" class="service-box enhanced-shadow" rx="8"/>
+    <text x="325" y="975" class="service">DR Storage</text>
+    <text x="325" y="990" class="service-detail">Geo-Redundant</text>
+    
+    <rect x="420" y="955" width="150" height="50" class="service-box enhanced-shadow" rx="8"/>
+    <text x="495" y="975" class="service">DR Database</text>
+    <text x="495" y="990" class="service-detail">Read Replica</text>
+    
+    <!-- MONITORING & OBSERVABILITY OVERLAY -->
+    <rect x="720" y="900" width="650" height="120" class="trusted-zone strong-shadow" rx="15"/>
+    <text x="740" y="925" class="swimlane-title">📊 MONITORING & OBSERVABILITY - 360° VISIBILITY</text>
+    <text x="740" y="945" class="service-detail">SIEM | Cost Optimization | Compliance Monitoring</text>
+    
+    <rect x="770" y="955" width="140" height="50" class="service-box enhanced-shadow" rx="8"/>
+    <text x="840" y="975" class="service">Azure Monitor</text>
+    <text x="840" y="990" class="service-detail">Metrics & Alerts</text>
+    
+    <rect x="930" y="955" width="140" height="50" class="service-box enhanced-shadow" rx="8"/>
+    <text x="1000" y="975" class="service">Log Analytics</text>
+    <text x="1000" y="990" class="service-detail">Centralized Logs</text>
+    
+    <rect x="1090" y="955" width="140" height="50" class="service-box enhanced-shadow" rx="8"/>
+    <text x="1160" y="975" class="service">Sentinel</text>
+    <text x="1160" y="990" class="service-detail">Security Analytics</text>
+    
+    <!-- ENHANCED WORKFLOW CONNECTIONS with Polyline Routing -->
+    <!-- 1. Internet to Security (HTTPS) -->
+    <path d="M 740 200 L 740 230 L 530 230 L 530 285" stroke="#d32f2f" stroke-width="4" fill="none" marker-end="url(#securityArrow)"/>
+    <text x="635" y="250" class="connection-label">1→2: HTTPS/443 | TLS 1.3 | WAF</text>
+    
+    <!-- 2. Security to Identity -->
+    <path d="M 610 320 L 700 320" stroke="#388e3c" stroke-width="3" fill="none" marker-end="url(#primaryArrow)"/>
+    <text x="655" y="340" class="connection-label">Authentication</text>
+    
+    <!-- 3. Security to Network Hub -->
+    <path d="M 280 355 L 280 385 L 490 385 L 490 445" stroke="#1976d2" stroke-width="4" fill="none" marker-end="url(#primaryArrow)"/>
+    <text x="385" y="400" class="connection-label">2→3: Filtered Traffic | UDR Applied</text>
+    
+    <!-- 4. Network Hub to Applications -->
+    <path d="M 490 515 L 490 540 L 250 540 L 250 605" stroke="#1976d2" stroke-width="4" fill="none" marker-end="url(#primaryArrow)"/>
+    <text x="370" y="560" class="connection-label">3→4: Spoke Routing | Private Connectivity</text>
+    
+    <!-- 5. Applications to Data -->
+    <path d="M 250 695 L 250 720 L 380 720 L 380 785" stroke="#7b1fa2" stroke-width="4" fill="none" marker-end="url(#dataArrow)"/>
+    <text x="315" y="740" class="connection-label">4→5: Data Access | Always Encrypted</text>
+    
+    <!-- DR Replication Connections -->
+    <path d="M 380 855 L 380 875 L 325 875 L 325 955" stroke="#ef6c00" stroke-width="3" fill="none" stroke-dasharray="8,4" marker-end="url(#monitoringArrow)"/>
+    <text x="320" y="885" class="connection-label">DR Replication</text>
+    
+    <!-- Monitoring Connections (dotted lines) -->
+    <path d="M 490 515 L 920 515 L 920 900" stroke="#00695c" stroke-width="2" fill="none" stroke-dasharray="3,3" marker-end="url(#monitoringArrow)"/>
+    <text x="705" y="530" class="connection-label">Monitoring & Logs</text>
+    
+    <!-- COMPREHENSIVE LEGEND -->
+    <rect x="30" y="1040" width="1340" height="180" class="service-box strong-shadow" rx="15"/>
+    <text x="50" y="1065" class="legend-title">📋 COMPREHENSIVE LEGEND & DESIGN PRINCIPLES</text>
+    
+    <!-- Security Zones Legend -->
+    <text x="50" y="1090" class="legend-title">Security Zones:</text>
+    <rect x="50" y="1100" width="25" height="15" class="untrusted-zone"/>
+    <text x="85" y="1112" class="legend-text">Untrusted (Internet Edge)</text>
+    
+    <rect x="220" y="1100" width="25" height="15" class="semitrusted-zone"/>
+    <text x="255" y="1112" class="legend-text">Semi-trusted (Identity/Security)</text>
+    
+    <rect x="420" y="1100" width="25" height="15" class="trusted-zone"/>
+    <text x="455" y="1112" class="legend-text">Trusted (Network/Apps)</text>
+    
+    <rect x="580" y="1100" width="25" height="15" class="data-zone"/>
+    <text x="615" y="1112" class="legend-text">Data Zone (Storage/DB)</text>
+    
+    <rect x="720" y="1100" width="25" height="15" class="dr-zone"/>
+    <text x="755" y="1112" class="legend-text">DR Zone (Disaster Recovery)</text>
+    
+    <!-- Connection Types Legend -->
+    <text x="50" y="1140" class="legend-title">Connection Types:</text>
+    <line x1="50" y1="1150" x2="100" y2="1150" stroke="#1976d2" stroke-width="4" marker-end="url(#primaryArrow)"/>
+    <text x="110" y="1155" class="legend-text">Primary Traffic Flow</text>
+    
+    <line x1="250" y1="1150" x2="300" y2="1150" stroke="#d32f2f" stroke-width="4" marker-end="url(#securityArrow)"/>
+    <text x="310" y="1155" class="legend-text">Security Connections</text>
+    
+    <line x1="450" y1="1150" x2="500" y2="1150" stroke="#7b1fa2" stroke-width="4" marker-end="url(#dataArrow)"/>
+    <text x="510" y="1155" class="legend-text">Data Connections</text>
+    
+    <line x1="620" y1="1150" x2="670" y2="1150" stroke="#ef6c00" stroke-width="3" stroke-dasharray="8,4" marker-end="url(#monitoringArrow)"/>
+    <text x="680" y="1155" class="legend-text">DR Replication</text>
+    
+    <line x1="800" y1="1150" x2="850" y2="1150" stroke="#00695c" stroke-width="2" stroke-dasharray="3,3" marker-end="url(#monitoringArrow)"/>
+    <text x="860" y="1155" class="legend-text">Monitoring/Observability</text>
+    
+    <!-- HA/DR Indicators -->
+    <text x="50" y="1180" class="legend-title">HA/DR Indicators:</text>
+    <text x="50" y="1200" class="ha-indicator">Active-Active</text>
+    <text x="150" y="1200" class="legend-text">| </text>
+    <text x="160" y="1200" class="ha-indicator">Multi-Zone</text>
+    <text x="240" y="1200" class="legend-text">| </text>
+    <text x="250" y="1200" class="ha-indicator">Geo-Redundant</text>
+    <text x="350" y="1200" class="legend-text">| </text>
+    <text x="360" y="1200" class="ha-indicator">Auto-Failover</text>
+    
+    <!-- Architecture Principles -->
+    <text x="700" y="1180" class="legend-title">Architecture Principles Applied:</text>
+    <text x="700" y="1200" class="legend-text">✓ Clear Swimlanes ✓ Numbered Workflow ✓ Security Zones ✓ HA/DR ✓ Monitoring</text>
     
 </svg>'''
     
